@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>PySec Academy Elite v8.4.2 Final Release</title>
+  <meta name="description" content="PySec Academy Elite v8.4.2 Final Release: app móvil PWA para aprender Python, hacking ético y ciberseguridad con labs, exámenes, certificados, repaso, exportación de progreso y simulador seguro con Web Worker." />
+  <meta name="theme-color" content="#060b18" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="application-name" content="PySec Elite" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PySec Elite" />
+  <meta property="og:title" content="PySec Academy Elite v8.4.2 Final Release" />
+  <meta property="og:description" content="Threat Defense Lab móvil con arquitectura interna limpia para Python, hacking ético y ciberseguridad." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/screenshot-mobile.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="main-header">
+      <button class="logo" id="btn-home-logo" aria-label="Ir al inicio">
+        <span class="logo-mark">🛡️</span>
+        <span>PySec Elite</span>
+      </button>
+      <div class="user-stats" aria-label="Estadísticas del usuario">
+        <button class="theme-toggle" id="theme-toggle" type="button" title="Cambiar tema">🌙</button>
+        <div class="stat-item" title="XP acumulado"><span>⚡</span><span id="total-xp">0</span></div>
+        <div class="stat-item" title="Racha de estudio"><span>🔥</span><span id="streak-days">0</span></div>
+      </div>
+    </header>
+    <main id="main-container" tabindex="-1">
+      <div class="loading-screen"><div class="loader"></div><p>INICIALIZANDO_PRO_LEARNING_OS...</p></div>
+    </main>
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <button class="nav-btn active" data-view="home"><span>🏠</span><small>Inicio</small></button>
+      <button class="nav-btn" data-view="courses"><span>📚</span><small>Cursos</small></button>
+      <button class="nav-btn" data-view="profile"><span>👤</span><small>Perfil</small></button>
+    </nav>
+  </div>
+  <input id="import-progress-file" type="file" accept="application/json,.json" hidden />
+  <script>window.PYSEC_WORKER_PATH = 'js/runner-worker.js';</script>
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/runner.js"></script>
+  <script src="js/ui-components.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
