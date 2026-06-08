@@ -1,10 +1,9 @@
-const CACHE_VERSION = 'v8.4.2-cyber-ui-2';
-const ASSET_VERSION = '842-cyber-ui-2';
+const CACHE_VERSION = 'v8.4.2-tactical-cyber-os';
 const STATIC_CACHE = `pysec-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `pysec-runtime-${CACHE_VERSION}`;
 const ASSETS = [
-  './', './index.html', `./styles.css?v=${ASSET_VERSION}`, `./manifest.json?v=${ASSET_VERSION}`,
-  `./js/data.js?v=${ASSET_VERSION}`, `./js/state.js?v=${ASSET_VERSION}`, `./js/validation.js?v=${ASSET_VERSION}`, `./js/runner.js?v=${ASSET_VERSION}`, `./js/runner-worker.js?v=${ASSET_VERSION}`, `./js/ui-components.js?v=${ASSET_VERSION}`, `./js/ui.js?v=${ASSET_VERSION}`, `./js/router.js?v=${ASSET_VERSION}`, `./js/app.js?v=${ASSET_VERSION}`,
+  './', './index.html', './styles.css', './manifest.json',
+  './js/data.js', './js/state.js', './js/validation.js', './js/runner.js', './js/runner-worker.js', './js/ui-components.js', './js/ui.js', './js/router.js', './js/app.js',
   './assets/icon-192.png', './assets/icon-512.png', './assets/screenshot-mobile.png', './assets/screenshot-wide.png'
 ];
 self.addEventListener('install', event => {

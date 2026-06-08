@@ -37,10 +37,10 @@ function renderHome() {
   const challenge = getCurrentChallenge();
   mainContainer.innerHTML = `
     <section class="hero-card premium-hero">
-      <span class="eyebrow">Ethical Cyber Learning OS · ${state.agentRank}</span>
+      <span class="eyebrow">ETHICAL CYBER LEARNING OS · ${state.agentRank.toUpperCase()}</span>
       <h1 class="hero-title">PySec Elite</h1>
-      <span class="hero-kicker">Cyber Learning OS</span>
-      <span class="version-chip">v8.4.2 · Tactical Lab Build</span>
+      <span class="hero-kicker">Tactical Cyber Learning OS</span>
+      <span class="version-chip">v8.4.2 · Secure Lab Build</span>
       <p class="hero-subtitle">Entrena Python, defensa y hacking ético en un laboratorio móvil premium con simulador seguro, ruta profesional y Threat Defense Lab.</p>
       <div class="hero-status-grid">
         ${chip(`${total} LABS`)}
@@ -65,11 +65,11 @@ function renderCareerPreview() {
   return `<section class="panel-card animated-card">${sectionTitle('Modo Carrera', 'Ruta PySec')}<div class="career-track">${CAREER_STAGES.map(careerStageItem).join('')}</div></section>`;
 }
 
-function careerStageItem(stage) {
+function careerStageItem(stage, index) {
   const course = getCourse(stage.id);
   const stats = course ? getCourseStats(course) : { percent:0 };
   const status = stats.percent === 100 ? 'Completado' : stats.percent > 0 ? 'En progreso' : 'Disponible';
-  return `<div class="career-stage ${stats.percent === 100 ? 'done' : stats.percent > 0 ? 'active' : ''}" onclick="renderView('course-detail',{courseId:'${stage.id}'})"><div class="career-icon">${stage.icon}</div><div><strong>${escapeHtml(stage.title)}</strong><span>${status} · ${stats.percent}%</span></div></div>`;
+  return `<div class="career-stage ${stats.percent === 100 ? 'done' : stats.percent > 0 ? 'active' : ''}" onclick="renderView('course-detail',{courseId:'${stage.id}'})"><div class="career-index">${String(index + 1).padStart(2, '0')}</div><div class="career-icon">${stage.icon}</div><div class="career-body"><div class="career-top"><strong>${escapeHtml(stage.title)}</strong><span class="career-status-label">STATUS ${escapeHtml(status.toUpperCase())}</span></div><span class="career-progress-text">${stats.percent}% operativo</span>${progressBar(stats.percent)}</div></div>`;
 }
 
 function renderCourses() {
@@ -167,7 +167,7 @@ function renderLesson(courseId, lessonId) {
 
 function renderPractice(courseId, lessonId) {
   const course = getCourse(courseId); const lesson = getLesson(courseId, lessonId); if (!course || !lesson) return renderHome();
-  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('lesson', {courseId:'${courseId}', lessonId:'${lessonId}'})">← TEORÍA</button><section class="panel-card practice-shell animated-card">${sectionTitle(lesson.title, `⚡ ${lesson.xp} XP`)}<div class="chip-row">${chip(course.title)}${runtimePill()}</div><div class="instruction-box"><strong>Instrucción:</strong><br>${escapeHtml(lesson.exercise.instruction)}</div></section><section class="editor-wrapper premium-editor"><div class="editor-header"><span>SECURE LAB / main.py</span><span>worker sandbox · 3.5s</span></div><textarea id="code-editor" class="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off">${escapeHtml(lesson.exercise.starter_code)}</textarea>${renderSymbolBars()}</section><div class="btn-row practice-actions"><button class="btn btn-success" id="run-btn">▶ EJECUTAR</button><button class="btn btn-outline" id="hint-btn">💡 PISTA</button><button class="btn btn-outline" id="solution-btn">👁 SOLUCIÓN</button><button class="btn btn-outline" id="reset-btn">↺ REINICIAR</button></div><div class="console-output" id="console">[secure-lab] esperando ejecución local...</div><div id="feedback-area" class="hidden"></div><section id="quiz-area" class="panel-card hidden"></section><button id="next-lesson-btn" class="btn btn-primary hidden full next-btn">SIGUIENTE MISIÓN →</button><div class="bottom-spacer"></div>`;
+  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('lesson', {courseId:'${courseId}', lessonId:'${lessonId}'})">← TEORÍA</button><section class="panel-card practice-shell animated-card">${sectionTitle(lesson.title, `⚡ ${lesson.xp} XP`)}<div class="chip-row">${chip(course.title)}${runtimePill()}</div><div class="instruction-box"><strong>Instrucción:</strong><br>${escapeHtml(lesson.exercise.instruction)}</div></section><section class="editor-wrapper premium-editor"><div class="editor-header"><span>main.py // secure lab</span><span>local simulation · safe execution</span></div><textarea id="code-editor" class="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off">${escapeHtml(lesson.exercise.starter_code)}</textarea>${renderSymbolBars()}</section><div class="btn-row practice-actions"><button class="btn btn-success" id="run-btn">▶ EJECUTAR</button><button class="btn btn-outline" id="hint-btn">💡 PISTA</button><button class="btn btn-outline" id="solution-btn">👁 SOLUCIÓN</button><button class="btn btn-outline" id="reset-btn">↺ REINICIAR</button></div><div class="console-output" id="console">[local simulation] safe execution ready...</div><div id="feedback-area" class="hidden"></div><section id="quiz-area" class="panel-card hidden"></section><button id="next-lesson-btn" class="btn btn-primary hidden full next-btn">SIGUIENTE MISIÓN →</button><div class="bottom-spacer"></div>`;
   document.getElementById('run-btn').addEventListener('click', () => runPythonSimulation(document.getElementById('code-editor').value, lesson, courseId));
   document.getElementById('hint-btn').addEventListener('click', () => showFeedback('warn','💡 Pista',lesson.exercise.hint));
   document.getElementById('solution-btn').addEventListener('click', () => { document.getElementById('code-editor').value = lesson.exercise.solution; showFeedback('warn','👁 Solución cargada','Ejecuta la solución para estudiar el resultado.'); });
@@ -187,7 +187,7 @@ async function runPythonSimulation(code, lesson, courseId) {
   const consoleEl = document.getElementById('console');
   const feedbackEl = document.getElementById('feedback-area');
   const runBtn = document.getElementById('run-btn');
-  consoleEl.textContent = '[SISTEMA] Ejecutando en simulador aislado...\n';
+  consoleEl.textContent = '[local simulation] Ejecutando en safe execution...\n';
   feedbackEl.classList.add('hidden');
   runBtn.disabled = true; runBtn.textContent = '⏳ EJECUTANDO...';
   try {
