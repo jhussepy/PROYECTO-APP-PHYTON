@@ -38,7 +38,8 @@ function renderHome() {
   mainContainer.innerHTML = `
     <section class="hero-card premium-hero">
       <span class="eyebrow">Learning Path · ${state.agentRank}</span>
-      <h1 class="hero-title">PySec Elite v8.4.2</h1>
+      <h1 class="hero-title">PySec Elite</h1>
+      <span class="version-chip">v8.4.2 · Learning Path OS</span>
       <p class="hero-subtitle">Sistema móvil de aprendizaje con ruta profesional, labs guiados, simulador seguro y Threat Defense Lab desde defensa.</p>
       <div class="progress-block"><div class="progress-label"><span>PROGRESO TOTAL</span><span>${percent}%</span></div>${progressBar(percent)}</div>
       <div class="metric-grid">${metricCard(`${completed}/${total}`, 'Labs', 'glow-blue')}${metricCard(state.xp, 'XP', 'glow-green')}${metricCard(state.certificates.length, 'Certificados', 'glow-purple')}</div>
