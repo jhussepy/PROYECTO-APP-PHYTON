@@ -22,7 +22,7 @@ function shortTitle(title) {
 }
 
 function runtimePill() {
-  return `<span class="pill green">Worker + timeout</span><span class="pill">Simulador aislado</span><span class="pill orange">Python real: futuro</span>`;
+  return `<span class="pill green">Secure Worker</span><span class="pill">Sandbox local</span><span class="pill orange">Timeout 3.5s</span>`;
 }
 
 function getNextLessonForCourse(course) {
@@ -37,10 +37,17 @@ function renderHome() {
   const challenge = getCurrentChallenge();
   mainContainer.innerHTML = `
     <section class="hero-card premium-hero">
-      <span class="eyebrow">Learning Path · ${state.agentRank}</span>
+      <span class="eyebrow">Ethical Cyber Learning OS · ${state.agentRank}</span>
       <h1 class="hero-title">PySec Elite</h1>
-      <span class="version-chip">v8.4.2 · Learning Path OS</span>
-      <p class="hero-subtitle">Sistema móvil de aprendizaje con ruta profesional, labs guiados, simulador seguro y Threat Defense Lab desde defensa.</p>
+      <span class="hero-kicker">Cyber Learning OS</span>
+      <span class="version-chip">v8.4.2 · Tactical Lab Build</span>
+      <p class="hero-subtitle">Entrena Python, defensa y hacking ético en un laboratorio móvil premium con simulador seguro, ruta profesional y Threat Defense Lab.</p>
+      <div class="hero-status-grid">
+        ${chip(`${total} LABS`)}
+        ${chip('SIMULADOR SEGURO', 'green')}
+        ${chip('THREAT DEFENSE')}
+        ${chip('MODO ÉTICO', 'green')}
+      </div>
       <div class="progress-block"><div class="progress-label"><span>PROGRESO TOTAL</span><span>${percent}%</span></div>${progressBar(percent)}</div>
       <div class="metric-grid">${metricCard(`${completed}/${total}`, 'Labs', 'glow-blue')}${metricCard(state.xp, 'XP', 'glow-green')}${metricCard(state.certificates.length, 'Certificados', 'glow-purple')}</div>
       <div class="btn-row compact-actions">${challenge ? actionButton('CONTINUAR ▶', `openLessonGuarded('${challenge.lesson.courseId}', '${challenge.lesson.id}')`, 'btn-primary') : ''}${actionButton('VER RUTA', `renderView('courses')`, 'btn-outline')}</div>
@@ -160,7 +167,7 @@ function renderLesson(courseId, lessonId) {
 
 function renderPractice(courseId, lessonId) {
   const course = getCourse(courseId); const lesson = getLesson(courseId, lessonId); if (!course || !lesson) return renderHome();
-  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('lesson', {courseId:'${courseId}', lessonId:'${lessonId}'})">← TEORÍA</button><section class="panel-card practice-shell animated-card">${sectionTitle(lesson.title, `⚡ ${lesson.xp} XP`)}<div class="chip-row">${chip(course.title)}${runtimePill()}</div><div class="instruction-box"><strong>Instrucción:</strong><br>${escapeHtml(lesson.exercise.instruction)}</div></section><section class="editor-wrapper premium-editor"><div class="editor-header"><span>main.py</span><span>worker sandbox · 3.5s</span></div><textarea id="code-editor" class="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off">${escapeHtml(lesson.exercise.starter_code)}</textarea>${renderSymbolBars()}</section><div class="btn-row practice-actions"><button class="btn btn-success" id="run-btn">▶ EJECUTAR</button><button class="btn btn-outline" id="hint-btn">💡 PISTA</button><button class="btn btn-outline" id="solution-btn">👁 SOLUCIÓN</button><button class="btn btn-outline" id="reset-btn">↺ REINICIAR</button></div><div class="console-output" id="console">> Esperando ejecución segura...</div><div id="feedback-area" class="hidden"></div><section id="quiz-area" class="panel-card hidden"></section><button id="next-lesson-btn" class="btn btn-primary hidden full next-btn">SIGUIENTE MISIÓN →</button><div class="bottom-spacer"></div>`;
+  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('lesson', {courseId:'${courseId}', lessonId:'${lessonId}'})">← TEORÍA</button><section class="panel-card practice-shell animated-card">${sectionTitle(lesson.title, `⚡ ${lesson.xp} XP`)}<div class="chip-row">${chip(course.title)}${runtimePill()}</div><div class="instruction-box"><strong>Instrucción:</strong><br>${escapeHtml(lesson.exercise.instruction)}</div></section><section class="editor-wrapper premium-editor"><div class="editor-header"><span>SECURE LAB / main.py</span><span>worker sandbox · 3.5s</span></div><textarea id="code-editor" class="code-editor" spellcheck="false" autocapitalize="off" autocomplete="off">${escapeHtml(lesson.exercise.starter_code)}</textarea>${renderSymbolBars()}</section><div class="btn-row practice-actions"><button class="btn btn-success" id="run-btn">▶ EJECUTAR</button><button class="btn btn-outline" id="hint-btn">💡 PISTA</button><button class="btn btn-outline" id="solution-btn">👁 SOLUCIÓN</button><button class="btn btn-outline" id="reset-btn">↺ REINICIAR</button></div><div class="console-output" id="console">[secure-lab] esperando ejecución local...</div><div id="feedback-area" class="hidden"></div><section id="quiz-area" class="panel-card hidden"></section><button id="next-lesson-btn" class="btn btn-primary hidden full next-btn">SIGUIENTE MISIÓN →</button><div class="bottom-spacer"></div>`;
   document.getElementById('run-btn').addEventListener('click', () => runPythonSimulation(document.getElementById('code-editor').value, lesson, courseId));
   document.getElementById('hint-btn').addEventListener('click', () => showFeedback('warn','💡 Pista',lesson.exercise.hint));
   document.getElementById('solution-btn').addEventListener('click', () => { document.getElementById('code-editor').value = lesson.exercise.solution; showFeedback('warn','👁 Solución cargada','Ejecuta la solución para estudiar el resultado.'); });
