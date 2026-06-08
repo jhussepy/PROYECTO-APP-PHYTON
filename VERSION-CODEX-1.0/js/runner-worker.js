@@ -1,4 +1,4 @@
-importScripts('runner.js');
+importScripts('runner.js?v=842-cyber-ui-2');
 self.onmessage = async event => {
   try {
     const result = await simulatePython(event.data && event.data.code ? event.data.code : '');

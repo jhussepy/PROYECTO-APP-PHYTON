@@ -85,6 +85,8 @@ code, pre, .code-editor, .console-output { font-family: "JetBrains Mono", "Fira 
   letter-spacing: -.03em;
   padding: 0;
   min-width: 0;
+  flex: 1 1 auto;
+  max-width: calc(100% - 170px);
 }
 .logo-mark {
   flex: 0 0 38px;
@@ -96,7 +98,7 @@ code, pre, .code-editor, .console-output { font-family: "JetBrains Mono", "Fira 
   background: linear-gradient(135deg, var(--blue-primary), var(--purple) 55%, var(--green-python));
   box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 12px 24px rgba(47,109,255,.3);
 }
-.logo span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.logo-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .user-stats { display: flex; gap: 7px; flex: 0 0 auto; }
 .stat-item {
   min-width: 58px;
@@ -680,6 +682,7 @@ code, pre, .code-editor, .console-output,
   display: grid;
   gap: 2px;
   min-width: 0;
+  max-width: 100%;
   white-space: normal !important;
   overflow: visible !important;
   text-overflow: clip !important;
@@ -698,6 +701,8 @@ code, pre, .code-editor, .console-output,
   text-transform: uppercase;
   opacity: .82;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .user-stats { gap: 8px; }
 .theme-toggle,

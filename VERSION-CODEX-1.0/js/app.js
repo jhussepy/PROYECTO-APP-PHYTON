@@ -19,5 +19,10 @@ function setupAppControls() {
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error', err)));
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('./sw.js?v=842-cyber-ui-2')
+      .then(registration => registration.update())
+      .catch(err => console.log('SW error', err));
+  });
 }
