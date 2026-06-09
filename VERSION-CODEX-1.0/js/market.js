@@ -1,12 +1,13 @@
-/* PySec Academy Elite v9.4.8 - Live Mini Chart Heatmap Pro
+/* PySec Academy Elite v9.8.3 - Finnhub Data Configuration
    Finnhub live + fallback Stooq/caché/demo.
    Incluye detalle de acción, sentimiento, top gainers/losers, watchlist, alertas locales, notas, sparkline, sectores avanzados y Market Agent local educativo. */
 
-const MARKET_VERSION = '9.5';
+const MARKET_VERSION = '9.8.3';
 const MARKET_CACHE_KEY = 'pysec_market_snapshot_v98';
 const MARKET_LEGACY_CACHE_KEYS = ['pysec_market_snapshot_v946', 'pysec_market_snapshot_v93', 'pysec_market_snapshot_v92', 'pysec_market_snapshot_v91', 'pysec_market_snapshot_v90'];
 const MARKET_PROFILE_CACHE_KEY = 'pysec_market_company_profiles_v98';
-const FINNHUB_KEY_STORAGE = 'pysec_finnhub_api_key_v91';
+const FINNHUB_KEY_STORAGE = 'pysec_finnhub_api_key';
+const FINNHUB_LEGACY_KEY_STORAGE = 'pysec_finnhub_api_key_v91';
 const MARKET_WATCHLIST_KEY = 'pysec_market_user_watchlist_v93';
 const MARKET_DETAIL_KEY = 'pysec_market_selected_symbol_v93';
 const MARKET_TTL_MS = 4 * 60 * 1000;
@@ -47,6 +48,7 @@ let marketState = {
   quotes: [],
   status: 'idle',
   source: 'Pendiente',
+  provider: 'none',
   updatedAt: null,
   filter: 'all',
   query: '',
@@ -62,18 +64,55 @@ function safeMarketEscape(value) {
   return String(value ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
 }
 
-function getFinnhubKey() {
-  try { return String(localStorage.getItem(FINNHUB_KEY_STORAGE) || '').trim(); }
-  catch (_) { return ''; }
+let finnhubConnectionState = { tone: 'idle', message: '' };
+
+function updateFinnhubConnectionFeedback() {
+  const feedback = document.getElementById('market-api-feedback');
+  if (!feedback) return;
+  feedback.className = `market-api-feedback ${finnhubConnectionState.tone || 'idle'}`;
+  feedback.textContent = finnhubConnectionState.message || '';
+  feedback.hidden = !finnhubConnectionState.message;
 }
 
-function hasFinnhubKey() { return getFinnhubKey().length > 8; }
+function getFinnhubApiKey() {
+  try {
+    const current = String(localStorage.getItem(FINNHUB_KEY_STORAGE) || '').trim();
+    if (current) return current;
+    const legacy = String(localStorage.getItem(FINNHUB_LEGACY_KEY_STORAGE) || '').trim();
+    if (!legacy) return '';
+    localStorage.setItem(FINNHUB_KEY_STORAGE, legacy);
+    localStorage.removeItem(FINNHUB_LEGACY_KEY_STORAGE);
+    return legacy;
+  } catch (_) { return ''; }
+}
 
-function maskFinnhubKey(key = getFinnhubKey()) {
+function saveFinnhubApiKey(key) {
+  const value = String(key || '').trim();
+  if (value.length < 8) return false;
+  try {
+    localStorage.setItem(FINNHUB_KEY_STORAGE, value);
+    localStorage.removeItem(FINNHUB_LEGACY_KEY_STORAGE);
+    return true;
+  } catch (_) { return false; }
+}
+
+function deleteFinnhubApiKey() {
+  try {
+    localStorage.removeItem(FINNHUB_KEY_STORAGE);
+    localStorage.removeItem(FINNHUB_LEGACY_KEY_STORAGE);
+    return true;
+  } catch (_) { return false; }
+}
+
+function hasFinnhubApiKey() { return getFinnhubApiKey().length >= 8; }
+
+function getFinnhubKey() { return getFinnhubApiKey(); }
+function hasFinnhubKey() { return hasFinnhubApiKey(); }
+
+function maskFinnhubKey(key = getFinnhubApiKey()) {
   const value = String(key || '').trim();
   if (!value) return 'No configurada';
-  if (value.length <= 8) return '••••';
-  return `${value.slice(0, 4)}••••${value.slice(-4)}`;
+  return `********${value.slice(-4)}`;
 }
 
 function saveFinnhubKeyFromInput() {
@@ -81,17 +120,52 @@ function saveFinnhubKeyFromInput() {
   const key = String(input?.value || '').trim();
   if (!key || key.length < 8) {
     if (typeof showToast === 'function') showToast('⚠️ API key inválida', 'Pega una API key de Finnhub válida.');
-    return;
+    return false;
   }
-  try { localStorage.setItem(FINNHUB_KEY_STORAGE, key); } catch (_) {}
+  if (!saveFinnhubApiKey(key)) {
+    if (typeof showToast === 'function') showToast('No se pudo guardar', 'Revisa el almacenamiento del navegador.');
+    return false;
+  }
+  if (input) input.value = '';
+  finnhubConnectionState = { tone: 'success', message: 'API guardada en este navegador.' };
   if (typeof showToast === 'function') showToast('🔐 Finnhub conectado', 'La API key se guardó solo en este navegador.');
   refreshMarket(true);
+  return true;
 }
 
 function clearFinnhubKey() {
-  try { localStorage.removeItem(FINNHUB_KEY_STORAGE); } catch (_) {}
+  deleteFinnhubApiKey();
+  finnhubConnectionState = { tone: 'idle', message: 'Finnhub eliminado. Mercado educativo / caché activo.' };
+  marketState = { ...marketState, status: 'cached', source: 'Mercado educativo / caché', provider: 'cache' };
   if (typeof showToast === 'function') showToast('🧹 API key eliminada', 'Acciones usará proveedor alternativo, caché o demo.');
-  renderMarket();
+  renderMarketContent();
+  refreshMarket(true);
+}
+
+async function testFinnhubConnection() {
+  const pendingKey = String(document.getElementById('finnhub-key-input')?.value || '').trim();
+  const key = pendingKey || getFinnhubApiKey();
+  if (!key) {
+    finnhubConnectionState = { tone: 'warning', message: 'Pega una API key primero.' };
+    if (typeof showToast === 'function') showToast('Finnhub no configurado', 'Pega una API key primero.');
+    updateFinnhubConnectionFeedback();
+    return false;
+  }
+
+  finnhubConnectionState = { tone: 'testing', message: 'Probando conexión con AAPL...' };
+  updateFinnhubConnectionFeedback();
+  try {
+    await fetchFinnhubQuote('AAPL', key);
+    finnhubConnectionState = { tone: 'success', message: 'Conexión Finnhub correcta.' };
+    if (typeof showToast === 'function') showToast('Conexión Finnhub correcta.', 'AAPL respondió correctamente.');
+    updateFinnhubConnectionFeedback();
+    return true;
+  } catch (_) {
+    finnhubConnectionState = { tone: 'error', message: 'No se pudo conectar con Finnhub. Revisa tu API key o conexión.' };
+    if (typeof showToast === 'function') showToast('No se pudo conectar con Finnhub.', 'Revisa tu API key o conexión.');
+    updateFinnhubConnectionFeedback();
+    return false;
+  }
 }
 
 function marketMeta(symbol) {
@@ -282,6 +356,7 @@ async function fetchStooqQuotes() {
 }
 
 async function fetchFinnhubQuote(symbol, token) {
+  // Para producción, mover Finnhub API a backend proxy.
   const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${encodeURIComponent(token)}`;
   const data = await fetchWithTimeout(url, 5200, 'json');
   if (!data || typeof data !== 'object') throw new Error(`${symbol}: respuesta inválida`);
@@ -291,7 +366,7 @@ async function fetchFinnhubQuote(symbol, token) {
 }
 
 async function fetchFinnhubQuotes() {
-  const token = getFinnhubKey();
+  const token = getFinnhubApiKey();
   if (!token) throw new Error('Finnhub API key no configurada');
   const tasks = MARKET_WATCHLIST.map(item => fetchFinnhubQuote(item.symbol, token));
   const results = await Promise.allSettled(tasks);
@@ -568,6 +643,19 @@ function getQuoteBySymbol(symbol) {
   return (marketState.quotes || []).find(q => q.symbol === value) || null;
 }
 
+function inferMarketProvider(source = '') {
+  const value = String(source || '').toLowerCase();
+  if (value.startsWith('finnhub')) return 'finnhub';
+  if (value.startsWith('stooq')) return 'stooq';
+  if (value.includes('caché') || value.includes('cache')) return 'cache';
+  if (value.includes('demo')) return 'demo';
+  return 'none';
+}
+
+function isFinnhubLiveMarket() {
+  return marketState.status === 'live' && (marketState.provider === 'finnhub' || inferMarketProvider(marketState.source) === 'finnhub');
+}
+
 async function loadMarketQuotes(force = false) {
   marketState.userWatchlist = readUserWatchlist();
   marketState.alerts = readMarketAlerts();
@@ -576,7 +664,14 @@ async function loadMarketQuotes(force = false) {
   marketState.detailSymbol = marketState.detailSymbol || readSelectedSymbol();
   const cached = readMarketCache();
   if (!force && cached && Date.now() - new Date(cached.updatedAt).getTime() < MARKET_TTL_MS) {
-    marketState = { ...marketState, quotes: cached.quotes, status: 'cached', source: cached.source || 'Caché local', updatedAt: cached.updatedAt };
+    marketState = {
+      ...marketState,
+      quotes: cached.quotes,
+      status: 'cached',
+      source: cached.source || 'Caché local',
+      provider: cached.provider || inferMarketProvider(cached.source),
+      updatedAt: cached.updatedAt
+    };
     updateMarketHistory(cached.quotes);
     evaluateMarketAlerts(cached.quotes);
     return marketState;
@@ -586,14 +681,17 @@ async function loadMarketQuotes(force = false) {
   try {
     let quotes;
     let source;
+    let provider;
     try {
       quotes = await fetchFinnhubQuotes();
       source = 'Finnhub live';
+      provider = 'finnhub';
     } catch (finnhubError) {
       quotes = await fetchStooqQuotes();
       source = hasFinnhubKey() ? `Stooq live · Finnhub fallback: ${String(finnhubError.message || 'no disponible').slice(0, 90)}` : 'Stooq live · Finnhub sin configurar';
+      provider = 'stooq';
     }
-    const payload = { quotes, status: 'live', source, updatedAt: new Date().toISOString(), version: MARKET_VERSION };
+    const payload = { quotes, status: 'live', source, provider, updatedAt: new Date().toISOString(), version: MARKET_VERSION };
     writeMarketCache(payload);
     marketState = { ...marketState, ...payload };
     updateMarketHistory(quotes);
@@ -601,12 +699,19 @@ async function loadMarketQuotes(force = false) {
     return marketState;
   } catch (err) {
     if (cached?.quotes?.length) {
-      marketState = { ...marketState, quotes: cached.quotes, status: 'cached', source: `Caché local · ${String(err.message || 'sin conexión')}`, updatedAt: cached.updatedAt };
+      marketState = {
+        ...marketState,
+        quotes: cached.quotes,
+        status: 'cached',
+        source: `Caché local · ${String(err.message || 'sin conexión')}`,
+        provider: 'cache',
+        updatedAt: cached.updatedAt
+      };
       updateMarketHistory(cached.quotes);
       evaluateMarketAlerts(cached.quotes);
       return marketState;
     }
-    marketState = { ...marketState, quotes: demoQuotes('demo'), status: 'demo', source: 'Demo local · proveedor live no disponible', updatedAt: new Date().toISOString(), error: String(err.message || err) };
+    marketState = { ...marketState, quotes: demoQuotes('demo'), status: 'demo', source: 'Demo local · proveedor live no disponible', provider: 'demo', updatedAt: new Date().toISOString(), error: String(err.message || err) };
     updateMarketHistory(marketState.quotes);
     evaluateMarketAlerts(marketState.quotes);
     return marketState;

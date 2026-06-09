@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v9.8.2-market-dashboard-alignment';
+const CACHE_VERSION = 'v9.8.3-finnhub-data-configuration';
 const STATIC_CACHE = `pysec-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `pysec-runtime-${CACHE_VERSION}`;
 const ASSETS = [

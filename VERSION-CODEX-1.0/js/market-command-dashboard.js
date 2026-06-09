@@ -1,8 +1,8 @@
-/* PySec Academy Elite v9.8.2 - Market Dashboard Alignment
+/* PySec Academy Elite v9.8.3 - Finnhub Data Configuration
    Reestructura Acciones Pro hacia un panel tipo terminal financiera: portfolio, gauge de sentimiento,
    acciones rápidas, heatmap compacto con logos reales/locales, mini gráficos y AI insight. */
 
-const MARKET_COMMAND_BUILD = '9.8.2';
+const MARKET_COMMAND_BUILD = '9.8.3';
 
 
 /* v9.8.2 · Market Dashboard Alignment
@@ -427,13 +427,13 @@ window.renderMarketContent = function renderMarketContent() {
 /* PySec Academy Elite v9.6 - Market Command Pro Dashboard
    Rebuild visual de Acciones para acercarse al dashboard profesional enviado por el usuario:
    sin hero pesado, con estado live, portfolio/sentimiento, herramientas, filtros compactos, heatmap Pro y AI Insight. */
-const MARKET_COMMAND_PRO_BUILD = '9.8.2';
+const MARKET_COMMAND_PRO_BUILD = '9.8.3';
 
 function renderProLiveHeader() {
-  const online = marketState.status === 'live';
-  return `<section class="pro-live-line ${online ? 'online' : 'cache'}">
-    <span class="market-dot ${online ? 'online' : 'offline'}"></span>
-    <b>${online ? 'MERCADOS EN VIVO' : 'MERCADO EDUCATIVO / CACHÉ'}</b>
+  const finnhubLive = isFinnhubLiveMarket();
+  return `<section class="pro-live-line ${finnhubLive ? 'online' : 'cache'}">
+    <span class="market-dot ${finnhubLive ? 'online' : 'offline'}"></span>
+    <b>${finnhubLive ? 'FINNHUB LIVE' : 'MERCADO EDUCATIVO / CACHÉ'}</b>
     <small>${safeMarketEscape(marketState.source || 'Pendiente')} · ${safeMarketEscape(formatMarketTime(marketState.updatedAt))}</small>
   </section>`;
 }
@@ -511,6 +511,7 @@ function renderProToolsRow() {
     <button onclick="scrollToMarketInsight()"><span>✺</span><b>AI Insights</b><em>Nuevo</em></button>
     <button onclick="setMarketTab('watchlist')"><span>◉</span><b>Watchlist</b>${watchCount ? `<em>${watchCount}</em>` : ''}</button>
     <button onclick="renderMarketNewsToast()"><span>▤</span><b>Noticias</b></button>
+    <button onclick="openMarketApiSettings()"><span>⌘</span><b>API</b></button>
   </section>`;
 }
 

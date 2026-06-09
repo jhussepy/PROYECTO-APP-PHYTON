@@ -1,10 +1,9 @@
-/* PySec Academy Elite v9.4.8 · Live Mini Chart Heatmap Pro
+/* PySec Academy Elite v9.8.3 · Finnhub Data Configuration
    Ordena Acciones Pro en tabs internas: Resumen, Heatmap, Watchlist y Alertas.
    Mantiene Finnhub, caché, demo, watchlist, alertas, notas, sparkline y Market Agent. */
 
-const MARKET_CLEAN_FLOW_VERSION = '9.4.8';
+const MARKET_CLEAN_FLOW_VERSION = '9.8.3';
 let marketActiveTab = 'summary';
-let marketApiSettingsOpen = false;
 
 function setMarketTab(tab) {
   const allowed = ['summary', 'heatmap', 'watchlist', 'alerts'];
@@ -12,9 +11,14 @@ function setMarketTab(tab) {
   renderMarketContent();
 }
 
-function toggleMarketApiSettings() {
-  marketApiSettingsOpen = !marketApiSettingsOpen;
+function openMarketApiSettings() {
+  marketActiveTab = 'alerts';
   renderMarketContent();
+  requestAnimationFrame(() => {
+    const target = document.getElementById('market-data-config');
+    target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.setTimeout(() => document.getElementById('finnhub-key-input')?.focus(), 350);
+  });
 }
 
 function renderMarketStatusLine() {
@@ -41,31 +45,27 @@ function renderMarketTabs() {
 }
 
 function renderMarketApiSettings() {
-  const configured = hasFinnhubKey();
-  if (!marketApiSettingsOpen) {
-    return `<section class="panel-card market-api-settings compact">
-      <div class="api-settings-row">
-        <div>
-          <span class="eyebrow">CONFIGURACIÓN DE DATOS</span>
-          <strong>${configured ? 'Finnhub configurado' : 'Finnhub no configurado'}</strong>
-          <small>${configured ? `Key local: ${safeMarketEscape(maskFinnhubKey())}` : 'Puedes pegar tu API key para feed prioritario.'}</small>
-        </div>
-        <button class="btn btn-outline" onclick="toggleMarketApiSettings()">${configured ? 'CAMBIAR API' : 'CONFIGURAR'}</button>
+  const configured = hasFinnhubApiKey();
+  const feedbackMessage = finnhubConnectionState?.message || '';
+  const feedbackTone = finnhubConnectionState?.tone || 'idle';
+  return `<section id="market-data-config" class="panel-card market-api-settings data-config-card">
+    <div class="data-config-head">
+      <div>
+        <span class="eyebrow">CONFIGURACIÓN DE DATOS</span>
+        <h2>${configured ? 'Finnhub configurado · datos live disponibles' : 'Finnhub no configurado'}</h2>
+        <small>${configured ? `API guardada: ${safeMarketEscape(maskFinnhubKey())}` : 'Agrega tu API key para usar Finnhub como proveedor principal.'}</small>
       </div>
-    </section>`;
-  }
-  return `<section class="panel-card market-api-settings">
-    <div>
-      <span class="eyebrow">FINNHUB API</span>
-      <strong>${configured ? 'Editar API local' : 'Conectar Finnhub'}</strong>
-      <small>La key se guarda solo en este navegador. Para una app pública final conviene usar backend proxy.</small>
+      <span class="data-provider-badge ${configured ? 'configured' : 'offline'}">${configured ? 'FINNHUB DISPONIBLE' : 'CACHÉ / DEMO'}</span>
     </div>
-    <input id="finnhub-key-input" class="market-api-input" placeholder="Pega tu API key de Finnhub" value="">
-    <div class="market-api-actions">
-      <button class="btn btn-success" onclick="saveFinnhubKeyFromInput(); marketApiSettingsOpen=false;">GUARDAR API</button>
-      <button class="btn btn-outline" onclick="clearFinnhubKey(); marketApiSettingsOpen=false;">BORRAR</button>
-      <button class="btn btn-outline" onclick="toggleMarketApiSettings()">CERRAR</button>
+    <label class="market-api-label" for="finnhub-key-input">API Key de Finnhub</label>
+    <input id="finnhub-key-input" class="market-api-input" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="${configured ? safeMarketEscape(maskFinnhubKey()) : 'Pega tu API key de Finnhub'}" value="">
+    <div id="market-api-feedback" class="market-api-feedback ${safeMarketEscape(feedbackTone)}" role="status" ${feedbackMessage ? '' : 'hidden'}>${safeMarketEscape(feedbackMessage)}</div>
+    <div class="market-api-actions data-config-actions">
+      <button class="btn btn-success" type="button" onclick="saveFinnhubKeyFromInput()">Guardar API</button>
+      <button class="btn btn-outline api-test-button" type="button" onclick="testFinnhubConnection()">Probar conexión</button>
+      <button class="btn btn-outline api-delete-button" type="button" onclick="clearFinnhubKey()">Borrar API</button>
     </div>
+    <p class="market-api-security">La API key se guarda solo en este navegador. Para producción se recomienda usar backend proxy.</p>
   </section>`;
 }
 

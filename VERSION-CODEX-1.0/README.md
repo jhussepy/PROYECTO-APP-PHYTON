@@ -120,6 +120,13 @@ Estados posibles del feed:
 - **CACHÉ LOCAL**: se usan datos guardados previamente.
 - **MODO DEMO**: entrenamiento local si no hay conexión o el proveedor falla.
 
+## v9.8.3 Finnhub Data Configuration
+
+- Añade una tarjeta visible en `Acciones > Alertas` para guardar, probar y borrar la API key de Finnhub.
+- Guarda la credencial localmente como `pysec_finnhub_api_key`, con migración automática de la clave anterior.
+- Prioriza Finnhub cuando hay credenciales y mantiene Stooq, caché y demo como fallback.
+- Distingue visualmente `FINNHUB LIVE` de `MERCADO EDUCATIVO / CACHÉ`.
+
 ## v9.8.2 Market Dashboard Alignment
 
 Esta versión sube el módulo **Acciones** a un panel más completo de inteligencia educativa de mercado:

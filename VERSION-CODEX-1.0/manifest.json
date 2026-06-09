@@ -1,9 +1,9 @@
 {
   "id": "./index.html",
-  "name": "PySec Academy Elite v9.8.2 Market Dashboard Alignment",
-  "short_name": "PySec v9.8.2",
+  "name": "PySec Academy Elite v9.8.3 Finnhub Data Configuration",
+  "short_name": "PySec v9.8.3",
   "description": "PWA móvil educativa con Python, hacking ético y Acciones Pro en formato Market Command Dashboard profesional con datos Finnhub.",
-  "version": "9.8.2",
+  "version": "9.8.3",
   "lang": "es",
   "dir": "ltr",
   "start_url": "./index.html",

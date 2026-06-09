@@ -1854,6 +1854,75 @@ body::after {
 .market-api-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .market-api-actions .btn { min-height: 44px; }
 
+/* v9.8.3 Finnhub data configuration */
+.data-config-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 12px;
+  padding: 17px;
+  border: 1px solid rgba(18, 238, 200, .38);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(34, 211, 238, .13), transparent 34%),
+    linear-gradient(145deg, rgba(6, 28, 35, .94), rgba(3, 10, 22, .97));
+  box-shadow: inset 0 0 32px rgba(0, 240, 164, .045), 0 18px 44px rgba(0, 0, 0, .30);
+}
+.data-config-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .18;
+  background-image:
+    linear-gradient(rgba(34, 211, 238, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, .06) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.data-config-card > * { position: relative; z-index: 1; }
+.data-config-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; }
+.data-config-head h2 { margin: 5px 0 0; color: #f2fbff; font-size: 1.02rem; line-height: 1.3; }
+.data-config-head small { display: block; margin-top: 5px; color: #a4b7cc; font-size: .72rem; line-height: 1.45; }
+.data-provider-badge {
+  align-self: start;
+  padding: 7px 9px;
+  border: 1px solid rgba(245, 158, 11, .35);
+  border-radius: 999px;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, .08);
+  font: 900 .55rem/1 var(--mono-font, monospace);
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.data-provider-badge.configured {
+  border-color: rgba(0, 240, 164, .44);
+  color: #18f2ae;
+  background: rgba(0, 240, 164, .09);
+  box-shadow: 0 0 18px rgba(0, 240, 164, .09);
+}
+.market-api-label { color: #c7d8e8; font-size: .72rem; font-weight: 800; }
+.data-config-card .market-api-input {
+  min-height: 50px;
+  border-color: rgba(34, 211, 238, .28);
+  background: rgba(0, 4, 12, .62);
+  font-size: .86rem;
+}
+.market-api-feedback {
+  padding: 10px 12px;
+  border: 1px solid rgba(125, 170, 255, .20);
+  border-radius: 12px;
+  color: #b8c8dc;
+  background: rgba(125, 170, 255, .06);
+  font-size: .72rem;
+  line-height: 1.4;
+}
+.market-api-feedback.success { border-color: rgba(0, 240, 164, .32); color: #35efb7; background: rgba(0, 240, 164, .07); }
+.market-api-feedback.error { border-color: rgba(255, 64, 91, .34); color: #ff7184; background: rgba(255, 64, 91, .07); }
+.market-api-feedback.warning { border-color: rgba(245, 158, 11, .34); color: #fbc451; background: rgba(245, 158, 11, .07); }
+.market-api-feedback.testing { border-color: rgba(34, 211, 238, .34); color: #67e8f9; }
+.data-config-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.data-config-actions .api-delete-button { grid-column: 1 / -1; border-color: rgba(255, 64, 91, .32); color: #ff8394; }
+.market-api-security { margin: 0; color: #7f93ab; font-size: .66rem; line-height: 1.5; }
+
 /* v9.2 Market Intelligence Center */
 .market-intel-card {
   position: relative;
@@ -3912,7 +3981,7 @@ body::after {
 .pro-sentiment .gauge-legend span { font-size:.62rem; }
 .pro-tools-row {
   display:grid;
-  grid-template-columns:repeat(5, minmax(0, 1fr));
+  grid-template-columns:repeat(6, minmax(0, 1fr));
   gap:8px;
   padding:8px;
   border:1px solid rgba(24,232,255,.22);
@@ -4013,7 +4082,7 @@ body::after {
 }
 @media (max-width:370px) {
   .pro-market-top-grid { grid-template-columns:1fr; }
-  .pro-tools-row { grid-template-columns:repeat(5, minmax(58px,1fr)); overflow-x:auto; }
+  .pro-tools-row { grid-template-columns:repeat(3, minmax(0,1fr)); }
   .pro-stock-card { min-height:118px; }
   .pro-stock-info strong { font-size:.92rem; }
   .pro-stock-price b { font-size:1rem; }
@@ -4715,7 +4784,7 @@ body::after {
 }
 
 /* =========================================================
-   PySec Elite v9.8.2 - Market Dashboard Alignment
+   PySec Elite v9.8.3 - Finnhub Data Configuration
    Ajuste real al layout de referencia: portafolio + sentimiento compactos,
    dashboard sin bloques desbordados y jerarquía premium móvil.
    ========================================================= */
@@ -4999,7 +5068,7 @@ body::after {
 .sentiment-pro-footer.neutral b { color:#f6d062; }
 .pro-tools-row {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 7px;
   padding: 7px;
   border-radius: 15px;
@@ -5035,6 +5104,12 @@ body::after {
   .sentiment-pro-legend b, .sentiment-pro-legend em { font-size: .52rem; }
   .sentiment-pro-footer { padding: 6px; }
   .sentiment-pro-footer small { font-size: .48rem; }
+  .data-config-head { grid-template-columns: 1fr; }
+  .data-provider-badge { justify-self: start; }
+  .data-config-card { padding: 15px 13px; }
+  .data-config-actions { grid-template-columns: 1fr; }
+  .data-config-actions .api-delete-button { grid-column: auto; }
+  .pro-tools-row { grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
 }
 @media (max-width: 360px) {
   .pro-market-top-grid { grid-template-columns: 1fr; }
