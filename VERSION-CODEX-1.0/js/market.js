@@ -1,8 +1,8 @@
-/* PySec Academy Elite v9.8.3 - Finnhub Data Configuration
+/* PySec Academy Elite v9.9.0 - Strategy Engine
    Finnhub live + fallback Stooq/caché/demo.
    Incluye detalle de acción, sentimiento, top gainers/losers, watchlist, alertas locales, notas, sparkline, sectores avanzados y Market Agent local educativo. */
 
-const MARKET_VERSION = '9.8.3';
+const MARKET_VERSION = '9.9.0';
 const MARKET_CACHE_KEY = 'pysec_market_snapshot_v98';
 const MARKET_LEGACY_CACHE_KEYS = ['pysec_market_snapshot_v946', 'pysec_market_snapshot_v93', 'pysec_market_snapshot_v92', 'pysec_market_snapshot_v91', 'pysec_market_snapshot_v90'];
 const MARKET_PROFILE_CACHE_KEY = 'pysec_market_company_profiles_v98';
@@ -549,6 +549,7 @@ function evaluateMarketAlerts(quotes = marketState.quotes || []) {
     if (alert.type === 'priceBelow') hit = price <= target;
     if (alert.type === 'changeAbove') hit = pct >= target;
     if (alert.type === 'changeBelow') hit = pct <= target;
+    if (!hit && typeof evaluateStrategyAlert === 'function') hit = evaluateStrategyAlert(alert, q);
     if (hit) {
       alert.triggeredAt = new Date().toISOString();
       changed = true;
@@ -564,6 +565,10 @@ function describeAlertTarget(alert) {
   if (alert.type === 'priceBelow') return `precio ≤ ${formatUSD(value)}`;
   if (alert.type === 'changeAbove') return `cambio ≥ ${formatPercent(value)}`;
   if (alert.type === 'changeBelow') return `cambio ≤ ${formatPercent(value)}`;
+  if (typeof describeStrategyAlert === 'function') {
+    const strategyDescription = describeStrategyAlert(alert);
+    if (strategyDescription) return strategyDescription;
+  }
   return String(alert.target || 'objetivo');
 }
 

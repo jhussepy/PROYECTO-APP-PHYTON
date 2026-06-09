@@ -1,8 +1,8 @@
-/* PySec Academy Elite v9.8.3 - Finnhub Data Configuration
+/* PySec Academy Elite v9.9.0 - Strategy Engine
    Reestructura Acciones Pro hacia un panel tipo terminal financiera: portfolio, gauge de sentimiento,
    acciones rápidas, heatmap compacto con logos reales/locales, mini gráficos y AI insight. */
 
-const MARKET_COMMAND_BUILD = '9.8.3';
+const MARKET_COMMAND_BUILD = '9.9.0';
 
 
 /* v9.8.2 · Market Dashboard Alignment
@@ -427,7 +427,7 @@ window.renderMarketContent = function renderMarketContent() {
 /* PySec Academy Elite v9.6 - Market Command Pro Dashboard
    Rebuild visual de Acciones para acercarse al dashboard profesional enviado por el usuario:
    sin hero pesado, con estado live, portfolio/sentimiento, herramientas, filtros compactos, heatmap Pro y AI Insight. */
-const MARKET_COMMAND_PRO_BUILD = '9.8.3';
+const MARKET_COMMAND_PRO_BUILD = '9.9.0';
 
 function renderProLiveHeader() {
   const finnhubLive = isFinnhubLiveMarket();
@@ -511,6 +511,7 @@ function renderProToolsRow() {
     <button onclick="scrollToMarketInsight()"><span>✺</span><b>AI Insights</b><em>Nuevo</em></button>
     <button onclick="setMarketTab('watchlist')"><span>◉</span><b>Watchlist</b>${watchCount ? `<em>${watchCount}</em>` : ''}</button>
     <button onclick="renderMarketNewsToast()"><span>▤</span><b>Noticias</b></button>
+    <button onclick="openStrategyEngine()"><span>⌬</span><b>Estrategia</b></button>
     <button onclick="openMarketApiSettings()"><span>⌘</span><b>API</b></button>
   </section>`;
 }
@@ -539,7 +540,9 @@ function renderProStockCard(q) {
   const pct = Number(q.changePercent || 0);
   const cls = quoteClass(pct);
   const sector = shortSector(q.sector);
+  const strategy = typeof calculateStrategyScore === 'function' ? calculateStrategyScore(q) : null;
   return `<article class="pro-stock-card ${cls}" onclick="selectStock('${safeMarketEscape(q.symbol)}')">
+    ${strategy ? `<span class="pro-strategy-badge ${strategy.tone}">${strategy.score}</span>` : ''}
     <div class="pro-stock-brand">${brandLogo(q)}</div>
     <div class="pro-stock-info">
       <strong>${safeMarketEscape(q.symbol)}</strong>
@@ -564,18 +567,20 @@ function renderProHeatmap(quotes) {
 }
 
 function renderProAIInsight(sentiment, gainers, losers) {
-  const leader = gainers[0];
-  const weak = losers[0];
-  const confidence = Math.max(55, Math.min(96, commandMarketScore(sentiment) + 12));
+  const strategySummary = typeof getMarketStrategySummary === 'function' ? getMarketStrategySummary() : null;
+  const leader = strategySummary?.best?.quote || gainers[0];
+  const leaderAnalysis = strategySummary?.best?.analysis || null;
+  const weak = strategySummary?.ranked?.at(-1)?.quote || losers[0];
+  const confidence = leaderAnalysis?.score || Math.max(55, Math.min(96, commandMarketScore(sentiment) + 12));
   return `<section id="market-ai-insight" class="pro-ai-insight">
     <div class="pro-ai-orb">◎</div>
     <div class="pro-ai-copy">
       <div><span>AI INSIGHT</span><em>Señal fuerte</em></div>
-      <h3>Oportunidad detectada: ${safeMarketEscape(leader?.symbol || '—')}</h3>
-      <p>${safeMarketEscape(buildPortfolioAgentText())}</p>
-      <label>Confianza: Alta <b>${confidence}%</b></label>
+      <h3>${safeMarketEscape(leaderAnalysis?.label || 'Oportunidad detectada')}: ${safeMarketEscape(leader?.symbol || '—')}</h3>
+      <p>${safeMarketEscape(leaderAnalysis?.explanation?.slice(0, 2).join(' ') || buildPortfolioAgentText())}</p>
+      <label>Strategy Score <b>${confidence}/100</b></label>
       <div class="ai-progress"><span style="width:${confidence}%"></span></div>
-      <small>Análisis educativo por PySec AI · Débil del panel: ${safeMarketEscape(weak?.symbol || '—')}</small>
+      <small>${safeMarketEscape(strategySummary?.profile?.name || 'Análisis educativo')} · Menor score: ${safeMarketEscape(weak?.symbol || '—')}</small>
     </div>
     ${leader ? `<div class="pro-ai-mini"><b>${leader.symbol} 1D</b>${renderMarketMiniChart(leader, 'ai-spark')}</div>` : ''}
   </section>`;
@@ -596,6 +601,8 @@ function renderProDashboard() {
 
   return `
     ${renderProLiveHeader()}
+    ${typeof renderStrategyQuickBar === 'function' ? renderStrategyQuickBar() : ''}
+    ${typeof renderStrategyScoreCard === 'function' ? renderStrategyScoreCard(allQuotes) : ''}
     <section class="pro-market-top-grid">
       ${renderProPortfolioCard(allQuotes)}
       ${renderProSentimentCard(sentiment)}
@@ -630,6 +637,10 @@ window.renderMarketContent = function renderMarketContent() {
   }
   if (marketActiveTab === 'alerts') {
     host.innerHTML = `${renderProLiveHeader()}${renderProToolsRow()}${renderMarketAlertsTab()}`;
+    return;
+  }
+  if (marketActiveTab === 'strategy') {
+    host.innerHTML = `${renderProLiveHeader()}${renderProToolsRow()}${renderStrategyWorkspace()}`;
     return;
   }
   host.innerHTML = renderProDashboard();

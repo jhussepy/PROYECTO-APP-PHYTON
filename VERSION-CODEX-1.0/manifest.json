@@ -1,9 +1,9 @@
 {
   "id": "./index.html",
-  "name": "PySec Academy Elite v9.8.3 Finnhub Data Configuration",
-  "short_name": "PySec v9.8.3",
-  "description": "PWA móvil educativa con Python, hacking ético y Acciones Pro en formato Market Command Dashboard profesional con datos Finnhub.",
-  "version": "9.8.3",
+  "name": "PySec Academy Elite v9.9.0 Strategy Engine",
+  "short_name": "PySec v9.9.0",
+  "description": "PWA móvil educativa con Python, hacking ético y Trading Command Center con Strategy Engine modular y datos Finnhub.",
+  "version": "9.9.0",
   "lang": "es",
   "dir": "ltr",
   "start_url": "./index.html",

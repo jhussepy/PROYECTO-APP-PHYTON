@@ -120,6 +120,13 @@ Estados posibles del feed:
 - **CACHÉ LOCAL**: se usan datos guardados previamente.
 - **MODO DEMO**: entrenamiento local si no hay conexión o el proveedor falla.
 
+## v9.9.0 Strategy Engine
+
+- Añade 12 perfiles configurables para scalping, intradía, swing, largo plazo, ICT/SMC, price action, volumen, noticias, cripto, forex, acciones e índices.
+- Calcula un Strategy Score explicable de 0 a 100 por símbolo usando nueve módulos ponderables.
+- Incluye vista simple, configuración avanzada, perfiles personalizados y metadatos preparados para marketplace.
+- Añade ocho plantillas de alertas modulares y conserva alertas, portafolio, watchlist, notas y fallback de mercado.
+
 ## v9.8.3 Finnhub Data Configuration
 
 - Añade una tarjeta visible en `Acciones > Alertas` para guardar, probar y borrar la API key de Finnhub.

@@ -1,12 +1,12 @@
-/* PySec Academy Elite v9.8.3 · Finnhub Data Configuration
+/* PySec Academy Elite v9.9.0 · Strategy Engine
    Ordena Acciones Pro en tabs internas: Resumen, Heatmap, Watchlist y Alertas.
    Mantiene Finnhub, caché, demo, watchlist, alertas, notas, sparkline y Market Agent. */
 
-const MARKET_CLEAN_FLOW_VERSION = '9.8.3';
+const MARKET_CLEAN_FLOW_VERSION = '9.9.0';
 let marketActiveTab = 'summary';
 
 function setMarketTab(tab) {
-  const allowed = ['summary', 'heatmap', 'watchlist', 'alerts'];
+  const allowed = ['summary', 'heatmap', 'watchlist', 'alerts', 'strategy'];
   marketActiveTab = allowed.includes(tab) ? tab : 'summary';
   renderMarketContent();
 }
@@ -156,6 +156,7 @@ function renderMarketWatchlistTab(watchQuotes) {
 function renderMarketAlertsTab() {
   return `
     ${renderMarketVisibleAlerts()}
+    ${typeof renderStrategyAlertTemplates === 'function' ? renderStrategyAlertTemplates() : ''}
     ${renderMarketAlertsPanel()}
     ${renderMarketNotesPanel()}
     ${renderMarketApiSettings()}
