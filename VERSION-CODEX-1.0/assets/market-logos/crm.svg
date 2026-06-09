@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+<defs><radialGradient id="g" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#082139"/><stop offset="1" stop-color="#031018"/></radialGradient><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<circle cx="64" cy="64" r="62" fill="url(#g)"/>
+<path d="M46 78c-11 0-20-8-20-18 0-9 8-17 18-18 5-10 17-16 30-13 10 2 18 9 21 18 10 1 18 8 18 17 0 10-9 18-21 18H46Z" fill="#00a1e0"/>
+<text x="68" y="68" text-anchor="middle" font-family="Arial Black,Arial" font-size="18" fill="#fff">SF</text>
+</svg>

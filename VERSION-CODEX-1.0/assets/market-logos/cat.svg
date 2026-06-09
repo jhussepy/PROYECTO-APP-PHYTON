@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+<defs><radialGradient id="g" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#121212"/><stop offset="1" stop-color="#050505"/></radialGradient><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<circle cx="64" cy="64" r="62" fill="url(#g)"/>
+<text x="64" y="73" text-anchor="middle" font-family="Arial Black,Arial" font-size="48" fill="#fff">CAT</text>
+<path d="M45 83h38l-19-29Z" fill="#ffcd11"/>
+</svg>

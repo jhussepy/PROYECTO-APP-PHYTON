@@ -1,4 +1,4 @@
-const VIRTUAL_FILE_KEY = 'pysec_virtual_files_v842';
+const VIRTUAL_FILE_KEY = 'pysec_virtual_files_v92';
 const SAFE_MODULES = ['math','random','hashlib','json','re','os','requests','base64','datetime','statistics'];
 function getStorage() { return (typeof localStorage !== 'undefined') ? localStorage : null; }
 function loadVirtualFiles() { try { const storage = getStorage(); return storage ? JSON.parse(storage.getItem(VIRTUAL_FILE_KEY) || '{}') : {}; } catch (_) { return {}; } }
@@ -209,20 +209,43 @@ async function requestGet(url) { url=String(url); const origin = (typeof locatio
 function runPythonSafe(code, options = {}) {
   const timeoutMs = Number(options.timeoutMs || 3500);
   const workerPath = (typeof window !== 'undefined' && window.PYSEC_WORKER_PATH) ? window.PYSEC_WORKER_PATH : 'js/runner-worker.js';
-  if (typeof Worker !== 'undefined') {
-    return new Promise(resolve => {
-      const worker = new Worker(workerPath);
-      const timer = setTimeout(() => {
-        worker.terminate();
-        resolve(err('TimeoutError: ejecución detenida por seguridad', 'El código tardó demasiado. Revisa posibles bucles infinitos o operaciones muy pesadas.'));
-      }, timeoutMs);
-      worker.onmessage = event => { clearTimeout(timer); worker.terminate(); resolve(event.data); };
-      worker.onerror = event => { clearTimeout(timer); worker.terminate(); resolve(err(event.message || 'WorkerError', 'El simulador aislado encontró un error. Revisa la sintaxis o intenta de nuevo.')); };
-      worker.postMessage({ code });
-    });
-  }
-  return Promise.race([
+  const fallbackRun = () => Promise.race([
     simulatePython(code),
     new Promise(resolve => setTimeout(() => resolve(err('TimeoutError: ejecución detenida por seguridad', 'El código tardó demasiado. Revisa posibles bucles infinitos.')), timeoutMs))
   ]);
+  if (typeof Worker !== 'undefined') {
+    try {
+      return new Promise(resolve => {
+        let worker;
+        try {
+          worker = new Worker(workerPath);
+        } catch (workerError) {
+          fallbackRun().then(result => resolve({
+            ...result,
+            fallback: true,
+            message: result.message || 'Worker no disponible. Usando simulador local fallback.'
+          }));
+          return;
+        }
+        const timer = setTimeout(() => {
+          worker.terminate();
+          resolve(err('TimeoutError: ejecución detenida por seguridad', 'El código tardó demasiado. Revisa posibles bucles infinitos o operaciones muy pesadas.'));
+        }, timeoutMs);
+        worker.onmessage = event => { clearTimeout(timer); worker.terminate(); resolve(event.data); };
+        worker.onerror = event => {
+          clearTimeout(timer);
+          worker.terminate();
+          fallbackRun().then(result => resolve({
+            ...result,
+            fallback: true,
+            message: result.message || `Worker no disponible (${event.message || 'error de origen'}). Usando simulador local fallback.`
+          }));
+        };
+        worker.postMessage({ code });
+      });
+    } catch (_) {
+      return fallbackRun();
+    }
+  }
+  return fallbackRun();
 }

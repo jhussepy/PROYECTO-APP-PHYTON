@@ -1,20 +1,73 @@
-# PySec Academy Elite v8.4.2 Final Release
+# PySec Academy Elite v9.4.2 — Clean Market Flow
 
-App móvil/PWA para aprender Python, hacking ético, Blue Team, Red/Purple Team y defensa contra amenazas reales con laboratorios guiados, exámenes, certificados locales imprimibles y simulador seguro.
+PWA móvil para estudiar Python, ciberseguridad, hacking ético, defensa cyber y lectura de datos de acciones. Incluye 11 rutas, 156 lecciones, simulador seguro, agente IA local, CTF simulado, sistema de rangos, Agent Command Center y nuevo módulo **Acciones** con mapa de calor/watchlist.
 
-## Alcance de la release
+## Abrir en PC
 
-- 11 cursos activos.
-- 156 lecciones/labs.
-- 16 insignias.
-- Threat Defense Lab defensivo.
-- Modo ético para cursos sensibles.
-- Modo Carrera con las 11 rutas.
-- Exámenes por curso y certificados locales.
-- Certificados con ID local, fecha, curso, puntaje, nivel, estado aprobado y botón de impresión.
-- Exportación/importación de progreso JSON con protección de notas privadas.
-- Simulador Python educativo con Web Worker, timeout anti-freeze y datos locales.
-- PWA Android mobile-first con manifest, iconos, screenshots y Service Worker.
+Entra a la carpeta donde está `index.html` y ejecuta:
+
+```powershell
+python -m http.server 8000 --bind 127.0.0.1
+```
+
+Abre:
+
+```text
+http://127.0.0.1:8000/index.html
+```
+
+Si recibes `404 File not found`, estás ejecutando el servidor en la carpeta equivocada. Debes estar dentro de la carpeta que contiene `index.html`, `styles.css`, `manifest.json`, `sw.js`, `assets/` y `js/`.
+
+## Probar en Android desde tu PC
+
+```powershell
+python -m http.server 8000 --bind 0.0.0.0
+```
+
+Luego busca la IP local de tu PC con:
+
+```powershell
+ipconfig
+```
+
+En Chrome Android abre:
+
+```text
+http://TU-IP:8000/index.html
+```
+
+PC y móvil deben estar en el mismo WiFi.
+
+## Nuevo módulo Acciones
+
+La barra inferior ahora tiene:
+
+```text
+Base | Rutas | Misión | Acciones | Agente
+```
+
+**Acciones** abre un panel educativo inspirado en mapas de calor de mercado:
+
+- mapa de calor de acciones
+- lista de seguimiento
+- filtros por sector
+- buscador por símbolo/nombre/sector
+- actualización manual
+- estado Live/Caché/Demo
+
+El módulo intenta obtener datos desde un proveedor público sin API key. Si el navegador, CORS o la conexión bloquean el feed, usa caché local o datos demo para que la app siga funcionando.
+
+> Nota: este módulo es educativo y no constituye asesoría financiera.
+
+## PWA
+
+La app incluye `manifest.json`, `sw.js`, iconos y screenshots. Para limpiar caché durante desarrollo:
+
+```text
+F12 → Application → Service Workers → Unregister
+Application → Storage → Clear site data
+Ctrl + Shift + R
+```
 
 ## Estructura
 
@@ -23,130 +76,57 @@ index.html
 styles.css
 manifest.json
 sw.js
+README.md
 assets/
-  icon-192.png
-  icon-512.png
-  screenshot-mobile.png
-  screenshot-wide.png
 js/
-  app.js
   data.js
+  curriculum-upgrade.js
   state.js
   validation.js
   runner.js
   runner-worker.js
   ui-components.js
+  rank-system.js
+  agent-command.js
+  market.js
+  ai-agent.js
   ui.js
   router.js
+  app.js
 ```
 
-## Arquitectura
+## Ética
 
-- `js/data.js`: catálogo completo de cursos, módulos, lecciones, ejercicios, soluciones, quizzes e insignias.
-- `js/state.js`: progreso local, racha, XP, certificados, importación/exportación, reset y tema.
-- `js/validation.js`: normalización y validación de salidas del simulador.
-- `js/runner.js` y `js/runner-worker.js`: simulador Python seguro con ejecución aislada.
-- `js/ui-components.js`: componentes UI pequeños y reutilizables.
-- `js/ui.js`: pantallas principales, cursos, práctica, exámenes, certificados, perfil y repaso.
-- `js/router.js`: navegación interna.
-- `js/app.js`: único punto de arranque de la app.
-- `sw.js`: cache estático/runtime y soporte offline básico.
-- `manifest.json`: configuración PWA instalable.
+La app se enfoca en laboratorios seguros, datos simulados, defensa, detección, hardening, reportes y aprendizaje responsable. No está orientada a atacar sistemas reales ni a realizar abuso informático.
 
-## Abrir en PC
 
-Con Live Server en VS Code:
+## Finnhub API
 
-1. Abre la carpeta del proyecto.
-2. Abre `index.html`.
-3. Clic derecho y selecciona **Open with Live Server**.
+El módulo **Acciones** puede usar Finnhub para obtener datos live. Por seguridad, no pegues tu API key en chats ni la escribas directamente en el código del proyecto.
 
-Con Python:
+Uso recomendado en desarrollo local:
 
-```bash
-python -m http.server 8000
-```
+1. Abre la app con servidor local.
+2. Entra a **Acciones**.
+3. Pega tu API key en el bloque **FINNHUB API**.
+4. Toca **GUARDAR API**.
+5. Toca **ACTUALIZAR**.
 
-Luego entra en:
+La key se guarda únicamente en `localStorage` del navegador local. Si publicas la app para otras personas, usa un backend proxy para proteger la clave. En una app estática, cualquier key usada en frontend puede quedar visible para quien inspeccione el navegador.
 
-```text
-http://127.0.0.1:8000
-```
+Estados posibles del feed:
 
-## Abrir en Android
+- **DATOS EN VIVO**: Finnhub o proveedor live respondió correctamente.
+- **CACHÉ LOCAL**: se usan datos guardados previamente.
+- **MODO DEMO**: entrenamiento local si no hay conexión o el proveedor falla.
 
-1. Copia o descomprime la carpeta del proyecto en el dispositivo.
-2. Abre la carpeta con Acode u otro editor con preview local.
-3. Abre `index.html`.
-4. Usa Preview o sirve la carpeta con un servidor local.
+## v9.8.2 Market Dashboard Alignment
 
-Para instalar como PWA, publica la carpeta en un hosting HTTPS y desde Chrome Android usa **Instalar app** o **Agregar a pantalla principal**.
+Esta versión sube el módulo **Acciones** a un panel más completo de inteligencia educativa de mercado:
 
-## Progreso local
+- **Alertas locales**: crea alertas por precio o cambio porcentual. Se guardan en el navegador y se evalúan al actualizar el feed.
+- **Notas de mercado**: diario local para registrar observaciones como fortaleza sectorial, líderes, debilidad o contexto.
+- **Sparkline local**: cada actualización guarda puntos de precio en `localStorage` y dibuja una mini línea histórica por acción.
+- **Sectores avanzados**: ranking por sector, promedio de cambio, verdes/rojas y líder por sector.
 
-La app guarda progreso en `localStorage`:
-
-- XP, nivel y racha.
-- Lecciones leídas y completadas.
-- Quizzes completados.
-- Exámenes aprobados.
-- Certificados locales.
-- Insignias.
-- Notas del agente.
-- Labs guiados completados.
-- Preferencias de tema y privacidad.
-
-El reset borra claves actuales y legacy del progreso, además de los archivos virtuales del simulador.
-
-## Certificados
-
-Cada certificado se genera localmente al aprobar un examen con 70% o más. Incluye:
-
-- ID local.
-- Fecha de emisión.
-- Curso.
-- Puntaje.
-- Nivel.
-- Estado aprobado.
-- Porcentaje final.
-- Botón para imprimir.
-
-Los certificados son evidencia local de aprendizaje; no sustituyen una certificación externa.
-
-## Simulador seguro
-
-El simulador interpreta un subconjunto educativo de Python:
-
-- `print`, variables, listas, diccionarios, funciones, clases básicas, condicionales y bucles.
-- Módulos permitidos para prácticas defensivas y educativas.
-- Archivos virtuales guardados localmente.
-- Timeout para prevenir bloqueos.
-- Peticiones restringidas a laboratorio local o misma app.
-
-## Service Worker y PWA
-
-La PWA cachea los assets esenciales, limpia cachés anteriores con prefijo `pysec-*`, no cachea respuestas fallidas y evita interceptar recursos externos. Si ves contenido viejo:
-
-```text
-F12 -> Application -> Service Workers -> Unregister
-F12 -> Application -> Storage -> Clear site data
-Ctrl + Shift + R
-```
-
-## QA de release
-
-Antes de entregar, valida:
-
-- JavaScript sin errores.
-- 11 cursos.
-- 156 lecciones.
-- 16 insignias.
-- 0 IDs duplicados.
-- 156/156 soluciones pasan validación.
-- Modo Carrera incluye los 11 cursos.
-- Reset borra claves actuales y legacy.
-- Manifest y Service Worker apuntan a la release actual.
-
-## Ética y seguridad
-
-Todo el contenido de hacking está enfocado en laboratorios propios, datos simulados, `127.0.0.1`, análisis defensivo, detección, prevención y respuesta. No incluye instrucciones para atacar terceros ni abuso real.
+Limitación: las alertas locales solo se evalúan cuando la app está abierta y se actualizan los datos. Para alertas reales 24/7 se necesitaría backend.

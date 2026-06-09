@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+<defs><radialGradient id="g" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#071627"/><stop offset="1" stop-color="#020812"/></radialGradient><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<circle cx="64" cy="64" r="62" fill="url(#g)"/>
+<text x="64" y="70" text-anchor="middle" font-family="Arial Rounded MT Bold,Arial" font-size="42" fill="#00aeef" font-weight="700">intel</text>
+<path d="M20 83c24 20 77 14 91-9" fill="none" stroke="#00aeef" stroke-width="6" stroke-linecap="round" opacity=".9"/>
+</svg>

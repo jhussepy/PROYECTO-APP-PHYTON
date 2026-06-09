@@ -1,31 +1,117 @@
 {
   "id": "./index.html",
-  "name": "PySec Academy Elite v8.4.2",
-  "short_name": "PySec Elite",
-  "description": "Threat Defense Lab móvil para Python, hacking ético y ciberseguridad con arquitectura interna limpia, labs, exámenes, certificados imprimibles y simulador seguro con Web Worker.",
-  "version": "8.4.2",
+  "name": "PySec Academy Elite v9.8.2 Market Dashboard Alignment",
+  "short_name": "PySec v9.8.2",
+  "description": "PWA móvil educativa con Python, hacking ético y Acciones Pro en formato Market Command Dashboard profesional con datos Finnhub.",
+  "version": "9.8.2",
   "lang": "es",
   "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#04070f",
   "theme_color": "#04070f",
   "orientation": "portrait",
-  "categories": ["education", "developer", "productivity"],
+  "categories": [
+    "education",
+    "developer",
+    "productivity"
+  ],
   "prefer_related_applications": false,
   "icons": [
-    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ],
   "screenshots": [
-    { "src": "assets/screenshot-mobile.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow", "label": "Inicio móvil de PySec Elite" },
-    { "src": "assets/screenshot-wide.png", "sizes": "1280x720", "type": "image/png", "form_factor": "wide", "label": "Vista previa de ruta de aprendizaje" }
+    {
+      "src": "assets/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Inicio móvil de PySec Elite"
+    },
+    {
+      "src": "assets/screenshot-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Vista previa de ruta de aprendizaje"
+    }
   ],
   "shortcuts": [
-    { "name": "Continuar", "short_name": "Continuar", "description": "Continuar la ruta", "url": "./index.html#home", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Cursos", "short_name": "Cursos", "description": "Ver rutas", "url": "./index.html#courses", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Perfil", "short_name": "Perfil", "description": "Ver progreso", "url": "./index.html#profile", "icons": [{ "src": "assets/icon-192.png", "sizes": "192x192" }] }
+    {
+      "name": "Continuar",
+      "short_name": "Continuar",
+      "description": "Continuar la ruta",
+      "url": "./index.html#home",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Rutas",
+      "short_name": "Rutas",
+      "description": "Ver rutas",
+      "url": "./index.html#courses",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Misión",
+      "short_name": "Misión",
+      "description": "Abrir próxima misión",
+      "url": "./index.html#mission",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Acciones",
+      "short_name": "Acciones",
+      "description": "Abrir mapa de calor y watchlist de acciones",
+      "url": "./index.html#market",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Agente",
+      "short_name": "Agente",
+      "description": "Ver progreso",
+      "url": "./index.html#profile",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }

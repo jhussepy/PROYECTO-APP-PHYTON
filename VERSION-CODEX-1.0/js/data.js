@@ -455,3 +455,5 @@ function quiz(question, options, answer) {
   });
   BADGES.push({ id:'threat_defender', title:'Threat Defender', description:'Completaste prácticas defensivas sobre amenazas reales con enfoque ético.', icon:'🧬' });
 })();
+
+BADGES.push({ id:'ctf_operator', title:'CTF Operator', description:'Completaste retos CTF simulados con enfoque defensivo y ético.', icon:'🏁' });

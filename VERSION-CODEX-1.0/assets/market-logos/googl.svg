@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+<defs><radialGradient id="g" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#111827"/><stop offset="1" stop-color="#080d16"/></radialGradient><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<circle cx="64" cy="64" r="62" fill="url(#g)"/>
+<circle cx="64" cy="64" r="43" fill="none" stroke="#4285f4" stroke-width="15" stroke-dasharray="85 220" stroke-dashoffset="-20"/>
+<circle cx="64" cy="64" r="43" fill="none" stroke="#34a853" stroke-width="15" stroke-dasharray="58 247" stroke-dashoffset="-105"/>
+<circle cx="64" cy="64" r="43" fill="none" stroke="#fbbc05" stroke-width="15" stroke-dasharray="58 247" stroke-dashoffset="-165"/>
+<circle cx="64" cy="64" r="43" fill="none" stroke="#ea4335" stroke-width="15" stroke-dasharray="70 235" stroke-dashoffset="-225"/>
+<path d="M66 63h41v13H66z" fill="#4285f4"/><path d="M107 63c0 13-5 24-14 32l-10-10c6-5 9-11 9-20Z" fill="#4285f4"/>
+</svg>

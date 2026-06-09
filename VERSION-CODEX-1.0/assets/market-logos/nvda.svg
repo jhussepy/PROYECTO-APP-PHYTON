@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img">
+<defs><radialGradient id="g" cx="40%" cy="30%" r="75%"><stop offset="0" stop-color="#0b3b16"/><stop offset="1" stop-color="#07100a"/></radialGradient><filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<circle cx="64" cy="64" r="62" fill="url(#g)"/>
+<rect x="21" y="34" width="86" height="60" rx="8" fill="#76b900" filter="url(#glow)"/>
+<path d="M31 64c13-20 50-25 69 0-18 22-56 22-69 0Z" fill="#07100a" opacity=".98"/>
+<path d="M43 64c10-12 32-16 45 0-13 13-35 14-45 0Z" fill="#76b900"/>
+<circle cx="65" cy="64" r="11" fill="#07100a"/><circle cx="68" cy="61" r="5" fill="#76b900"/>
+<text x="64" y="111" text-anchor="middle" font-family="Arial Black,Arial" font-size="18" fill="#76b900">NVIDIA</text>
+</svg>

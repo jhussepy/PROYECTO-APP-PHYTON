@@ -1,6 +1,16 @@
-const APP_VERSION = '8.4.2';
-const STORAGE_KEY = 'pysec_elite_v842_state';
+const APP_VERSION = '9.4';
+const STORAGE_KEY = 'pysec_elite_v92_state';
 const LEGACY_KEYS = [
+  'pysec_elite_v89_state',
+  'pysec_elite_v88_state',
+  'pysec_elite_v872_state',
+  'pysec_elite_v871_state',
+  'pysec_elite_v87_state',
+  'pysec_elite_v86_state',
+  'pysec_elite_v85_state',
+  'pysec_elite_v844_state',
+  'pysec_elite_v843_state',
+  'pysec_elite_v842_state',
   'pysec_elite_v841_state',
   'pysec_elite_v84_state',
   'pysec_elite_v83_state',
@@ -14,13 +24,13 @@ const LEGACY_KEYS = [
   'pysec_academy_v32_state',
   'pysec_pro_state'
 ];
-const RANKS = ['Recluta', 'Analista Jr.', 'Especialista', 'Agente de Campo', 'Ciber-Operador', 'Arquitecto de Seguridad', 'Maestro PySec'];
+const RANKS = ['Recluta', 'Operador Junior', 'Analista Cyber', 'Python Operator', 'Blue Sentinel', 'Ethical Hacker Jr.', 'Threat Defender', 'PySec Elite Operator'];
 
 let state = {
   view: 'home', xp: 0, streak: 0,
-  completedLessons: [], readLessons: [], completedQuizzes: [], acceptedEthics: [], badges: [],
+  completedLessons: [], readLessons: [], completedQuizzes: [], acceptedEthics: [], badges: [], completedCTF: [],
   passedExams: {}, certificates: [], mistakes: [], notes: [], favoriteLessons: [], completedLabs: [],
-  lastActive: null, level: 1, agentRank: 'Recluta', theme: 'dark', privacyMode: true
+  lastActive: null, level: 1, agentRank: 'Recluta', rankId: 'recluta', rankLevel: 1, nextRank: 'Operador Junior', xpToNextRank: 100, theme: 'dark', privacyMode: true, operatorId: null
 };
 
 function buildCertificateId(courseId) {
@@ -75,7 +85,7 @@ function createCertificate(courseId, exam) {
 }
 
 function ensureArrays() {
-  ['completedLessons','readLessons','completedQuizzes','acceptedEthics','badges','certificates','mistakes','notes','favoriteLessons','completedLabs'].forEach(key => {
+  ['completedLessons','readLessons','completedQuizzes','acceptedEthics','badges','completedCTF','certificates','mistakes','notes','favoriteLessons','completedLabs'].forEach(key => {
     if (!Array.isArray(state[key])) state[key] = [];
   });
   if (!state.passedExams || typeof state.passedExams !== 'object' || Array.isArray(state.passedExams)) state.passedExams = {};
@@ -110,7 +120,8 @@ function saveState() {
 
 function updateGlobalStats() {
   state.level = Math.floor(Number(state.xp || 0) / 150) + 1;
-  state.agentRank = RANKS[Math.min(state.level - 1, RANKS.length - 1)];
+  if (typeof syncRankState === 'function') syncRankState();
+  else state.agentRank = RANKS[Math.min(state.level - 1, RANKS.length - 1)];
   const xpEl = document.getElementById('total-xp');
   const streakEl = document.getElementById('streak-days');
   if (xpEl) xpEl.textContent = state.xp;
@@ -186,6 +197,16 @@ function resetProgress() {
   const currentAndLegacyKeys = [
     STORAGE_KEY,
     ...LEGACY_KEYS,
+    'pysec_virtual_files_v92',
+    'pysec_virtual_files_v89',
+    'pysec_virtual_files_v88',
+    'pysec_virtual_files_v872',
+    'pysec_virtual_files_v871',
+    'pysec_virtual_files_v87',
+    'pysec_virtual_files_v86',
+    'pysec_virtual_files_v85',
+    'pysec_virtual_files_v844',
+    'pysec_virtual_files_v843',
     'pysec_virtual_files_v842',
     'pysec_virtual_files_v841',
     'pysec_virtual_files_v84',
@@ -234,6 +255,7 @@ function sanitizeStateForExport() {
       completedLessons: [...new Set(state.completedLessons)],
       readLessons: [...new Set(state.readLessons)],
       completedQuizzes: [...new Set(state.completedQuizzes)],
+      completedCTF: [...new Set(state.completedCTF)],
       acceptedEthics: [...new Set(state.acceptedEthics)],
       badges: [...new Set(state.badges)],
       passedExams: state.passedExams || {},
@@ -244,7 +266,11 @@ function sanitizeStateForExport() {
       completedLabs: state.completedLabs || [],
       lastActive: state.lastActive,
       theme: state.theme || 'dark',
-      privacyMode: !!state.privacyMode
+      privacyMode: !!state.privacyMode,
+      rankId: state.rankId || 'recluta',
+      rankLevel: state.rankLevel || 1,
+      agentRank: state.agentRank || 'Recluta',
+      operatorId: state.operatorId || null
     }
   };
 }
@@ -254,7 +280,7 @@ function exportProgressJSON() {
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `pysec-progress-v842-${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `pysec-progress-v92-${new Date().toISOString().slice(0,10)}.json`;
   document.body.appendChild(a);
   a.click();
   setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
@@ -274,6 +300,7 @@ function validateImportedProgress(payload) {
     completedLessons: safeArray(data.completedLessons, allowedLessonIds),
     readLessons: safeArray(data.readLessons, allowedLessonIds),
     completedQuizzes: safeArray(data.completedQuizzes, allowedLessonIds),
+    completedCTF: safeArray(data.completedCTF),
     acceptedEthics: safeArray(data.acceptedEthics, allowedCourseIds),
     badges: safeArray(data.badges, allowedBadges),
     passedExams: (data.passedExams && typeof data.passedExams === 'object' && !Array.isArray(data.passedExams)) ? data.passedExams : {},
@@ -284,7 +311,8 @@ function validateImportedProgress(payload) {
     completedLabs: safeArray(data.completedLabs, allowedCourseIds),
     lastActive: data.lastActive || null,
     theme: ['dark','light'].includes(data.theme) ? data.theme : 'dark',
-    privacyMode: data.privacyMode !== false
+    privacyMode: data.privacyMode !== false,
+    operatorId: typeof data.operatorId === 'string' ? data.operatorId : null
   };
 }
 

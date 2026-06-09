@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>PySec Academy Elite v8.4.2 Final Release</title>
-  <meta name="description" content="PySec Academy Elite v8.4.2 Final Release: app móvil PWA para aprender Python, hacking ético y ciberseguridad con labs, exámenes, certificados, repaso, exportación de progreso y simulador seguro con Web Worker." />
+  <title>PySec Academy Elite v9.8.2 Market Dashboard Alignment</title>
+  <meta name="description" content="PySec Academy Elite v9.8.2 Market Dashboard Alignment: PWA móvil para aprender Python, ciberseguridad, hacking ético y vigilancia de acciones con datos live, agente IA local y simulador seguro." />
   <meta name="theme-color" content="#04070f" />
   <meta name="color-scheme" content="dark light" />
   <meta name="application-name" content="PySec Elite" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PySec Elite" />
-  <meta property="og:title" content="PySec Academy Elite v8.4.2 Final Release" />
-  <meta property="og:description" content="Threat Defense Lab móvil con arquitectura interna limpia para Python, hacking ético y ciberseguridad." />
+  <meta property="og:title" content="PySec Academy Elite v9.8.2 Market Dashboard Alignment" />
+  <meta property="og:description" content="Threat Defense Lab móvil con Finnhub Live Market para Python, hacking ético, ciberseguridad y lectura de datos financieros." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="assets/screenshot-mobile.png" />
   <link rel="manifest" href="manifest.json" />
@@ -31,22 +31,24 @@
       </button>
       <div class="user-stats" aria-label="Estadísticas del usuario">
         <button class="theme-toggle" id="theme-toggle" type="button" title="Cambiar tema">🌙</button>
-        <div class="stat-item" title="XP acumulado"><span>⚡</span><span id="total-xp">0</span></div>
+        <button class="stat-item stat-button" id="btn-rank-xp" type="button" title="Ver sistema de rangos"><span>⚡</span><span id="total-xp">0</span></button>
         <div class="stat-item" title="Racha de estudio"><span>🔥</span><span id="streak-days">0</span></div>
       </div>
     </header>
     <main id="main-container" tabindex="-1">
       <div class="loading-screen"><div class="loader"></div><p>INICIALIZANDO_PRO_LEARNING_OS...</p></div>
     </main>
-    <nav class="bottom-nav" aria-label="Navegación principal">
-      <button class="nav-btn active" data-view="home"><span>🏠</span><small>Inicio</small></button>
-      <button class="nav-btn" data-view="courses"><span>📚</span><small>Cursos</small></button>
-      <button class="nav-btn" data-view="profile"><span>👤</span><small>Perfil</small></button>
+    <nav class="bottom-nav cyber-dock" aria-label="Cyber Dock v2">
+      <button class="nav-btn active" data-view="home" title="Base"><span>⌂</span><small>Base</small></button>
+      <button class="nav-btn" data-view="courses" title="Rutas"><span>▦</span><small>Rutas</small></button>
+      <button class="nav-btn nav-mission" data-view="mission" title="Abrir próxima misión"><span>▶</span><small>Misión</small></button>
+      <button class="nav-btn nav-market" data-view="market" title="Acciones en vivo"><span>▥</span><small>Acciones</small></button>
+      <button class="nav-btn" data-view="profile" title="Agente"><span>◉</span><small>Agente</small></button>
     </nav>
   </div>
   <input id="import-progress-file" type="file" accept="application/json,.json" hidden />
   <script>
-    window.PYSEC_BUILD = '842-tactical-cyber-os';
+    window.PYSEC_BUILD = '982-market-dashboard-alignment';
     try {
       const key = 'pysec_active_build';
       const previous = localStorage.getItem(key);
@@ -63,10 +65,18 @@
     window.PYSEC_WORKER_PATH = 'js/runner-worker.js';
   </script>
   <script src="js/data.js"></script>
+  <script src="js/curriculum-upgrade.js"></script>
   <script src="js/state.js"></script>
   <script src="js/validation.js"></script>
   <script src="js/runner.js"></script>
   <script src="js/ui-components.js"></script>
+  <script src="js/rank-system.js"></script>
+  <script src="js/agent-command.js"></script>
+  <script src="js/market.js"></script>
+  <script src="js/market-intelligence-ux.js"></script>
+  <script src="js/market-clean-flow.js"></script>
+  <script src="js/market-command-dashboard.js"></script>
+  <script src="js/ai-agent.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/router.js"></script>
   <script src="js/app.js"></script>
