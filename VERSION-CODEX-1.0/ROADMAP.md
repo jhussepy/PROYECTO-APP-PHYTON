@@ -6,6 +6,10 @@
 - Tests de navegación y persistencia.
 - Consolidación del dashboard de mercado.
 - Métricas de accesibilidad y rendimiento.
+- Consolidación de Elite Store con economía meritocrática.
+- Inventario común para avatares, temas, marcos, badges, fondos, mascotas, widgets y certificados internos.
+- Packs completos con contenido visible y precio fijo en PyCoins.
+- Desbloqueos trazables por logros y progreso académico.
 
 ## v10.2
 
@@ -29,3 +33,6 @@
 - AAB y Play Store.
 
 No se añadirán funciones ofensivas contra terceros.
+Elite Store no incluirá ruletas, gacha, spins, loot boxes, premios aleatorios, sorteos ni apuestas.
+
+Consulta `ELITE_STORE_PLAN.md` para el alcance y los criterios de aceptación.

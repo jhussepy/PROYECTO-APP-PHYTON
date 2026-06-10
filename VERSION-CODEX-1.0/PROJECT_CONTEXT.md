@@ -36,6 +36,8 @@
 - Conservar Strategy Engine y todos los flujos financieros.
 - Mantener Google en estado preparado, sin falso login.
 - Restringir Ollama y accesos a labs a loopback.
+- Mantener Elite Store como economía educativa interna basada en progreso real y compras directas con PyCoins.
+- Excluir de forma permanente cualquier mecánica de azar, apuesta, premio aleatorio o contenido oculto.
 
 ## Deuda controlada
 
@@ -43,3 +45,4 @@
 - Consolidar las cuatro generaciones de renderizado del mercado.
 - Dividir `styles.css` por dominio.
 - Añadir pruebas de navegador versionadas.
+- Generalizar el inventario de Elite Store para packs, marcos, badges, fondos, mascotas, widgets y certificados internos.

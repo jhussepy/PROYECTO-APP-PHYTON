@@ -74,6 +74,7 @@ Nunca incluyas client secrets, contraseñas ni API keys privadas en el repositor
 - `GOOGLE_OAUTH_SETUP.md`
 - `APK_PLAYSTORE_ROADMAP.md`
 - `ROADMAP.md`
+- `ELITE_STORE_PLAN.md`
 - `CHANGELOG.md`
 
 ## Seguridad
@@ -150,12 +151,14 @@ Nueva fase gamificada local para PySec Academy Elite.
 - Temas visuales desbloqueables y aplicables a toda la app.
 - Avatar + PyCoins visibles en el header.
 - Recompensas automáticas de PyCoins al ganar XP.
-- Bono fundador local para probar la tienda.
-- Sección Premium Futuro para avatares/temas de pago entre $1 y $20, sin pagos reales activos.
-- Sección PyCoin Network Futuro, solo roadmap conceptual; no token, no wallet real, no retiro, no compraventa.
+- Compras directas con precio y contenido visibles.
+- Niveles de colección vinculados al progreso, sin etiquetas de rareza.
+- Roadmap para packs completos, marcos, badges, fondos, mascotas, widgets y certificados internos.
 
 ### Seguridad / economía
 
-PyCoins en v11.2.0 son puntos internos de aprendizaje guardados en localStorage. No son criptomoneda, no tienen valor monetario, no se pueden transferir y no prometen rentabilidad.
+PyCoins en v11.2.0 son puntos internos de aprendizaje guardados en localStorage. No son criptomoneda, no tienen valor monetario y no se pueden transferir, retirar ni comprar.
 
-Los pagos reales quedan desactivados. Para una futura app en Play Store, los cosméticos digitales premium deberán integrarse mediante un sistema de pagos permitido por la plataforma.
+Elite Store no usa ni usará ruletas, gacha, spins, loot boxes, premios aleatorios, sorteos o apuestas. Los PyCoins proceden de progreso académico verificable y todas las compras son directas.
+
+Consulta `ELITE_STORE_PLAN.md` para la planificación completa.

@@ -58,7 +58,7 @@ code, pre, .code-editor, .console-output { font-family: "JetBrains Mono", "Fira 
 }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes loader-rotate { to { transform: rotate(360deg); } }
 
 .main-header {
   position: sticky;
@@ -130,7 +130,7 @@ code, pre, .code-editor, .console-output { font-family: "JetBrains Mono", "Fira 
   font-size: .75rem;
   text-transform: uppercase;
 }
-.loader { width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(117,169,255,.18); border-top-color: var(--blue-glow); animation: spin .8s linear infinite; }
+.loader { width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(117,169,255,.18); border-top-color: var(--blue-glow); animation: loader-rotate .8s linear infinite; }
 
 .bottom-nav {
   position: fixed;
@@ -7288,7 +7288,7 @@ body::before {
 .elite-card-body { display: grid; gap: 9px; padding: 13px; }
 .elite-card-top { display: grid; gap: 6px; }
 .elite-card-top h3 { font-size: .98rem; line-height: 1.05; letter-spacing: -.03em; }
-.elite-rarity {
+.elite-tier {
   width: fit-content;
   border-radius: 999px;
   padding: 4px 7px;
@@ -7298,11 +7298,11 @@ body::before {
   border: 1px solid rgba(255,255,255,.1);
   color: var(--text-main);
 }
-.rarity-comun { color: #dce8e0; border-color: rgba(220,232,224,.18); }
-.rarity-raro { color: #6ee7ff; border-color: rgba(110,231,255,.28); }
-.rarity-epico { color: #c084fc; border-color: rgba(192,132,252,.32); }
-.rarity-legendario { color: #ffd166; border-color: rgba(255,209,102,.34); }
-.rarity-elite { color: #00ff88; border-color: rgba(0,255,136,.38); text-shadow: 0 0 12px rgba(0,255,136,.24); }
+.tier-inicial { color: #dce8e0; border-color: rgba(220,232,224,.18); }
+.tier-fundamentos { color: #6ee7ff; border-color: rgba(110,231,255,.28); }
+.tier-especializacion { color: #c084fc; border-color: rgba(192,132,252,.32); }
+.tier-maestria { color: #ffd166; border-color: rgba(255,209,102,.34); }
+.tier-elite { color: #00ff88; border-color: rgba(0,255,136,.38); text-shadow: 0 0 12px rgba(0,255,136,.24); }
 .elite-card-body p { color: var(--text-sec); font-size: .78rem; line-height: 1.36; }
 .elite-card-meta { display: flex; justify-content: space-between; gap: 8px; color: var(--muted); font-size: .7rem; }
 .elite-card-meta strong { color: var(--success); }
@@ -7323,10 +7323,7 @@ body::before {
   color: var(--success);
   border: 1px solid rgba(0,255,136,.25);
 }
-.elite-history-panel,
-.elite-future-panel,
-.elite-premium-grid article,
-.elite-roadmap-steps article {
+.elite-history-panel {
   margin-top: 14px;
   border: 1px solid var(--border-soft);
   border-radius: 22px;
@@ -7344,67 +7341,6 @@ body::before {
 .elite-tx span { color: #ffd166; font-weight: 950; }
 .elite-tx p { color: var(--text-sec); font-size: .78rem; }
 .elite-tx small { color: var(--muted); font-size: .66rem; }
-.elite-future-panel {
-  display: grid;
-  grid-template-columns: 72px 1fr;
-  gap: 14px;
-  align-items: center;
-  margin-top: 0;
-}
-.elite-future-panel span {
-  color: var(--cyan);
-  font-size: .66rem;
-  font-weight: 950;
-  letter-spacing: .12em;
-}
-.elite-future-panel h2 { margin: 5px 0 8px; letter-spacing: -.04em; }
-.elite-future-panel p { color: var(--text-sec); line-height: 1.45; }
-.elite-future-orb {
-  width: 72px;
-  height: 72px;
-  display: grid;
-  place-items: center;
-  border-radius: 26px;
-  background: linear-gradient(135deg, rgba(255,209,102,.20), rgba(0,255,136,.10));
-  border: 1px solid rgba(255,209,102,.24);
-  color: #ffd166;
-  font-size: 1.8rem;
-  font-weight: 1000;
-}
-.elite-premium-grid,
-.elite-roadmap-steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 12px;
-}
-.elite-premium-grid article,
-.elite-roadmap-steps article { margin-top: 0; }
-.elite-premium-grid b,
-.elite-roadmap-steps span {
-  color: #ffd166;
-  font-size: .64rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.elite-premium-grid h3,
-.elite-roadmap-steps h3 { margin: 7px 0; font-size: .98rem; }
-.elite-premium-grid strong { color: var(--success); font-size: 1.2rem; }
-.elite-premium-grid p,
-.elite-roadmap-steps p { color: var(--text-sec); font-size: .78rem; line-height: 1.38; margin: 8px 0; }
-.elite-premium-grid button {
-  width: 100%;
-  min-height: 36px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.1);
-  background: rgba(255,255,255,.05);
-  color: var(--muted);
-  font-weight: 900;
-}
-@media (max-width: 760px) {
-  .elite-premium-grid,
-  .elite-roadmap-steps { grid-template-columns: 1fr; }
-}
 @media (max-width: 430px) {
   .elite-store-hero { grid-template-columns: 1fr; padding: 16px; }
   .elite-wallet-card { min-height: 104px; }

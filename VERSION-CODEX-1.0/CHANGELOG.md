@@ -24,7 +24,14 @@
 - Agregados avatares desbloqueables.
 - Agregados temas visuales desbloqueables.
 - Agregado badge de avatar/PyCoins en header.
-- Agregada pestaña Premium Futuro.
-- Agregada pestaña PyCoin Futuro.
 - Recompensas de PyCoins ligadas a XP.
 - Actualizado Service Worker y manifest.
+
+## Planificación Elite Store meritocrática
+
+- Eliminadas de la tienda visible las secciones de pago futuro y tokenización.
+- Eliminados el bono fundador y el botón de saldo de prueba.
+- Sustituidas las etiquetas de rareza por niveles educativos de colección.
+- Eliminado el uso de aleatoriedad en identificadores de transacciones de la tienda.
+- Definido catálogo futuro de packs completos, avatares, temas, marcos, badges, fondos, mascotas, widgets y certificados internos.
+- Prohibidas explícitamente las ruletas, gacha, spins, loot boxes, premios aleatorios, sorteos y apuestas.
