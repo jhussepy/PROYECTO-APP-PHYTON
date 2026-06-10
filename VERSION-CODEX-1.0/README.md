@@ -36,9 +36,11 @@ El proyecto no necesita dependencias npm; `npm install` solo valida el manifiest
 
 ```powershell
 npm run build
+npm run preview
 ```
 
 Genera una copia estática en `dist/`.
+La vista previa de `dist` queda disponible en `http://127.0.0.1:8001/index.html#store`.
 
 ## QA
 

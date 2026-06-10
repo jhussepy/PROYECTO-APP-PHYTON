@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v11.2.0-elite-store-themes';
+const CACHE_VERSION = 'v11.2.1-merit-store-no-random';
 const STATIC_CACHE = `pysec-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `pysec-runtime-${CACHE_VERSION}`;
 const ASSETS = [

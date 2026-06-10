@@ -1,8 +1,8 @@
-/* PySec Academy Elite v11.2.0 — Elite Store & Themes
+/* PySec Academy Elite v11.2.1 — Merit Store
    Tienda educativa local con progreso verificable y compras directas con PyCoins.
    No usa azar, premios aleatorios, pagos reales, apuestas ni activos transferibles. */
 
-const PYSEC_STORE_VERSION = '11.2.0';
+const PYSEC_STORE_VERSION = '11.2.1';
 const PYSEC_WALLET_KEY = 'pysec_wallet';
 const PYSEC_OWNED_AVATARS_KEY = 'pysec_owned_avatars';
 const PYSEC_EQUIPPED_AVATAR_KEY = 'pysec_equipped_avatar';
@@ -274,7 +274,7 @@ function renderEliteStore(tab = localStorage.getItem(PYSEC_STORE_TAB_KEY) || 'av
   mainContainer.innerHTML = `
     <button class="os-back" onclick="renderView('profile')">← PERFIL</button>
     <section class="elite-store-hero">
-      <div><span class="os-eyebrow">ELITE STORE · ECONOMÍA EDUCATIVA</span><h1>Tienda Elite</h1><p>Gana PyCoins mediante progreso real y elige cada compra de forma directa. Sin azar, apuestas ni premios aleatorios.</p></div>
+      <div><span class="os-eyebrow">MERIT STORE · v${PYSEC_STORE_VERSION}</span><h1>Tienda Elite</h1><p>Gana PyCoins mediante progreso real y elige cada compra de forma directa. Sin azar, apuestas ni premios aleatorios.</p></div>
       <div class="elite-wallet-card"><span>PYCOINS</span><strong>${wallet.coins}</strong><small>Ganadas: ${wallet.lifetimeEarned} · Gastadas: ${wallet.lifetimeSpent}</small></div>
     </section>
     <section class="elite-equipped-strip">

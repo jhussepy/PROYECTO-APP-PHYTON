@@ -27,7 +27,7 @@
 - Recompensas de PyCoins ligadas a XP.
 - Actualizado Service Worker y manifest.
 
-## Planificación Elite Store meritocrática
+## v11.2.1 — Merit Store
 
 - Eliminadas de la tienda visible las secciones de pago futuro y tokenización.
 - Eliminados el bono fundador y el botón de saldo de prueba.
