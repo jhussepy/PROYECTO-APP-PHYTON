@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>PySec Academy Elite v9.9.0 Strategy Engine</title>
-  <meta name="description" content="PySec Academy Elite v9.9.0 Strategy Engine: PWA móvil con Trading Command Center modular, datos live, aprendizaje de Python y ciberseguridad." />
-  <meta name="theme-color" content="#04070f" />
+  <title>PySec Academy Elite v10.0.0 Learning OS</title>
+  <meta name="description" content="Learning OS PWA para dominar Python, IA local, productividad y ciberseguridad ética con práctica verificable." />
+  <meta name="theme-color" content="#050807" />
   <meta name="color-scheme" content="dark light" />
   <meta name="application-name" content="PySec Elite" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="PySec Elite" />
-  <meta property="og:title" content="PySec Academy Elite v9.9.0 Strategy Engine" />
-  <meta property="og:description" content="Threat Defense Lab móvil con Finnhub Live Market para Python, hacking ético, ciberseguridad y lectura de datos financieros." />
+  <meta property="og:title" content="PySec Academy Elite v10.0.0 Learning OS" />
+  <meta property="og:description" content="Tu sistema de aprendizaje técnico: Python, IA local, proyectos y laboratorios defensivos autorizados." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="assets/screenshot-mobile.png" />
   <link rel="manifest" href="manifest.json" />
@@ -29,7 +29,12 @@
           <span class="logo-subtitle">Ethical Cyber OS</span>
         </span>
       </button>
+      <div class="header-system-status" aria-label="Estado del sistema">
+        <span id="system-online-status" data-tone="success">ONLINE</span>
+        <span id="system-ai-status" data-tone="muted">IA LOCAL OFF</span>
+      </div>
       <div class="user-stats" aria-label="Estadísticas del usuario">
+        <button class="install-header-btn" id="install-app-btn" type="button" onclick="installPySecApp()" title="Instalar aplicación">INSTALAR</button>
         <button class="theme-toggle" id="theme-toggle" type="button" title="Cambiar tema">🌙</button>
         <button class="stat-item stat-button" id="btn-rank-xp" type="button" title="Ver sistema de rangos"><span>⚡</span><span id="total-xp">0</span></button>
         <div class="stat-item" title="Racha de estudio"><span>🔥</span><span id="streak-days">0</span></div>
@@ -48,7 +53,7 @@
   </div>
   <input id="import-progress-file" type="file" accept="application/json,.json" hidden />
   <script>
-    window.PYSEC_BUILD = '990-strategy-engine';
+    window.PYSEC_BUILD = '1000-learning-os';
     try {
       const key = 'pysec_active_build';
       const previous = localStorage.getItem(key);
@@ -64,10 +69,14 @@
     } catch (_) {}
     window.PYSEC_WORKER_PATH = 'js/runner-worker.js';
   </script>
+  <script src="js/config.js"></script>
   <script src="js/data.js"></script>
   <script src="js/curriculum-upgrade.js"></script>
+  <script src="js/learning-paths.js"></script>
   <script src="js/state.js"></script>
   <script src="js/validation.js"></script>
+  <script src="js/platform-core.js"></script>
+  <script src="js/local-ai-core.js"></script>
   <script src="js/runner.js"></script>
   <script src="js/ui-components.js"></script>
   <script src="js/rank-system.js"></script>
@@ -79,6 +88,7 @@
   <script src="js/market-command-dashboard.js"></script>
   <script src="js/ai-agent.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/learning-os.js"></script>
   <script src="js/router.js"></script>
   <script src="js/app.js"></script>
 </body>

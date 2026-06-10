@@ -57,7 +57,7 @@ function renderHome() {
       <span class="eyebrow">ETHICAL CYBER LEARNING OS · ${rankInfo.current.title.toUpperCase()}</span>
       <h1 class="hero-title">PySec Elite</h1>
       <span class="hero-kicker">Secure Cyber Lab</span>
-      <span class="version-chip">v9.4.1 · Clean Market Flow</span>
+      <span class="version-chip">v10.0.0 · Learning OS</span>
       <p class="hero-subtitle">Entrena Python, defensa y hacking ético con misiones tácticas, agente IA local, CTF simulado y Threat Defense Lab.</p>
       <div class="hero-status-grid">
         ${chip(`${total} LABS`)}

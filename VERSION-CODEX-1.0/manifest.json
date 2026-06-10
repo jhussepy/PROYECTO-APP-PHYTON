@@ -1,9 +1,9 @@
 {
   "id": "./index.html",
-  "name": "PySec Academy Elite v9.9.0 Strategy Engine",
-  "short_name": "PySec v9.9.0",
-  "description": "PWA móvil educativa con Python, hacking ético y Trading Command Center con Strategy Engine modular y datos Finnhub.",
-  "version": "9.9.0",
+  "name": "PySec Academy Elite v10.0.0 Learning OS",
+  "short_name": "PySec OS",
+  "description": "PWA premium para Python, IA local, productividad, proyectos y ciberseguridad ética.",
+  "version": "10.0.0",
   "lang": "es",
   "dir": "ltr",
   "start_url": "./index.html",
@@ -13,9 +13,9 @@
     "standalone",
     "minimal-ui"
   ],
-  "background_color": "#04070f",
-  "theme_color": "#04070f",
-  "orientation": "portrait",
+  "background_color": "#050807",
+  "theme_color": "#050807",
+  "orientation": "any",
   "categories": [
     "education",
     "developer",
@@ -82,6 +82,30 @@
       "short_name": "Misión",
       "description": "Abrir próxima misión",
       "url": "./index.html#mission",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mentor IA",
+      "short_name": "Mentor",
+      "description": "Abrir mentor local",
+      "url": "./index.html#mentor",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Safe Labs",
+      "short_name": "Labs",
+      "description": "Abrir laboratorios éticos",
+      "url": "./index.html#ethical-labs",
       "icons": [
         {
           "src": "assets/icon-192.png",

@@ -1,146 +1,81 @@
-# PySec Academy Elite v9.4.2 — Clean Market Flow
+# PySec Academy Elite v10.0.0
 
-PWA móvil para estudiar Python, ciberseguridad, hacking ético, defensa cyber y lectura de datos de acciones. Incluye 11 rutas, 156 lecciones, simulador seguro, agente IA local, CTF simulado, sistema de rangos, Agent Command Center y nuevo módulo **Acciones** con mapa de calor/watchlist.
+Learning OS PWA para estudiar Python, IA local, productividad, proyectos y ciberseguridad ética. Funciona con JavaScript vanilla, almacenamiento local y un diseño mobile-first.
 
-## Abrir en PC
+## Capacidades
 
-Entra a la carpeta donde está `index.html` y ejecuta:
+- Command Center con progreso, misión diaria, roadmap y estados PWA/Google/Ollama.
+- Mission OS con niveles Recluta, Aprendiz, Operador, Analista, Builder y Elite.
+- 14 cursos integrados en siete Learning Paths.
+- Mentor IA con Ollama local y fallback educativo sin backend.
+- Generador de retos, analizador básico de código y Focus Mode.
+- Notas locales con crear, editar, borrar y filtrar.
+- Ethical Hacking Labs limitados a localhost, CTF y entornos autorizados.
+- Trading Command Center con Finnhub opcional, Strategy Engine, caché y demo.
+- PWA instalable, navegación offline, exportación/importación de progreso.
 
-```powershell
-python -m http.server 8000 --bind 127.0.0.1
-```
+## Requisitos
 
-Abre:
+- Node.js 18 o posterior para scripts de desarrollo.
+- Un navegador moderno.
+- Ollama es opcional.
 
-```text
-http://127.0.0.1:8000/index.html
-```
-
-Si recibes `404 File not found`, estás ejecutando el servidor en la carpeta equivocada. Debes estar dentro de la carpeta que contiene `index.html`, `styles.css`, `manifest.json`, `sw.js`, `assets/` y `js/`.
-
-## Probar en Android desde tu PC
-
-```powershell
-python -m http.server 8000 --bind 0.0.0.0
-```
-
-Luego busca la IP local de tu PC con:
+## Desarrollo
 
 ```powershell
-ipconfig
+npm install
+npm run check
+npm run dev
 ```
 
-En Chrome Android abre:
+Abre `http://127.0.0.1:8000`.
 
-```text
-http://TU-IP:8000/index.html
+El proyecto no necesita dependencias npm; `npm install` solo valida el manifiesto y genera el lockfile.
+
+## Build
+
+```powershell
+npm run build
 ```
 
-PC y móvil deben estar en el mismo WiFi.
+Genera una copia estática en `dist/`.
 
-## Nuevo módulo Acciones
+## QA
 
-La barra inferior ahora tiene:
-
-```text
-Base | Rutas | Misión | Acciones | Agente
+```powershell
+npm test
+git diff --check
 ```
 
-**Acciones** abre un panel educativo inspirado en mapas de calor de mercado:
+Prueba manualmente:
 
-- mapa de calor de acciones
-- lista de seguimiento
-- filtros por sector
-- buscador por símbolo/nombre/sector
-- actualización manual
-- estado Live/Caché/Demo
+1. `390x844`: Command Center, Misión, Rutas, Acciones y Perfil.
+2. Desktop: sidebar, topbar y grids.
+3. DevTools > Application: manifest, service worker y modo offline.
+4. Configuración > Local AI: URL loopback y prueba de conexión.
+5. Configuración > Google: debe indicar pendiente si no hay Client ID.
 
-El módulo intenta obtener datos desde un proveedor público sin API key. Si el navegador, CORS o la conexión bloquean el feed, usa caché local o datos demo para que la app siga funcionando.
+## Configuración pública
 
-> Nota: este módulo es educativo y no constituye asesoría financiera.
+Edita `js/config.js` solo con valores públicos:
 
-## PWA
+- Google OAuth Client ID.
+- Redirect URI.
+- URL y modelo local de Ollama.
 
-La app incluye `manifest.json`, `sw.js`, iconos y screenshots. Para limpiar caché durante desarrollo:
+Nunca incluyas client secrets, contraseñas ni API keys privadas en el repositorio.
 
-```text
-F12 → Application → Service Workers → Unregister
-Application → Storage → Clear site data
-Ctrl + Shift + R
-```
+## Documentación
 
-## Estructura
+- `PROJECT_CONTEXT.md`
+- `SECURITY.md`
+- `ETHICAL_USE.md`
+- `LOCAL_AI_SETUP.md`
+- `GOOGLE_OAUTH_SETUP.md`
+- `APK_PLAYSTORE_ROADMAP.md`
+- `ROADMAP.md`
+- `CHANGELOG.md`
 
-```text
-index.html
-styles.css
-manifest.json
-sw.js
-README.md
-assets/
-js/
-  data.js
-  curriculum-upgrade.js
-  state.js
-  validation.js
-  runner.js
-  runner-worker.js
-  ui-components.js
-  rank-system.js
-  agent-command.js
-  market.js
-  ai-agent.js
-  ui.js
-  router.js
-  app.js
-```
+## Seguridad
 
-## Ética
-
-La app se enfoca en laboratorios seguros, datos simulados, defensa, detección, hardening, reportes y aprendizaje responsable. No está orientada a atacar sistemas reales ni a realizar abuso informático.
-
-
-## Finnhub API
-
-El módulo **Acciones** puede usar Finnhub para obtener datos live. Por seguridad, no pegues tu API key en chats ni la escribas directamente en el código del proyecto.
-
-Uso recomendado en desarrollo local:
-
-1. Abre la app con servidor local.
-2. Entra a **Acciones**.
-3. Pega tu API key en el bloque **FINNHUB API**.
-4. Toca **GUARDAR API**.
-5. Toca **ACTUALIZAR**.
-
-La key se guarda únicamente en `localStorage` del navegador local. Si publicas la app para otras personas, usa un backend proxy para proteger la clave. En una app estática, cualquier key usada en frontend puede quedar visible para quien inspeccione el navegador.
-
-Estados posibles del feed:
-
-- **DATOS EN VIVO**: Finnhub o proveedor live respondió correctamente.
-- **CACHÉ LOCAL**: se usan datos guardados previamente.
-- **MODO DEMO**: entrenamiento local si no hay conexión o el proveedor falla.
-
-## v9.9.0 Strategy Engine
-
-- Añade 12 perfiles configurables para scalping, intradía, swing, largo plazo, ICT/SMC, price action, volumen, noticias, cripto, forex, acciones e índices.
-- Calcula un Strategy Score explicable de 0 a 100 por símbolo usando nueve módulos ponderables.
-- Incluye vista simple, configuración avanzada, perfiles personalizados y metadatos preparados para marketplace.
-- Añade ocho plantillas de alertas modulares y conserva alertas, portafolio, watchlist, notas y fallback de mercado.
-
-## v9.8.3 Finnhub Data Configuration
-
-- Añade una tarjeta visible en `Acciones > Alertas` para guardar, probar y borrar la API key de Finnhub.
-- Guarda la credencial localmente como `pysec_finnhub_api_key`, con migración automática de la clave anterior.
-- Prioriza Finnhub cuando hay credenciales y mantiene Stooq, caché y demo como fallback.
-- Distingue visualmente `FINNHUB LIVE` de `MERCADO EDUCATIVO / CACHÉ`.
-
-## v9.8.2 Market Dashboard Alignment
-
-Esta versión sube el módulo **Acciones** a un panel más completo de inteligencia educativa de mercado:
-
-- **Alertas locales**: crea alertas por precio o cambio porcentual. Se guardan en el navegador y se evalúan al actualizar el feed.
-- **Notas de mercado**: diario local para registrar observaciones como fortaleza sectorial, líderes, debilidad o contexto.
-- **Sparkline local**: cada actualización guarda puntos de precio en `localStorage` y dibuja una mini línea histórica por acción.
-- **Sectores avanzados**: ranking por sector, promedio de cambio, verdes/rojas y líder por sector.
-
-Limitación: las alertas locales solo se evalúan cuando la app está abierta y se actualizan los datos. Para alertas reales 24/7 se necesitaría backend.
+Las funciones de ciberseguridad son educativas y defensivas. Solo se permite practicar en sistemas propios, localhost, laboratorios, CTF o con autorización explícita. Consulta `ETHICAL_USE.md`.

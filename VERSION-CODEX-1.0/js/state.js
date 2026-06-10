@@ -1,6 +1,7 @@
-const APP_VERSION = '9.4';
-const STORAGE_KEY = 'pysec_elite_v92_state';
+const APP_VERSION = '10.0.0';
+const STORAGE_KEY = 'pysec_elite_v10_state';
 const LEGACY_KEYS = [
+  'pysec_elite_v92_state',
   'pysec_elite_v89_state',
   'pysec_elite_v88_state',
   'pysec_elite_v872_state',
@@ -30,7 +31,8 @@ let state = {
   view: 'home', xp: 0, streak: 0,
   completedLessons: [], readLessons: [], completedQuizzes: [], acceptedEthics: [], badges: [], completedCTF: [],
   passedExams: {}, certificates: [], mistakes: [], notes: [], favoriteLessons: [], completedLabs: [],
-  lastActive: null, level: 1, agentRank: 'Recluta', rankId: 'recluta', rankLevel: 1, nextRank: 'Operador Junior', xpToNextRank: 100, theme: 'dark', privacyMode: true, operatorId: null
+  lastActive: null, level: 1, agentRank: 'Recluta', rankId: 'recluta', rankLevel: 1, nextRank: 'Operador Junior', xpToNextRank: 100, theme: 'dark', privacyMode: true, operatorId: null,
+  resolvedMistakes: 0
 };
 
 function buildCertificateId(courseId) {
@@ -150,7 +152,12 @@ function recordMistake(payload) {
   state.mistakes = state.mistakes.slice(0, 40);
   saveState();
 }
-function removeMistake(id) { state.mistakes = state.mistakes.filter(m => m.id !== id); saveState(); }
+function removeMistake(id) {
+  const existed = state.mistakes.some(m => m.id === id);
+  state.mistakes = state.mistakes.filter(m => m.id !== id);
+  if (existed) state.resolvedMistakes = Number(state.resolvedMistakes || 0) + 1;
+  saveState();
+}
 
 function addAgentNote(text, context='general') {
   const cleaned = String(text || '').trim();
@@ -197,6 +204,7 @@ function resetProgress() {
   const currentAndLegacyKeys = [
     STORAGE_KEY,
     ...LEGACY_KEYS,
+    'pysec_learning_os_v10',
     'pysec_virtual_files_v92',
     'pysec_virtual_files_v89',
     'pysec_virtual_files_v88',
@@ -240,6 +248,9 @@ function checkBadges(lessonId) {
   if (lessonId.startsWith('red_')) unlockBadge('purple_operator');
   if (lessonId.startsWith('final_')) unlockBadge('certified_agent');
   if (lessonId.startsWith('threat_')) unlockBadge('threat_defender');
+  if (lessonId.startsWith('ai_')) unlockBadge('local_ai_operator');
+  if (lessonId.startsWith('super_')) unlockBadge('super_dotado_builder');
+  if (lessonId.startsWith('project_')) unlockBadge('portfolio_builder');
 }
 
 function sanitizeStateForExport() {
@@ -271,6 +282,8 @@ function sanitizeStateForExport() {
       rankLevel: state.rankLevel || 1,
       agentRank: state.agentRank || 'Recluta',
       operatorId: state.operatorId || null
+      ,
+      resolvedMistakes: Number(state.resolvedMistakes || 0)
     }
   };
 }
@@ -313,6 +326,8 @@ function validateImportedProgress(payload) {
     theme: ['dark','light'].includes(data.theme) ? data.theme : 'dark',
     privacyMode: data.privacyMode !== false,
     operatorId: typeof data.operatorId === 'string' ? data.operatorId : null
+    ,
+    resolvedMistakes: Math.max(0, Number(data.resolvedMistakes || 0))
   };
 }
 

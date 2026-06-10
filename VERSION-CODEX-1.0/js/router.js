@@ -7,7 +7,6 @@ function setupNavigation() {
   navBtns = document.querySelectorAll('.nav-btn');
   btnHomeLogo = document.getElementById('btn-home-logo');
   navBtns.forEach(btn => btn.addEventListener('click', () => {
-    if (btn.dataset.view === 'mission') return openCurrentMission();
     renderView(btn.dataset.view);
   }));
   btnHomeLogo.addEventListener('click', () => renderView('home'));
@@ -17,7 +16,7 @@ function setActiveNav(view) {
     ? 'mission'
     : ['course-detail','exam','lab'].includes(view)
       ? 'courses'
-      : ['review','notes','certificate','ctf','glossary','rank'].includes(view)
+      : ['review','notes','certificate','ctf','glossary','rank','mentor','challenges','analyzer','ethical-labs','focus','roadmap','settings'].includes(view)
         ? 'profile'
         : view;
   navBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.view === root));
@@ -28,7 +27,7 @@ function makeHashForView(view, params = {}) {
   if ((view === 'lesson' || view === 'practice') && params.courseId && params.lessonId) return `#${view}/${enc(params.courseId)}/${enc(params.lessonId)}`;
   if ((view === 'exam' || view === 'lab' || view === 'certificate') && params.courseId) return `#${view}/${enc(params.courseId)}`;
   if (view === 'notes' && params.context && params.context !== 'general') return `#notes/${enc(params.context)}`;
-  const simple = ['home','courses','profile','mission','market','review','notes','ctf','glossary','rank'];
+  const simple = ['home','courses','profile','mission','market','review','notes','ctf','glossary','rank','mentor','challenges','analyzer','ethical-labs','focus','roadmap','settings'];
   return simple.includes(view) ? `#${view}` : '#home';
 }
 
@@ -48,8 +47,15 @@ function renderView(view, params = {}) {
   if (view === 'courses') return renderCourses();
   if (view === 'profile') return renderProfile();
   if (view === 'rank') return renderRankSystem();
-  if (view === 'mission') return openCurrentMission();
+  if (view === 'mission') return renderMissionOS();
   if (view === 'market') return renderMarket();
+  if (view === 'mentor') return renderMentor();
+  if (view === 'challenges') return renderChallengeGenerator();
+  if (view === 'analyzer') return renderCodeAnalyzer();
+  if (view === 'ethical-labs') return renderEthicalLabs();
+  if (view === 'focus') return renderFocusMode();
+  if (view === 'roadmap') return renderRoadmap();
+  if (view === 'settings') return renderSettings();
   if (view === 'course-detail') return renderCourseDetail(params.courseId);
   if (view === 'exam') return renderCourseExam(params.courseId);
   if (view === 'lab') return renderGuidedLab(params.courseId);
