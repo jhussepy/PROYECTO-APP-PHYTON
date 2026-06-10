@@ -79,3 +79,83 @@ Nunca incluyas client secrets, contraseñas ni API keys privadas en el repositor
 ## Seguridad
 
 Las funciones de ciberseguridad son educativas y defensivas. Solo se permite practicar en sistemas propios, localhost, laboratorios, CTF o con autorización explícita. Consulta `ETHICAL_USE.md`.
+
+## v11.0.0 — Cloud Mentor OS
+
+Nueva fase incorporada:
+
+- Proxy seguro `api/chat.js` para IA Cloud en Vercel.
+- Nuevo módulo `js/ai-mentor-cloud.js` sin API keys en frontend.
+- Chat interactivo del Mentor IA con memoria de sesión, burbujas, botones rápidos y fallback local.
+- Exámenes dinámicos con IA opcionales y fallback automático al banco local.
+- Service Worker actualizado a cache `v11.0.0-cloud-mentor-os` y exclusión de `/api/chat`.
+- Configuración `vercel.json` para Serverless Function.
+
+### Variables de entorno en Vercel
+
+Configura en Vercel → Project Settings → Environment Variables:
+
+```text
+ANTHROPIC_API_KEY=tu_api_key_privada
+ANTHROPIC_MODEL=modelo_configurado
+```
+
+No coloques claves reales en el código, en GitHub ni en localStorage. Si no configuras la variable, el Mentor IA usará fallback local y la app seguirá funcionando.
+
+### Deploy recomendado en Vercel
+
+```text
+Build Command: npm run build
+Output Directory: dist
+```
+
+### Prueba local
+
+```bash
+npm run build
+npm run dev
+```
+
+Luego abre la app, entra a Mentor y prueba una pregunta. Sin variables de entorno cloud, debe responder con Mentor local.
+
+## v11.1.0 — Local Mentor Pro
+
+Esta versión elimina la dependencia obligatoria de Anthropic/API Cloud para el mentor educativo.
+
+### Qué cambia
+
+- Mentor IA funciona en modo **Local Mentor Pro** por defecto.
+- No requiere API key.
+- No requiere pagar créditos.
+- No depende de `/api/chat` ni de variables de entorno para funcionar.
+- Mantiene compatibilidad con el chat de v11.
+- Genera retos por plantillas inteligentes locales.
+- Revisa código Python por patrones comunes de error.
+- Genera exámenes dinámicos locales con fallback seguro.
+- Ollama queda como opción avanzada si el usuario lo tiene instalado en su PC.
+
+### Importante
+
+Local Mentor Pro no es un LLM cloud como Claude/ChatGPT. Es un motor educativo local por reglas, contexto, plantillas y patrones. Su ventaja es que funciona gratis, offline-first y sin exponer credenciales.
+
+## v11.2.0 — Elite Store & Themes
+
+Nueva fase gamificada local para PySec Academy Elite.
+
+### Incluye
+
+- PyCoins internos sin valor real.
+- Tienda Elite offline.
+- Avatares desbloqueables y equipables.
+- Temas visuales desbloqueables y aplicables a toda la app.
+- Avatar + PyCoins visibles en el header.
+- Recompensas automáticas de PyCoins al ganar XP.
+- Bono fundador local para probar la tienda.
+- Sección Premium Futuro para avatares/temas de pago entre $1 y $20, sin pagos reales activos.
+- Sección PyCoin Network Futuro, solo roadmap conceptual; no token, no wallet real, no retiro, no compraventa.
+
+### Seguridad / economía
+
+PyCoins en v11.2.0 son puntos internos de aprendizaje guardados en localStorage. No son criptomoneda, no tienen valor monetario, no se pueden transferir y no prometen rentabilidad.
+
+Los pagos reales quedan desactivados. Para una futura app en Play Store, los cosméticos digitales premium deberán integrarse mediante un sistema de pagos permitido por la plataforma.

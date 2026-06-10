@@ -1,4 +1,4 @@
-const APP_VERSION = '10.0.0';
+const APP_VERSION = '11.2.0';
 const STORAGE_KEY = 'pysec_elite_v10_state';
 const LEGACY_KEYS = [
   'pysec_elite_v92_state',

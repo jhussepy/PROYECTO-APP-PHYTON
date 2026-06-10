@@ -1,6 +1,6 @@
 /* Configuración pública. No colocar client secrets, contraseñas ni API keys privadas. */
 window.PYSEC_CONFIG = Object.freeze({
-  appVersion: '10.0.0',
+  appVersion: '11.2.0',
   googleOAuth: Object.freeze({
     clientId: '',
     redirectUri: `${location.origin}${location.pathname}`,

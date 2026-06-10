@@ -1,9 +1,9 @@
 {
   "id": "./index.html",
-  "name": "PySec Academy Elite v10.0.0 Learning OS",
+  "name": "PySec Academy Elite v11.2.0 Elite Store & Themes",
   "short_name": "PySec OS",
   "description": "PWA premium para Python, IA local, productividad, proyectos y ciberseguridad ética.",
-  "version": "10.0.0",
+  "version": "11.2.0",
   "lang": "es",
   "dir": "ltr",
   "start_url": "./index.html",

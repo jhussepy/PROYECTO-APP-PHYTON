@@ -16,3 +16,15 @@
 - Sidebar desktop y diseño dark + green + red.
 - Toolchain npm sin dependencias para dev, check y build.
 - Documentación de seguridad, ética, OAuth, IA local y Android.
+
+## v11.2.0 — Elite Store & Themes
+
+- Agregada Tienda Elite.
+- Agregado sistema PyCoins.
+- Agregados avatares desbloqueables.
+- Agregados temas visuales desbloqueables.
+- Agregado badge de avatar/PyCoins en header.
+- Agregada pestaña Premium Futuro.
+- Agregada pestaña PyCoin Futuro.
+- Recompensas de PyCoins ligadas a XP.
+- Actualizado Service Worker y manifest.

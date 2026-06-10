@@ -3,9 +3,11 @@ document.addEventListener('DOMContentLoaded', initApp);
 function initApp() {
   loadState();
   if (typeof applyTheme === 'function') applyTheme();
+  if (typeof applyEquippedTheme === 'function') applyEquippedTheme();
   checkStreak();
   setupNavigation();
   setupAppControls();
+  if (typeof renderOperatorCosmetics === 'function') renderOperatorCosmetics();
   const initialView = getInitialViewFromHash();
   renderView(initialView.view, initialView.params);
   window.addEventListener('hashchange', () => {
@@ -20,7 +22,7 @@ function getInitialViewFromHash() {
   const raw = String(location.hash || '').replace('#', '').trim();
   if (!raw) return { view: 'home', params: {} };
   const [view, a, b] = raw.split('/').map(decodeURIComponent);
-  const allowed = ['home','courses','profile','mission','market','review','notes','ctf','glossary','rank','mentor','challenges','analyzer','ethical-labs','focus','roadmap','settings'];
+  const allowed = ['home','courses','profile','mission','market','review','notes','ctf','glossary','rank','mentor','challenges','analyzer','ethical-labs','focus','roadmap','settings','store'];
   if (view === 'course-detail' && a) return { view, params: { courseId: a } };
   if ((view === 'lesson' || view === 'practice') && a && b) return { view, params: { courseId: a, lessonId: b } };
   if ((view === 'exam' || view === 'lab' || view === 'certificate') && a) return { view, params: { courseId: a } };

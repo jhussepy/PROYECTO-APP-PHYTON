@@ -105,6 +105,7 @@ function renderCommandTools() {
     ['Safe Labs', 'Laboratorios autorizados', 'ethical-labs', 'LAB'],
     ['Focus', 'Sesiones sin distracciones', 'focus', '25'],
     ['Roadmap', 'Prioridades personales', 'roadmap', 'MAP'],
+    ['Tienda Elite', 'Avatares, temas y PyCoins', 'store', '🪙'],
     ['Configuración', 'Perfil e integraciones', 'settings', 'CFG']
   ];
   return `<div class="os-tool-grid">${tools.map(([title, copy, view, icon]) => `
@@ -330,60 +331,136 @@ function setupLearningPathDirectory() {
   search?.addEventListener('input', apply);
 }
 
+function getMentorCloudLabel() {
+  const status = window.CLOUD_AI_STATUS || 'offline';
+  if (status === 'local-pro') return learningOsPill('LOCAL PRO', 'success');
+  if (status === 'online') return learningOsPill('CLOUD OPCIONAL', 'success');
+  if (status === 'loading') return learningOsPill('IA PENSANDO', 'info');
+  const platformState = readPlatformState();
+  return learningOsPill(platformState.localAI.status === 'online' ? 'OLLAMA LOCAL' : 'MENTOR LOCAL', platformState.localAI.status === 'online' ? 'success' : 'warning');
+}
+
+function getMentorHistory() {
+  const platformState = readPlatformState();
+  const stored = Array.isArray(platformState.mentorHistory) ? platformState.mentorHistory : [];
+  return stored.slice(0, 5);
+}
+
 function renderMentor() {
-  const platform = readPlatformState();
-  const online = platform.localAI.status === 'online';
-  const history = platform.mentorHistory.slice(0, 5);
+  const history = getMentorHistory();
   mainContainer.innerHTML = `
     <button class="os-back" onclick="renderView('home')">← COMMAND CENTER</button>
-    <section class="os-feature-hero">
-      <div><span class="os-eyebrow">LOCAL AI CORE</span><h1>Mentor IA</h1><p>Pregunta, diagnostica y aprende con Ollama local o con el fallback educativo integrado.</p></div>
-      ${learningOsPill(online ? 'OLLAMA ONLINE' : 'FALLBACK LOCAL', online ? 'success' : 'warning')}
+    <section class="os-feature-hero mentor-hero-v11">
+      <div><span class="os-eyebrow">LOCAL MENTOR PRO</span><h1>Mentor IA sin API</h1><p>Chat educativo 100% local, gratis y offline-first. No necesita Anthropic, OpenAI ni claves API.</p></div>
+      ${getMentorCloudLabel()}
     </section>
-    <section class="os-panel">
-      <label class="os-field-label" for="mentor-question">Pregunta técnica</label>
-      <textarea id="mentor-question" class="os-textarea" placeholder="Ejemplo: explica por qué este bucle no termina o crea un plan para aprender APIs..."></textarea>
-      <div class="os-panel-actions">
-        <button class="os-primary-action" onclick="submitMentorQuestion()">PREGUNTAR</button>
-        <button class="os-secondary-action" onclick="renderView('settings')">CONFIGURAR OLLAMA</button>
+    <section class="os-panel mentor-chat-panel">
+      <div class="mentor-status-line"><span id="mentor-cloud-status">Estado: ${escapeHtml(window.CLOUD_AI_STATUS || 'local-pro')}</span><small>Motor local + memoria de sesión</small></div>
+      <div id="mentor-chat-log" class="mentor-chat-log">
+        ${history.length ? history.reverse().map(item => `
+          <div class="mentor-bubble user"><span>Tú</span><p>${escapeHtml(item.question || '')}</p></div>
+          <div class="mentor-bubble ai"><span>${escapeHtml(item.source || 'Mentor')}</span><p>${escapeHtml(item.answer || '')}</p></div>
+        `).join('') : '<div class="mentor-empty">Haz una pregunta, pide una pista o solicita un plan de estudio. El mentor usa Local Mentor Pro sin API. Funciona gratis y no depende de Vercel Functions.</div>'}
       </div>
-      <p class="os-security-note">Privacidad: no pegues credenciales, tokens, información personal ni datos de terceros.</p>
+      <div id="mentor-typing" class="mentor-typing hidden"><i></i><i></i><i></i><span>IA escribiendo...</span></div>
+      <div class="mentor-quick-actions">
+        <button onclick="mentorQuickPrompt('Explícame la lección actual con un ejemplo simple.')">Explícame la lección</button>
+        <button onclick="mentorQuickPrompt('Revisa mi enfoque y dime qué error debo buscar primero.')">Revisar mi código</button>
+        <button onclick="mentorQuickPrompt('Dame un reto nuevo acorde a mi rango actual.')">Dame un reto nuevo</button>
+        <button onclick="mentorQuickPrompt('¿Cómo subo de rango en PySec?')">¿Cómo subo de rango?</button>
+      </div>
+      <label class="os-field-label" for="mentor-question">Mensaje al mentor</label>
+      <textarea id="mentor-question" class="os-textarea mentor-input" placeholder="Ejemplo: no entiendo los bucles for, dame una pista sin resolverme el ejercicio..."></textarea>
+      <div class="os-panel-actions">
+        <button class="os-primary-action" onclick="submitMentorQuestion()">ENVIAR</button>
+        <button class="os-secondary-action" onclick="renderView('settings')">CONFIGURAR LOCAL</button>
+      </div>
+      <p class="os-security-note">Modo actual: Local Mentor Pro. Gratis, sin API key, sin pagos y compatible con PWA/offline. Ollama queda como opción local avanzada.</p>
     </section>
-    <section class="os-panel" id="mentor-response-panel">
-      <div class="os-panel-heading"><div><span>RESPUESTA</span><h2>Mentor preparado</h2></div></div>
-      <div id="mentor-response" class="os-ai-response">Formula una pregunta concreta. El sistema indicará si respondió Ollama o el motor local.</div>
-    </section>
-    ${history.length ? `<section class="os-panel"><div class="os-panel-heading"><div><span>HISTORIAL LOCAL</span><h2>Consultas recientes</h2></div></div>${history.map(item => `<div class="os-history-row"><strong>${escapeHtml(item.question)}</strong><small>${escapeHtml(item.source)}</small></div>`).join('')}</section>` : ''}
     <div class="bottom-spacer"></div>`;
+  const log = document.getElementById('mentor-chat-log');
+  if (log) log.scrollTop = log.scrollHeight;
+}
+
+function mentorContext(extra = {}) {
+  const platformState = readPlatformState();
+  const rankInfo = typeof getRankInfo === 'function' ? getRankInfo(state.xp) : null;
+  return {
+    rango: rankInfo?.current?.title || state.agentRank || 'Recluta',
+    xp: state.xp || 0,
+    nivel: state.level || 1,
+    racha: state.streak || 0,
+    perfil: platformState.profile || {},
+    errores: Array.isArray(state.mistakes) ? state.mistakes.slice(0, 3) : [],
+    completadas: Array.isArray(state.completedLessons) ? state.completedLessons.length : 0,
+    quizzes: Array.isArray(state.completedQuizzes) ? state.completedQuizzes.length : 0,
+    ...extra
+  };
+}
+
+function appendMentorBubble(role, label, text) {
+  const log = document.getElementById('mentor-chat-log');
+  if (!log) return;
+  const empty = log.querySelector('.mentor-empty');
+  if (empty) empty.remove();
+  const div = document.createElement('div');
+  div.className = `mentor-bubble ${role}`;
+  div.innerHTML = `<span>${escapeHtml(label)}</span><p>${escapeHtml(text)}</p>`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function mentorQuickPrompt(text) {
+  const input = document.getElementById('mentor-question');
+  if (input) input.value = text;
+  submitMentorQuestion();
 }
 
 async function submitMentorQuestion() {
   const input = document.getElementById('mentor-question');
-  const responseNode = document.getElementById('mentor-response');
+  const typing = document.getElementById('mentor-typing');
+  const status = document.getElementById('mentor-cloud-status');
   const question = String(input?.value || '').trim();
   if (!question) {
     if (typeof showToast === 'function') showToast('Pregunta vacía', 'Describe tu duda o pega un error sin datos sensibles');
     return;
   }
-  responseNode.textContent = 'Analizando de forma local...';
+  input.value = '';
+  appendMentorBubble('user', 'Tú', question);
+  typing?.classList.remove('hidden');
+  if (status) status.textContent = 'Estado: loading';
   let answer = '';
-  let source = 'Motor local';
-  const platform = readPlatformState();
-  if (platform.localAI.status === 'online') {
-    try {
+  let source = 'Mentor local';
+  const platformState = readPlatformState();
+  try {
+    if (typeof askMentorCloud === 'function') {
+      answer = await askMentorCloud(question, mentorContext());
+      source = window.CLOUD_AI_STATUS === 'online' ? 'Cloud opcional' : 'Local Mentor Pro';
+    } else if (platformState.localAI.status === 'online') {
       answer = await sendLocalAiPrompt(question);
-      source = `Ollama · ${platform.localAI.model}`;
-    } catch (_) {
+      source = `Ollama · ${platformState.localAI.model}`;
+    } else {
+      answer = localMentorFallback(question);
+    }
+  } catch (_) {
+    try {
+      if (platformState.localAI.status === 'online') {
+        answer = await sendLocalAiPrompt(question);
+        source = `Ollama · ${platformState.localAI.model}`;
+      } else {
+        answer = localMentorFallback(question);
+      }
+    } catch (error) {
       answer = localMentorFallback(question);
       source = 'Fallback local';
     }
-  } else {
-    answer = localMentorFallback(question);
   }
-  responseNode.innerHTML = `<span>${escapeHtml(source)}</span><p>${escapeHtml(answer)}</p>`;
+  typing?.classList.add('hidden');
+  if (status) status.textContent = `Estado: ${window.CLOUD_AI_STATUS || 'local-pro'}`;
+  appendMentorBubble('ai', source, answer);
   updatePlatformState(current => ({
     ...current,
-    mentorHistory: [{ question: question.slice(0, 160), answer: answer.slice(0, 500), source, date: new Date().toISOString() }, ...current.mentorHistory].slice(0, 20)
+    mentorHistory: [{ question: question.slice(0, 160), answer: answer.slice(0, 700), source, date: new Date().toISOString() }, ...current.mentorHistory].slice(0, 20)
   }));
 }
 
@@ -669,8 +746,8 @@ function renderSettings() {
       </article>
       <article class="os-panel">
         <div class="os-panel-heading"><div><span>APARIENCIA</span><h2>Dark operational</h2></div></div>
-        <p>La identidad principal usa negro profundo, verde para operación y rojo para alertas.</p>
-        <div class="os-panel-actions"><button class="os-secondary-action" onclick="toggleTheme()">CAMBIAR TEMA</button><button class="os-secondary-action" onclick="renderView('rank')">VER NIVEL</button></div>
+        <p>La identidad principal usa negro profundo, verde para operación y rojo para alertas. Los temas avanzados se equipan desde la Tienda Elite.</p>
+        <div class="os-panel-actions"><button class="os-primary-action" onclick="renderView('store')">ABRIR TIENDA ELITE</button><button class="os-secondary-action" onclick="toggleTheme()">MODO BASE</button><button class="os-secondary-action" onclick="renderView('rank')">VER NIVEL</button></div>
       </article>
     </section>
     <section class="os-panel">
@@ -714,7 +791,7 @@ window.renderProfile = function renderLearningOsProfile() {
         <button onclick="renderView('settings')"><span>GOOGLE</span><strong>${escapeHtml(google.label)}</strong></button>
         <button onclick="renderView('focus')"><span>FOCUS</span><strong>${platform.focus.sessions} SESIONES</strong></button>
       </div>
-      <div class="os-panel-actions"><button class="os-primary-action" onclick="renderView('settings')">CONFIGURACIÓN</button><button class="os-secondary-action" onclick="renderView('roadmap')">ROADMAP</button><button class="os-secondary-action" onclick="renderView('ethical-labs')">SAFE LABS</button></div>
+      <div class="os-panel-actions"><button class="os-primary-action" onclick="renderView('store')">TIENDA ELITE</button><button class="os-secondary-action" onclick="renderView('settings')">CONFIGURACIÓN</button><button class="os-secondary-action" onclick="renderView('roadmap')">ROADMAP</button><button class="os-secondary-action" onclick="renderView('ethical-labs')">SAFE LABS</button></div>
     </section>`;
   document.querySelector('.profile-hero')?.insertAdjacentHTML('afterend', insertion);
 };

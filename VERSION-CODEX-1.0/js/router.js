@@ -16,7 +16,7 @@ function setActiveNav(view) {
     ? 'mission'
     : ['course-detail','exam','lab'].includes(view)
       ? 'courses'
-      : ['review','notes','certificate','ctf','glossary','rank','mentor','challenges','analyzer','ethical-labs','focus','roadmap','settings'].includes(view)
+      : ['review','notes','certificate','ctf','glossary','rank','mentor','challenges','analyzer','ethical-labs','focus','roadmap','settings','store'].includes(view)
         ? 'profile'
         : view;
   navBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.view === root));
@@ -27,7 +27,7 @@ function makeHashForView(view, params = {}) {
   if ((view === 'lesson' || view === 'practice') && params.courseId && params.lessonId) return `#${view}/${enc(params.courseId)}/${enc(params.lessonId)}`;
   if ((view === 'exam' || view === 'lab' || view === 'certificate') && params.courseId) return `#${view}/${enc(params.courseId)}`;
   if (view === 'notes' && params.context && params.context !== 'general') return `#notes/${enc(params.context)}`;
-  const simple = ['home','courses','profile','mission','market','review','notes','ctf','glossary','rank','mentor','challenges','analyzer','ethical-labs','focus','roadmap','settings'];
+  const simple = ['home','courses','profile','mission','market','review','notes','ctf','glossary','rank','mentor','challenges','analyzer','ethical-labs','focus','roadmap','settings','store'];
   return simple.includes(view) ? `#${view}` : '#home';
 }
 
@@ -56,6 +56,7 @@ function renderView(view, params = {}) {
   if (view === 'focus') return renderFocusMode();
   if (view === 'roadmap') return renderRoadmap();
   if (view === 'settings') return renderSettings();
+  if (view === 'store') return renderEliteStore();
   if (view === 'course-detail') return renderCourseDetail(params.courseId);
   if (view === 'exam') return renderCourseExam(params.courseId);
   if (view === 'lab') return renderGuidedLab(params.courseId);

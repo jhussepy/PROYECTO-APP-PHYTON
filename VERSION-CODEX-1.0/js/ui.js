@@ -426,12 +426,95 @@ function completeCTF(id) {
   renderCTFMode();
 }
 
-function renderCourseExam(courseId) {
+function normalizeCloudQuizQuestions(items = []) {
+  return (Array.isArray(items) ? items : []).filter(q => q && Array.isArray(q.options) && q.options.length === 4 && Number.isInteger(q.correct) && q.correct >= 0 && q.correct <= 3).slice(0, 5).map((q, index) => ({
+    id: `cloud_${Date.now()}_${index}`,
+    quiz: {
+      question: String(q.question || '').slice(0, 240),
+      options: q.options.map(opt => String(opt || '').slice(0, 160)),
+      answer: String(q.options[q.correct] || ''),
+      explanation: String(q.explanation || 'Revisa la teoría del curso y compara la opción correcta con el objetivo de la pregunta.').slice(0, 500),
+      cloudCorrectIndex: q.correct
+    }
+  })).filter(item => item.quiz.question && item.quiz.answer);
+}
+
+function renderCourseExam(courseId, mode = 'local') {
   const course = getCourse(courseId); if (!course) return renderCourses();
-  const questions = getCourseExam(course);
+  const localQuestions = getCourseExam(course);
   const exam = state.passedExams[courseId];
-  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('course-detail',{courseId:'${courseId}'})">← VOLVER</button><section class="panel-card animated-card"><span class="eyebrow">Examen del curso</span><h1>${escapeHtml(course.title)}</h1><p class="hero-subtitle">Responde ${questions.length} preguntas. Necesitas 70% para aprobar y obtener certificado local.</p>${exam ? `<div class="result-card ${exam.passed ? 'success' : 'warn'}"><strong>Último resultado: ${exam.percent}%</strong><span>${exam.passed ? 'Aprobado' : 'No aprobado'}</span></div>` : ''}</section><form id="exam-form">${questions.map((lesson, i) => `<section class="panel-card exam-question"><h3>${i + 1}. ${escapeHtml(lesson.quiz.question)}</h3>${lesson.quiz.options.map(opt => `<label class="exam-option"><input type="radio" name="q${i}" value="${escapeHtml(opt)}"> ${escapeHtml(opt)}</label>`).join('')}</section>`).join('')}<button class="btn btn-primary full" type="submit">ENTREGAR EXAMEN</button><div class="bottom-spacer"></div></form>`;
-  document.getElementById('exam-form').addEventListener('submit', event => { event.preventDefault(); let score = 0; questions.forEach((lesson, i) => { const selected = document.querySelector(`input[name="q${i}"]:checked`)?.value; if (selected === lesson.quiz.answer) score++; }); const result = passExam(courseId, score, questions.length); showToast(result.passed ? '🏅 Examen aprobado' : '📘 Sigue repasando', `${result.percent}%`); renderCourseExam(courseId); });
+  const storedKey = `pysec_cloud_exam_${courseId}`;
+  let questions = localQuestions;
+  let sourceLabel = 'Banco local';
+  if (mode === 'cloud') {
+    try {
+      const parsed = JSON.parse(sessionStorage.getItem(storedKey) || '[]');
+      const normalized = normalizeCloudQuizQuestions(parsed);
+      if (normalized.length) {
+        questions = normalized;
+        sourceLabel = 'Local Pro';
+      }
+    } catch (_) {}
+  }
+  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('course-detail',{courseId:'${courseId}'})">← VOLVER</button>
+    <section class="panel-card animated-card exam-command-card">
+      <span class="eyebrow">Examen del curso · ${escapeHtml(sourceLabel)}</span>
+      <h1>${escapeHtml(course.title)}</h1>
+      <p class="hero-subtitle">Responde ${questions.length} preguntas. Necesitas 70% para aprobar y obtener certificado local.</p>
+      ${exam ? `<div class="result-card ${exam.passed ? 'success' : 'warn'}"><strong>Último resultado: ${exam.percent}%</strong><span>${exam.passed ? 'Aprobado' : 'No aprobado'}</span></div>` : ''}
+      <div class="btn-row exam-ai-row">
+        <button class="btn btn-primary" type="button" onclick="generateAiCourseExam('${courseId}')">GENERAR EXAMEN LOCAL PRO</button>
+        <button class="btn btn-outline" type="button" onclick="renderCourseExam('${courseId}','local')">USAR EXAMEN LOCAL</button>
+      </div>
+      <p class="os-security-note">El examen se genera con plantillas inteligentes locales. No usa API, no consume créditos y funciona sin backend.</p>
+    </section>
+    <form id="exam-form" data-exam-source="${escapeHtml(sourceLabel)}">
+      ${questions.map((lesson, i) => `<section class="panel-card exam-question"><h3>${i + 1}. ${escapeHtml(lesson.quiz.question)}</h3>${lesson.quiz.options.map(opt => `<label class="exam-option"><input type="radio" name="q${i}" value="${escapeHtml(opt)}"> ${escapeHtml(opt)}</label>`).join('')}<p class="exam-explanation hidden" id="exam-exp-${i}">${escapeHtml(lesson.quiz.explanation || '')}</p></section>`).join('')}
+      <button class="btn btn-primary full" type="submit">ENTREGAR EXAMEN</button><div class="bottom-spacer"></div>
+    </form>`;
+  document.getElementById('exam-form').addEventListener('submit', event => {
+    event.preventDefault();
+    let score = 0;
+    questions.forEach((lesson, i) => {
+      const selected = document.querySelector(`input[name="q${i}"]:checked`)?.value;
+      const correct = selected === lesson.quiz.answer;
+      if (correct) score++;
+      const exp = document.getElementById(`exam-exp-${i}`);
+      if (exp) {
+        exp.classList.remove('hidden');
+        exp.innerHTML = `<strong>${correct ? 'Correcto' : 'Revisar'}:</strong> ${escapeHtml(lesson.quiz.explanation || `Respuesta correcta: ${lesson.quiz.answer}`)}`;
+      }
+    });
+    const result = passExam(courseId, score, questions.length);
+    showToast(result.passed ? '🏅 Examen aprobado' : '📘 Sigue repasando', `${result.percent}%`);
+    const form = document.getElementById('exam-form');
+    form.querySelectorAll('input, button[type="submit"]').forEach(el => { el.disabled = true; });
+    const summary = document.createElement('section');
+    summary.className = `panel-card result-card ${result.passed ? 'success' : 'warn'}`;
+    summary.innerHTML = `<strong>Resultado: ${result.percent}%</strong><span>${score}/${questions.length} correctas · ${result.passed ? 'Certificado desbloqueado' : 'Repite la teoría y vuelve a intentar'}</span><button class="btn btn-outline full" onclick="renderCourseExam('${courseId}')">REINTENTAR</button>`;
+    form.appendChild(summary);
+  });
+}
+
+async function generateAiCourseExam(courseId) {
+  const course = getCourse(courseId); if (!course) return;
+  const buttonText = 'Generando examen personalizado...';
+  if (typeof showToast === 'function') showToast('Local Mentor Pro', buttonText);
+  const lessons = (course.modules || []).flatMap(module => module.lessons || []).filter(lesson => state.completedLessons.includes(lesson.id) || state.readLessons.includes(lesson.id)).slice(-12);
+  const sourceLessons = lessons.length ? lessons : (course.modules || []).flatMap(module => module.lessons || []).slice(0, 8);
+  try {
+    const rankInfo = typeof getRankInfo === 'function' ? getRankInfo(state.xp) : null;
+    const difficulty = rankInfo?.current?.title || course.level || 'intermedio';
+    const quiz = typeof generateQuizCloud === 'function' ? await generateQuizCloud(course.title, sourceLessons, difficulty) : [];
+    const normalized = normalizeCloudQuizQuestions(quiz);
+    if (!normalized.length) throw new Error('Sin preguntas IA válidas');
+    sessionStorage.setItem(`pysec_cloud_exam_${courseId}`, JSON.stringify(quiz));
+    if (typeof showToast === 'function') showToast('Examen local listo', `${normalized.length} preguntas personalizadas`);
+    renderCourseExam(courseId, 'cloud');
+  } catch (_) {
+    if (typeof showToast === 'function') showToast('Generador local activo', 'Usando examen local seguro');
+    renderCourseExam(courseId, 'local');
+  }
 }
 
 function renderCertificate(courseId) {

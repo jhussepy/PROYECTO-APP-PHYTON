@@ -170,8 +170,8 @@ function updatePlatformIndicators() {
     onlineNode.dataset.tone = online ? 'success' : 'danger';
   }
   if (aiNode) {
-    aiNode.textContent = platform.localAI.status === 'online' ? 'IA LOCAL ON' : 'IA LOCAL OFF';
-    aiNode.dataset.tone = platform.localAI.status === 'online' ? 'success' : 'muted';
+    aiNode.textContent = window.LOCAL_MENTOR_PRO_STATUS === 'online' ? 'LOCAL PRO' : (platform.localAI.status === 'online' ? 'OLLAMA ON' : 'LOCAL PRO');
+    aiNode.dataset.tone = 'success';
   }
   if (installButton) {
     installButton.hidden = pysecInstalled;
