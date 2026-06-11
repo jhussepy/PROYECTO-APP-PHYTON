@@ -153,6 +153,13 @@ const ACTION_REGISTRY = {
     removePortfolioHolding(el.dataset.symbol);
   },
 
+  // --- Phase 3.1 Lote 5 · market-clean-flow.js ---
+
+  // <button data-action="set-market-tab" data-tab="strategy">...</button>
+  'set-market-tab': function(el) {
+    setMarketTab(el.dataset.tab);
+  },
+
   // --- Phase 3.1 Lote 5 · strategy-engine.js ---
 
   // <button data-action="set-strategy-profile" data-id="conservative">...</button>
