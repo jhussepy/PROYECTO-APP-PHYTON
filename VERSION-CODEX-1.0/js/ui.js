@@ -565,11 +565,7 @@ function renderReviewMode() {
   mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('profile')">← PERFIL</button><section class="panel-card animated-card"><span class="eyebrow">Modo repaso</span><h1>Errores y prácticas fallidas</h1><p class="hero-subtitle">Aquí aparecen tus últimos errores para que puedas corregirlos y repetir la lección.</p></section>${items.length ? items.map(m => `<section class="panel-card review-card"><h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.reason || '')}</p><pre class="code-view">${codeHtml(m.code || '')}</pre><div class="btn-row"><button class="btn btn-primary" onclick="openPracticeGuarded('${escapeHtml(m.courseId)}','${escapeHtml(m.lessonId)}')">REINTENTAR</button><button class="btn btn-outline" onclick="removeMistake('${escapeHtml(m.id)}'); renderReviewMode()">RESUELTO</button></div></section>`).join('') : '<section class="panel-card"><p class="hero-subtitle">No tienes errores registrados todavía. Excelente ritmo.</p></section>'}<div class="bottom-spacer"></div>`;
 }
 
-function renderNotesMode(context='general') {
-  const notes = state.notes || [];
-  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('profile')">← PERFIL</button><section class="panel-card animated-card"><span class="eyebrow">Notas del agente</span><h1>Cuaderno offline</h1><p class="hero-subtitle">Guarda ideas, errores, comandos o aprendizajes. Se almacena localmente en tu dispositivo.</p><textarea id="note-input" class="note-input" placeholder="Escribe tu nota..."></textarea><button class="btn btn-success full" id="save-note-btn">GUARDAR NOTA</button></section>${notes.map(note => `<section class="panel-card note-card"><p>${escapeHtml(note.text)}</p><span>${new Date(note.date).toLocaleString()}</span><button class="btn btn-outline full" onclick="deleteAgentNote('${escapeHtml(note.id)}'); renderNotesMode('${escapeHtml(context)}')">ELIMINAR</button></section>`).join('')}<div class="bottom-spacer"></div>`;
-  document.getElementById('save-note-btn').addEventListener('click', () => { const ok = addAgentNote(document.getElementById('note-input').value, context); if (ok) { showToast('📝 Nota guardada','Disponible offline'); renderNotesMode(context); } });
-}
+
 
 function renderProfile() {
   const total = getTotalLessons();

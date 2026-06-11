@@ -808,7 +808,7 @@ window.renderNotesMode = function renderStudentNotes(context = 'general') {
       <label class="os-field-label" for="note-context">Módulo<select id="note-context" class="os-select">${contexts.filter(item => item !== 'all').map(item => `<option value="${escapeHtml(item)}" ${item === context ? 'selected' : ''}>${escapeHtml(item)}</option>`).join('')}<option value="general" ${context === 'general' ? 'selected' : ''}>general</option></select></label>
       <textarea id="note-input" class="os-textarea" placeholder="Idea, error corregido, comando o próximo paso..."></textarea>
       <button class="os-primary-action full" onclick="saveStudentNote()">GUARDAR NOTA</button>
-      <div class="os-filter-row">${contexts.map(item => `<button class="${activeNotesFilter === item ? 'active' : ''}" onclick="setNotesFilter('${item}')">${escapeHtml(item.toUpperCase())}</button>`).join('')}</div>
+      <div class="os-filter-row">${contexts.map(item => `<button class="${activeNotesFilter === item ? 'active' : ''}" onclick="setNotesFilter('${escapeHtml(item)}')">${escapeHtml(item.toUpperCase())}</button>`).join('')}</div>
     </section>
     <section class="os-note-grid">
       ${visible.map(note => {
@@ -816,7 +816,7 @@ window.renderNotesMode = function renderStudentNotes(context = 'general') {
         return `<article class="os-note-card">
           <div><span>${escapeHtml(note.context || 'general')}</span><small>${new Date(note.date).toLocaleString()}</small></div>
           ${editing ? `<textarea id="edit-note-${note.id}" class="os-textarea">${escapeHtml(note.text)}</textarea>` : `<p>${escapeHtml(note.text)}</p>`}
-          <div class="os-panel-actions">${editing ? `<button class="os-primary-action" onclick="saveStudentNoteEdit('${note.id}')">GUARDAR</button>` : `<button class="os-secondary-action" onclick="editStudentNote('${note.id}')">EDITAR</button>`}<button class="os-danger-action" onclick="deleteAgentNote('${note.id}'); renderNotesMode('${context}')">BORRAR</button></div>
+          <div class="os-panel-actions">${editing ? `<button class="os-primary-action" onclick="saveStudentNoteEdit('${escapeHtml(note.id)}')">GUARDAR</button>` : `<button class="os-secondary-action" onclick="editStudentNote('${escapeHtml(note.id)}')">EDITAR</button>`}<button class="os-danger-action" onclick="deleteAgentNote('${escapeHtml(note.id)}'); renderNotesMode('${escapeHtml(context)}')">BORRAR</button></div>
         </article>`;
       }).join('') || '<article class="os-panel"><p class="os-empty">No hay notas para este filtro.</p></article>'}
     </section>
