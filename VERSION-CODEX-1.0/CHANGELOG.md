@@ -1,5 +1,14 @@
 # Changelog
 
+## v11.3.0 - Elite Collection Expansion
+
+- Agregadas las categorías Marcos, Badges, Fondos, Mascotas, Widgets, Packs, Certificados y Títulos.
+- Implementadas compras y equipamiento genéricos por categoría.
+- Agregados cinco packs con contenido completo visible y desbloqueo conjunto.
+- Agregada persistencia local para propiedad, equipamiento y widgets activos.
+- Actualizado el perfil con avatar, tema, marco, badge, fondo, mascota y título equipados.
+- Actualizados estilos, manifest, caché offline y versión de la aplicación.
+
 ## 10.0.0
 
 - Nuevo Command Center responsive.

@@ -593,6 +593,7 @@ function renderProfile() {
       ${typeof renderRankStrip === 'function' ? renderRankStrip() : ''}
     </section>
     ${typeof renderAgentCommandCenter === 'function' ? renderAgentCommandCenter() : ''}
+    <section class="panel-card compact-panel operator-cosmetics-panel" id="operator-cosmetics-panel"></section>
     <section class="panel-card compact-panel tools-panel">
       ${sectionTitle('Herramientas Pro','')}
       <div class="btn-row tool-actions">${actionButton('RANGOS', `renderView('rank')`, 'btn-primary')}${actionButton('ERROR LAB', `renderView('review')`, 'btn-outline')}${actionButton('NOTAS', `renderView('notes')`, 'btn-outline')}${actionButton('GLOSARIO', `renderView('glossary')`, 'btn-outline')}${actionButton('CTF', `renderView('ctf')`, 'btn-outline')}${actionButton('TEMA', `toggleTheme()`, 'btn-outline')}</div>
@@ -606,4 +607,5 @@ function renderProfile() {
     <section class="panel-card">${sectionTitle('Rutas completadas', `${COURSES.length} rutas`)}<div class="profile-course-list">${rows}</div></section>
     <section class="panel-card">${sectionTitle('Insignias', `${state.badges.length}/${BADGES.length}`)}<div class="badge-grid">${BADGES.map(b => `<div class="badge-item ${state.badges.includes(b.id)?'unlocked':''}"><div class="badge-icon">${b.icon}</div><div class="badge-name">${escapeHtml(b.title)}</div><p>${escapeHtml(b.description)}</p></div>`).join('')}</div></section>
     <button class="btn btn-danger full" onclick="resetProgress()">ELIMINAR PERFIL Y DATOS</button><div class="bottom-spacer"></div>`;
+  if (typeof renderOperatorCosmetics === 'function') renderOperatorCosmetics();
 }

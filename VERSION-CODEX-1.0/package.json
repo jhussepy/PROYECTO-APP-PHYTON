@@ -1,14 +1,14 @@
 {
   "name": "pysec-academy-elite",
-  "version": "11.2.1",
+  "version": "11.3.0",
   "private": true,
-  "description": "Merit Store PWA para Python, IA local gratis, productividad y ciberseguridad ética.",
+  "description": "Elite Collection PWA para Python, IA local, productividad y ciberseguridad ética.",
   "scripts": {
     "dev": "node scripts/dev-server.cjs",
     "build": "node scripts/build-static.cjs",
     "preview": "node scripts/preview-dist.cjs",
     "check": "node scripts/check-project.cjs",
-    "test": "node scripts/check-project.cjs"
+    "test": "node scripts/check-project.cjs && node scripts/test-elite-store.cjs"
   },
   "engines": {
     "node": ">=18"

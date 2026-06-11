@@ -1,4 +1,4 @@
-# PySec Academy Elite v10.0.0
+# PySec Academy Elite v11.3.0
 
 Learning OS PWA para estudiar Python, IA local, productividad, proyectos y ciberseguridad ética. Funciona con JavaScript vanilla, almacenamiento local y un diseño mobile-first.
 
@@ -164,3 +164,16 @@ PyCoins en v11.2.0 son puntos internos de aprendizaje guardados en localStorage.
 Elite Store no usa ni usará ruletas, gacha, spins, loot boxes, premios aleatorios, sorteos o apuestas. Los PyCoins proceden de progreso académico verificable y todas las compras son directas.
 
 Consulta `ELITE_STORE_PLAN.md` para la planificación completa.
+
+## v11.3.0 - Elite Collection Expansion
+
+Tienda Elite ahora incluye categorías funcionales para avatares, temas, marcos, badges, fondos, mascotas, widgets, packs, certificados internos y títulos.
+
+- Catálogos locales con precio y descripción visibles.
+- Compras directas con PyCoins educativos.
+- Persistencia completa en `localStorage`.
+- Equipamiento de cosméticos y widgets activables.
+- Packs Blue Team, Trading Neon, AI Core, Matrix y Gold Elite con todo su contenido declarado antes de comprar.
+- Perfil actualizado con los siete cosméticos equipados.
+- Colección consolidada con todos los artículos adquiridos.
+- Funcionamiento offline, sin pagos reales ni activos transferibles.
