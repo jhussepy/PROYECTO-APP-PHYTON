@@ -320,7 +320,12 @@ function validateImportedProgress(payload) {
     passedExams: (data.passedExams && typeof data.passedExams === 'object' && !Array.isArray(data.passedExams)) ? data.passedExams : {},
     certificates: Array.isArray(data.certificates) ? data.certificates.slice(0, 30).map(cert => normalizeCertificate(cert, data.passedExams)).filter(cert => allowedCourseIds.has(cert.courseId)) : [],
     mistakes: Array.isArray(data.mistakes) ? data.mistakes.slice(0, 40) : [],
-    notes: Array.isArray(data.notes) ? data.notes.slice(0, 60) : [],
+    notes: Array.isArray(data.notes) ? data.notes.slice(0, 60).map((n, i) => ({
+      id: `note_${Date.now()}_${i}`,
+      text: String(n.text || '').slice(0, 2000),
+      context: String(n.context || '').slice(0, 100),
+      date: n.date || new Date().toISOString()
+    })) : [],
     favoriteLessons: safeArray(data.favoriteLessons, allowedLessonIds),
     completedLabs: safeArray(data.completedLabs, allowedCourseIds),
     lastActive: data.lastActive || null,
