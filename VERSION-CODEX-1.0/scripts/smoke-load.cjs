@@ -14,7 +14,8 @@ const SCRIPT_ORDER = [
   'validation.js', 'platform-core.js', 'local-ai-core.js', 'ai-mentor-cloud.js', 'runner.js',
   'ui-components.js', 'elite-store.js', 'rank-system.js', 'agent-command.js', 'market.js',
   'strategy-engine.js', 'market-intelligence-ux.js', 'market-clean-flow.js',
-  'market-command-dashboard.js', 'ai-agent.js', 'ui.js', 'learning-os.js', 'router.js', 'app.js'
+  'market-command-dashboard.js', 'ai-agent.js', 'ui.js', 'learning-os.js', 'router.js',
+  'event-delegation.js', 'app.js'
 ];
 
 function makeElement() {
@@ -150,6 +151,7 @@ const REQUIRED_GLOBALS = {
   renderHome: 'function', renderCourses: 'function', renderProfile: 'function',
   renderEliteStore: 'function', buyEliteItem: 'function', applyTheme: 'function',
   loadState: 'function', saveState: 'function', getRankInfo: 'function',
+  initEventDelegation: 'function',
   COURSES: 'object', BADGES: 'object', PYSEC_AVATARS: 'object'
 };
 // Se evalúan dentro del contexto: los `const`/`let` de nivel superior son bindings léxicos
@@ -190,8 +192,34 @@ const renderErrors = evalInCtx(`(function () {
 viewsProbed = evalInCtx('globalThis.__probed') || 0;
 for (const err of renderErrors) failures.push(`Render: ${err}`);
 
+// Scan rendered views for data-action attributes; any found must have a handler in ACTION_REGISTRY.
+// At Phase 3.0 (no migrated onclicks yet) this will always report 0 unique actions.
+// As Phase 3.1 adds data-action attributes, orphans trigger a hard failure here.
+const dataActionScan = evalInCtx(`(function() {
+  const re = /data-action="([^"]+)"/g;
+  const found = new Set();
+  const c = document.getElementById('main-container');
+  const simpleViews = ['home','courses','profile','market','notes','review','ctf','glossary','rank','mentor','store'];
+  const paramViews = [['course-detail', {courseId:'python_desde_cero'}]];
+  for (const v of simpleViews) {
+    try { renderView(v); } catch (_) {}
+    let m; re.lastIndex = 0;
+    while ((m = re.exec(c.innerHTML || '')) !== null) found.add(m[1]);
+  }
+  for (const [v, p] of paramViews) {
+    try { renderView(v, p); } catch (_) {}
+    let m; re.lastIndex = 0;
+    while ((m = re.exec(c.innerHTML || '')) !== null) found.add(m[1]);
+  }
+  const orphans = [...found].filter(a => typeof ACTION_REGISTRY[a] !== 'function');
+  return { found: found.size, orphans };
+})()`) || { found: 0, orphans: [] };
+if (dataActionScan.orphans.length) {
+  failures.push(`Acciones delegadas sin handler: ${dataActionScan.orphans.join(', ')}`);
+}
+
 if (failures.length) {
   console.error('SMOKE FALLÓ:\n' + failures.map(f => ' - ' + f).join('\n'));
   process.exit(1);
 }
-console.log(`OK: ${SCRIPT_ORDER.length} scripts cargados, ${Object.keys(REQUIRED_GLOBALS).length} globales verificados, ${courseCount} cursos, ${viewsProbed} vistas renderizadas sin error.`);
+console.log(`OK: ${SCRIPT_ORDER.length} scripts cargados, ${Object.keys(REQUIRED_GLOBALS).length} globales verificados, ${courseCount} cursos, ${viewsProbed} vistas renderizadas sin error. data-action: ${dataActionScan.found} únicas, ${dataActionScan.orphans.length} sin handler.`);
