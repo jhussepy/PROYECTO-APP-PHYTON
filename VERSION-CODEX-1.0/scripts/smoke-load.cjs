@@ -246,7 +246,11 @@ const dataActionScan = evalInCtx(`(function() {
       renderProSearchAndFilters(),   // set-market-filter (filter pills)
       renderProStockCard(q),         // select-stock
       portfolioEmptyHtml,            // quick-add-portfolio
-      portfolioSeededHtml            // remove-portfolio-holding
+      portfolioSeededHtml,           // remove-portfolio-holding
+      // Lote 5: strategy and market-tab sub-components not reached via renderView('market').
+      renderMarketTabs(),            // set-market-tab (defined but not called via standard path)
+      renderStrategyWorkspace(),     // set-strategy-profile, select-stock
+      renderStrategyAlertTemplates() // create-strategy-alert
     ].join('');
     let mm; re.lastIndex = 0;
     while ((mm = re.exec(marketHtml)) !== null) { found.add(mm[1]); marketActions.add(mm[1]); }
