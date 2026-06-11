@@ -572,7 +572,7 @@ function renderStrategyScoreCard(quotes = marketState.quotes || []) {
 
 function renderStrategyProfileSelector(profiles, activeId) {
   return `<div class="strategy-profile-strip">
-    ${profiles.map(profile => `<button class="${profile.id === activeId ? 'active' : ''}" type="button" onclick="setActiveStrategyProfile('${safeMarketEscape(profile.id)}')">
+    ${profiles.map(profile => `<button class="${profile.id === activeId ? 'active' : ''}" type="button" data-action="set-strategy-profile" data-id="${safeMarketEscape(profile.id)}">
       <strong>${safeMarketEscape(profile.name)}</strong>
       <small>${safeMarketEscape(profile.horizon)}</small>
     </button>`).join('')}
@@ -583,7 +583,7 @@ function renderStrategyOpportunityList(summary) {
   return `<section class="strategy-opportunity-panel">
     <div class="strategy-section-head"><div><span class="eyebrow">OPORTUNIDADES</span><h3>Score adaptable</h3></div><small>${safeMarketEscape(summary.profile.name)}</small></div>
     <div class="strategy-ranked-list">
-      ${summary.ranked.slice(0, 5).map(item => `<button type="button" onclick="selectStock('${safeMarketEscape(item.quote.symbol)}')">
+      ${summary.ranked.slice(0, 5).map(item => `<button type="button" data-action="select-stock" data-symbol="${safeMarketEscape(item.quote.symbol)}">
         <span><strong>${safeMarketEscape(item.quote.symbol)}</strong><small>${safeMarketEscape(item.analysis.label)}</small></span>
         <b class="${item.analysis.tone}">${item.analysis.score}</b>
       </button>`).join('') || '<div class="empty-state">Actualiza el mercado para calcular oportunidades.</div>'}
@@ -744,7 +744,7 @@ function renderStrategyAlertTemplates() {
     <label for="strategy-alert-symbol">Símbolo</label>
     <select id="strategy-alert-symbol">${options || '<option value="">Sin datos</option>'}</select>
     <div class="strategy-alert-template-grid">
-      ${STRATEGY_ALERT_TEMPLATES.map(template => `<button type="button" onclick="createStrategyAlertFromTemplate('${safeMarketEscape(template.id)}')">
+      ${STRATEGY_ALERT_TEMPLATES.map(template => `<button type="button" data-action="create-strategy-alert" data-template-id="${safeMarketEscape(template.id)}">
         <span>${safeMarketEscape(template.icon)}</span><strong>${safeMarketEscape(template.name)}</strong><small>${safeMarketEscape(template.description)}</small>
       </button>`).join('')}
     </div>

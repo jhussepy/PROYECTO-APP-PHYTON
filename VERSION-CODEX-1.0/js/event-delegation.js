@@ -153,6 +153,25 @@ const ACTION_REGISTRY = {
     removePortfolioHolding(el.dataset.symbol);
   },
 
+  // --- Phase 3.1 Lote 5 · market-clean-flow.js ---
+
+  // <button data-action="set-market-tab" data-tab="strategy">...</button>
+  'set-market-tab': function(el) {
+    setMarketTab(el.dataset.tab);
+  },
+
+  // --- Phase 3.1 Lote 5 · strategy-engine.js ---
+
+  // <button data-action="set-strategy-profile" data-id="conservative">...</button>
+  'set-strategy-profile': function(el) {
+    setActiveStrategyProfile(el.dataset.id);
+  },
+
+  // <button data-action="create-strategy-alert" data-template-id="rsi-oversold">...</button>
+  'create-strategy-alert': function(el) {
+    createStrategyAlertFromTemplate(el.dataset.templateId);
+  },
+
   // --- Phase 3.1 Lote 4 · elite-store.js ---
 
   // <button data-action="render-elite-store" data-id="themes">...</button>

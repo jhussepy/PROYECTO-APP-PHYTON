@@ -40,7 +40,7 @@ function renderMarketTabs() {
     ['alerts', 'Alertas', '◉']
   ];
   return `<nav class="market-tabs" aria-label="Secciones de Acciones Pro">
-    ${tabs.map(([id, label, icon]) => `<button class="market-tab ${marketActiveTab === id ? 'active' : ''}" onclick="setMarketTab('${id}')"><span>${icon}</span>${label}</button>`).join('')}
+    ${tabs.map(([id, label, icon]) => `<button class="market-tab ${marketActiveTab === id ? 'active' : ''}" data-action="set-market-tab" data-tab="${safeMarketEscape(id)}"><span>${icon}</span>${label}</button>`).join('')}
   </nav>`;
 }
 
@@ -123,7 +123,7 @@ function renderMarketHeatmapTab(quotes, sectors, totalCap, selected) {
       </div>
       <div class="market-filters">
         <button class="filter-pill ${marketState.filter === 'all' ? 'active' : ''}" onclick="setMarketFilter('all')">Todos</button>
-        ${sectors.map(sector => `<button class="filter-pill ${marketState.filter === sector ? 'active' : ''}" onclick="setMarketFilter('${safeMarketEscape(sector)}')">${safeMarketEscape(shortSector(sector))}</button>`).join('')}
+        ${sectors.map(sector => `<button class="filter-pill ${marketState.filter === sector ? 'active' : ''}" data-action="set-market-filter" data-sector="${safeMarketEscape(sector)}">${safeMarketEscape(shortSector(sector))}</button>`).join('')}
       </div>
     </section>
     <section class="panel-card clean-heatmap-card">
@@ -146,7 +146,7 @@ function renderMarketWatchlistTab(watchQuotes) {
   return `
     <section class="panel-card pro-watchlist-panel clean-watchlist-panel">
       ${sectionTitle('Mi Watchlist', `${watchQuotes.length} símbolos`)}
-      ${watchQuotes.length ? `<div class="watchlist-grid">${watchQuotes.map(q => `<button class="watchlist-card ${quoteClass(q.changePercent)}" onclick="selectStock('${safeMarketEscape(q.symbol)}')"><div><strong>${safeMarketEscape(q.symbol)}</strong><small>${safeMarketEscape(shortSector(q.sector))}</small></div><b>${formatPercent(q.changePercent)}</b>${renderSparkline(q.symbol, 'watch-spark')}</button>`).join('')}</div>` : `<div class="empty-state">Aún no sigues acciones. Ve al Heatmap, toca una acción y pulsa ⭐ Seguir.</div>`}
+      ${watchQuotes.length ? `<div class="watchlist-grid">${watchQuotes.map(q => `<button class="watchlist-card ${quoteClass(q.changePercent)}" data-action="select-stock" data-symbol="${safeMarketEscape(q.symbol)}"><div><strong>${safeMarketEscape(q.symbol)}</strong><small>${safeMarketEscape(shortSector(q.sector))}</small></div><b>${formatPercent(q.changePercent)}</b>${renderSparkline(q.symbol, 'watch-spark')}</button>`).join('')}</div>` : `<div class="empty-state">Aún no sigues acciones. Ve al Heatmap, toca una acción y pulsa ⭐ Seguir.</div>`}
     </section>
     ${watchQuotes.length ? renderStockDetail(watchQuotes[0]) : ''}
     ${renderMarketNotesPanel()}
