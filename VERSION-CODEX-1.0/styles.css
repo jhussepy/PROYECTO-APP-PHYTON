@@ -876,20 +876,20 @@ code, pre, .code-editor, .console-output,
 .glow-purple strong { color: #b9a8ff; }
 
 .pill, .level-badge {
-  color: #b9eaff;
-  background: rgba(47, 109, 255, .1);
-  border-color: rgba(134, 189, 255, .22);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+  color: var(--c-ash);
+  background: rgba(255,255,255,.04);
+  border-color: var(--c-line);
+  box-shadow: none;
 }
 .pill.green {
-  color: var(--green-python);
-  background: rgba(25, 216, 134, .075);
-  border-color: rgba(53, 243, 161, .22);
+  color: var(--c-green);
+  background: var(--c-green-dim);
+  border-color: var(--c-line-green);
 }
 .pill.orange {
-  color: #ffd389;
-  background: rgba(255, 184, 77, .08);
-  border-color: rgba(255, 184, 77, .22);
+  color: var(--warning);
+  background: rgba(255, 176, 0, .08);
+  border-color: rgba(255, 176, 0, .25);
 }
 
 .btn {
@@ -1078,16 +1078,16 @@ code, pre, .code-editor, .console-output,
 .filter-chip {
   min-height: 36px;
   border-radius: 999px;
-  border: 1px solid rgba(134, 189, 255, .14);
-  background: rgba(12, 25, 54, .62);
-  color: var(--text-sec);
+  border: 1px solid var(--c-line);
+  background: transparent;
+  color: var(--c-ash);
   padding: 0 12px;
   font-weight: 950;
 }
 .filter-chip.active {
-  color: var(--cyan);
-  border-color: rgba(35, 220, 255, .3);
-  background: rgba(35, 220, 255, .08);
+  color: var(--c-green);
+  border-color: var(--c-line-green);
+  background: var(--c-green-dim);
 }
 .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
 
@@ -1480,7 +1480,7 @@ body::after {
   background: linear-gradient(110deg, rgba(0, 208, 132, .09), transparent 42%, rgba(34, 211, 238, .06));
   pointer-events: none;
 }
-.mission-briefing { border-color: rgba(0, 208, 132, .28); }
+.mission-briefing { border-color: var(--c-line-red); }
 .briefing-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
@@ -5762,8 +5762,9 @@ body::before {
 .course-card,
 .lesson-card,
 .ethic-box {
-  background: linear-gradient(155deg, rgba(14, 24, 19, .97), rgba(7, 12, 9, .985));
-  border-color: rgba(0, 255, 136, .15);
+  background: linear-gradient(155deg, var(--c-panel), var(--c-graphite));
+  border-color: var(--c-line);
+  border-radius: var(--radius);
   box-shadow: 0 18px 46px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.025);
 }
 
