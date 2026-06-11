@@ -18,6 +18,59 @@ const ACTION_REGISTRY = {
   // <button data-action="buy-item" data-category="themes" data-id="neon-dark">...</button>
   'buy-item': function(el) {
     buyEliteItem(el.dataset.category, el.dataset.id);
+  },
+
+  // --- Phase 3.1 (ui.js batch 1) ---
+
+  // <article data-action="open-lesson-guarded" data-course-id="c" data-lesson-id="l">...</article>
+  'open-lesson-guarded': function(el) {
+    openLessonGuarded(el.dataset.courseId, el.dataset.lessonId);
+  },
+
+  // Locked lesson card: ethics not yet accepted. No data needed.
+  'lesson-locked': function() {
+    alert('Primero acepta el modo ético del curso.');
+  },
+
+  // Symbol/snippet bar. data-snippet holds an encodeURIComponent value;
+  // insertEncoded itself decodeURIComponent's it.
+  'insert-encoded': function(el) {
+    insertEncoded(el.dataset.snippet);
+  },
+
+  // <button data-action="complete-ctf" data-challenge-id="id">...</button>
+  'complete-ctf': function(el) {
+    completeCTF(el.dataset.challengeId);
+  },
+
+  // <button data-action="generate-ai-exam" data-course-id="c">...</button>
+  'generate-ai-exam': function(el) {
+    generateAiCourseExam(el.dataset.courseId);
+  },
+
+  // <button data-action="render-course-exam" data-course-id="c" [data-mode="local"]>...</button>
+  'render-course-exam': function(el) {
+    if (el.dataset.mode !== undefined) renderCourseExam(el.dataset.courseId, el.dataset.mode);
+    else renderCourseExam(el.dataset.courseId);
+  },
+
+  // Compound: mark lab complete, toast, then go back to the course detail.
+  'complete-guided-lab': function(el) {
+    const courseId = el.dataset.courseId;
+    completeGuidedLab(courseId);
+    showToast('🧪 Lab guiado completado', '+60 XP');
+    renderView('course-detail', { courseId });
+  },
+
+  // <button data-action="open-practice-guarded" data-course-id="c" data-lesson-id="l">...</button>
+  'open-practice-guarded': function(el) {
+    openPracticeGuarded(el.dataset.courseId, el.dataset.lessonId);
+  },
+
+  // Compound: remove the mistake then re-render the review list.
+  'remove-mistake': function(el) {
+    removeMistake(el.dataset.mistakeId);
+    renderReviewMode();
   }
 };
 
