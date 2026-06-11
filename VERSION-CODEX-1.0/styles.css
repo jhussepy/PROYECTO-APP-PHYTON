@@ -1,3 +1,79 @@
+/* ============================================================================
+   DESIGN TOKENS v2 — terminal neón hack (Rediseño Base 1)
+   Fuente única de verdad del rediseño. Verde señal (online/python/éxito),
+   azul datos (métricas), rojo crítico (alertas/prioridad) sobre negro #04060a.
+
+   IMPORTANTE — mecánica de migración: este archivo aún contiene 7 bloques
+   :root legados más abajo (líneas ~595, 1026, 1229, 1305, 2422, 5524 además
+   del original). Como en CSS gana la última declaración, los MAPEOS de
+   nombres viejos de este bloque quedan inertes hasta que esos bloques se
+   eliminen en lotes posteriores: hoy la app se ve EXACTAMENTE igual.
+   Los tokens nuevos (--c-*, --f-*) no colisionan con nada y ya son usables.
+   ========================================================================== */
+:root {
+  /* — superficies — */
+  --c-void: #04060a;
+  --c-graphite: #0b0f15;
+  --c-panel: #0f141c;
+  --c-panel-2: #141b25;
+  /* — líneas / bordes — */
+  --c-line: rgba(255, 255, 255, .06);
+  --c-line-green: rgba(45, 245, 126, .22);
+  --c-line-red: rgba(255, 59, 92, .24);
+  /* — acentos — */
+  --c-green: #2df57e;
+  --c-green-glow: rgba(45, 245, 126, .45);
+  --c-green-dim: rgba(45, 245, 126, .10);
+  --c-red: #ff3b5c;
+  --c-red-glow: rgba(255, 59, 92, .4);
+  --c-red-dim: rgba(255, 59, 92, .10);
+  --c-blue: #3d8bff;
+  --c-blue-glow: rgba(61, 139, 255, .4);
+  --c-blue-dim: rgba(61, 139, 255, .10);
+  /* — texto — */
+  --c-bone: #e9eef2;
+  --c-ash: #7e8896;
+  --c-faint: #515b69;
+  /* — tipografía — */
+  --f-display: "Space Grotesk", sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* — geometría — */
+  --radius: 14px;
+  --radius-sm: 10px;
+
+  /* — MAPEO nombres legados → tokens v2 —
+     Inertes mientras existan los :root legados (ellos re-declaran estos
+     nombres más abajo y ganan la cascada). Al borrar los bloques legados
+     en lotes posteriores, estos mapeos toman el control sin tocar selectores. */
+  --bg-main: var(--c-void);
+  --bg-soft: var(--c-graphite);
+  --bg-elev: var(--c-panel);
+  --bg-card: var(--c-panel);
+  --bg-card-2: var(--c-panel-2);
+  --blue-primary: var(--c-blue);
+  --blue-glow: var(--c-blue-glow);
+  --green-python: var(--c-green);
+  --success: var(--c-green);
+  --error: var(--c-red);
+  --text-main: var(--c-bone);
+  --text-sec: var(--c-ash);
+  --muted: var(--c-faint);
+  --border: var(--c-line-green);
+  --border-soft: var(--c-line);
+  --shadow-glow: 0 22px 70px var(--c-green-dim);
+  --market-panel: var(--c-panel);
+  --market-panel-strong: var(--c-panel-2);
+  --market-border: var(--c-line-green);
+  --market-border-soft: var(--c-line);
+  --market-green: var(--c-green);
+  --market-blue: var(--c-blue);
+  --market-cyan: var(--c-blue);
+  /* SIN mapeo (sin equivalente en la paleta v2; se decide en lotes visibles):
+     --purple, --cyan, --warning, --header-height, --nav-height, --app-width,
+     --radius-xl, --radius-lg. */
+}
+
 :root {
   --bg-main: #060b18;
   --bg-soft: #0a1224;
