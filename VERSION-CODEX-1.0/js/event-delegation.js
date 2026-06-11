@@ -139,6 +139,18 @@ const ACTION_REGISTRY = {
   // <button data-action="toggle-watchlist" data-symbol="NVDA">...</button>
   'toggle-watchlist': function(el) {
     toggleWatchlist(el.dataset.symbol);
+  },
+
+  // --- Phase 3.1 Lote 4 · market-command-dashboard.js ---
+
+  // <button data-action="quick-add-portfolio" data-symbol="NVDA">...</button>
+  'quick-add-portfolio': function(el) {
+    quickAddPortfolio(el.dataset.symbol);
+  },
+
+  // <button data-action="remove-portfolio-holding" data-symbol="NVDA">...</button>
+  'remove-portfolio-holding': function(el) {
+    removePortfolioHolding(el.dataset.symbol);
   }
 };
 

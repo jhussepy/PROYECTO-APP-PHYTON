@@ -117,7 +117,7 @@ function renderPortfolioManager() {
   const options = (marketState.quotes?.length ? marketState.quotes : MARKET_WATCHLIST)
     .map(q => `<option value="${safeMarketEscape(q.symbol)}">${safeMarketEscape(q.symbol)} · ${safeMarketEscape(shortCompanyName(q.name))}</option>`).join('');
   const quick = ['NVDA','AAPL','MSFT','GOOGL','META','AMZN','TSLA','AMD'].map(symbol =>
-    `<button type="button" onclick="quickAddPortfolio('${symbol}')">${symbol}</button>`).join('');
+    `<button type="button" data-action="quick-add-portfolio" data-symbol="${safeMarketEscape(symbol)}">${safeMarketEscape(symbol)}</button>`).join('');
   return `<section class="pro-portfolio-manager">
     <div class="pro-manager-head">
       <div><span class="eyebrow">MI PORTAFOLIO PERSONAL</span><h3>Empresas elegidas por ti</h3></div>
@@ -136,7 +136,7 @@ function renderPortfolioManager() {
         ${brandLogo(r.quote)}
         <div><b>${r.symbol}</b><small>${r.shares.toLocaleString('es-PE')} acciones · ${formatUSD(r.price)}</small></div>
         <div><strong>${formatUSD(r.value)}</strong><em>${formatPercent(r.dayPct)}</em></div>
-        <button onclick="removePortfolioHolding('${r.symbol}')">×</button>
+        <button data-action="remove-portfolio-holding" data-symbol="${safeMarketEscape(r.symbol)}">×</button>
       </article>`).join('')}
       <button class="portfolio-clear" onclick="clearMarketPortfolio()">Eliminar todo el portafolio</button>
     </div>` : ''}
@@ -281,7 +281,7 @@ function renderProSearchAndFilters(sectors = marketSectors()) {
     </div>
     <div class="pro-sector-row">
       <button class="filter-pill ${marketState.filter === 'all' ? 'active' : ''}" onclick="setMarketFilter('all')">Todos</button>
-      ${sectors.map(sector => `<button class="filter-pill ${marketState.filter === sector ? 'active' : ''}" onclick="setMarketFilter('${safeMarketEscape(sector)}')">${safeMarketEscape(shortSector(sector))}</button>`).join('')}
+      ${sectors.map(sector => `<button class="filter-pill ${marketState.filter === sector ? 'active' : ''}" data-action="set-market-filter" data-sector="${safeMarketEscape(sector)}">${safeMarketEscape(shortSector(sector))}</button>`).join('')}
     </div>
   </section>`;
 }
@@ -291,7 +291,7 @@ function renderProStockCard(q) {
   const cls = quoteClass(pct);
   const sector = shortSector(q.sector);
   const strategy = typeof calculateStrategyScore === 'function' ? calculateStrategyScore(q) : null;
-  return `<article class="pro-stock-card ${cls}" onclick="selectStock('${safeMarketEscape(q.symbol)}')">
+  return `<article class="pro-stock-card ${cls}" data-action="select-stock" data-symbol="${safeMarketEscape(q.symbol)}">
     ${strategy ? `<span class="pro-strategy-badge ${strategy.tone}">${strategy.score}</span>` : ''}
     <div class="pro-stock-brand">${brandLogo(q)}</div>
     <div class="pro-stock-info">
