@@ -163,65 +163,6 @@ function renderMarketAlertsTab() {
   `;
 }
 
-function renderMarket() {
-  marketState.userWatchlist = readUserWatchlist();
-  marketState.detailSymbol = readSelectedSymbol();
-  mainContainer.innerHTML = `
-    <section class="panel-card market-shell clean-market-shell">
-      <div class="card-topline">
-        <div>
-          <span class="eyebrow">MARKET OPS · PRO INTELLIGENCE</span>
-          <h1 class="section-heading">Acciones Pro</h1>
-        </div>
-        <span class="status-pill green version-pro">v9.4.8</span>
-      </div>
-      <p class="hero-subtitle">Centro educativo de inteligencia de mercado con resumen ejecutivo, heatmap, watchlist y alertas en capas claras. No constituye asesoría financiera.</p>
-      <div class="market-actions clean-actions">
-        <button class="btn btn-success market-primary-action" onclick="refreshMarket(true)"><span>↻</span> ACTUALIZAR</button>
-        <button class="btn btn-outline market-secondary-action" onclick="setMarketTab('heatmap')">VER HEATMAP <span>▦</span></button>
-      </div>
-      <div class="market-status" id="market-status-box">Inicializando feed...</div>
-      ${renderMarketTabs()}
-    </section>
-    <section id="market-content" class="market-content clean-market-content">
-      <div class="panel-card"><div class="loader small"></div><p class="hero-subtitle">Cargando datos de acciones...</p></div>
-    </section>
-    <div class="bottom-spacer"></div>
-  `;
-  refreshMarket(false);
-}
-
-function renderMarketContent() {
-  const host = document.getElementById('market-content');
-  const statusBox = document.getElementById('market-status-box');
-  if (!host) return;
-  marketState.userWatchlist = readUserWatchlist();
-  marketState.alerts = readMarketAlerts();
-  marketState.notes = readMarketNotes();
-  marketState.priceHistory = readMarketHistory();
-
-  const quotes = getVisibleQuotes();
-  const allQuotes = marketState.quotes || [];
-  const sectors = marketSectors();
-  const totalCap = Math.max(1, quotes.reduce((sum, q) => sum + Number(q.cap || 0), 0));
-  const sentiment = marketSentiment(allQuotes);
-  const gainers = [...allQuotes].sort((a, b) => Number(b.changePercent) - Number(a.changePercent)).slice(0, 4);
-  const losers = [...allQuotes].sort((a, b) => Number(a.changePercent) - Number(b.changePercent)).slice(0, 4);
-  const watchQuotes = marketState.userWatchlist.map(getQuoteBySymbol).filter(Boolean);
-  const selected = getQuoteBySymbol(marketState.detailSymbol) || quotes[0] || null;
-
-  if (statusBox) statusBox.innerHTML = renderMarketStatusLine();
-  const shell = document.querySelector('.clean-market-shell');
-  const existingTabs = shell?.querySelector('.market-tabs');
-  if (existingTabs) existingTabs.outerHTML = renderMarketTabs();
-
-  if (marketActiveTab === 'summary') host.innerHTML = renderMarketSummaryTab(allQuotes, sentiment, gainers, losers, watchQuotes);
-  else if (marketActiveTab === 'heatmap') host.innerHTML = renderMarketHeatmapTab(quotes, sectors, totalCap, selected);
-  else if (marketActiveTab === 'watchlist') host.innerHTML = renderMarketWatchlistTab(watchQuotes);
-  else if (marketActiveTab === 'alerts') host.innerHTML = renderMarketAlertsTab();
-  else host.innerHTML = renderMarketSummaryTab(allQuotes, sentiment, gainers, losers, watchQuotes);
-}
-
 function renderSectorRotationCard(sentiment = marketSentiment()) {
   return `<section class="panel-card">${renderSectorRotation(sentiment)}</section>`;
 }

@@ -50,9 +50,10 @@ function normalizeCertificate(cert = {}, examMap = state.passedExams) {
   const total = Number(cert.total ?? exam.total ?? 0);
   const percent = Number(cert.percent ?? exam.percent ?? (total ? Math.round((score / total) * 100) : 0));
   const approved = cert.approved !== undefined ? !!cert.approved : percent >= 70;
-  const courseTitle = cert.courseTitle || cert.course || cert.title || course?.title || courseId || 'Curso';
+  const rawTitle = cert.courseTitle || cert.course || cert.title || course?.title || courseId || 'Curso';
+  const courseTitle = String(rawTitle).slice(0, 120);
   return {
-    id: cert.id || buildCertificateId(courseId),
+    id: String(cert.id || buildCertificateId(courseId)).slice(0, 80),
     courseId,
     title: courseTitle,
     courseTitle,

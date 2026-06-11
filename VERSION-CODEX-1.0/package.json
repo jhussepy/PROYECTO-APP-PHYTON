@@ -8,7 +8,8 @@
     "build": "node scripts/build-static.cjs",
     "preview": "node scripts/preview-dist.cjs",
     "check": "node scripts/check-project.cjs",
-    "test": "node scripts/check-project.cjs && node scripts/test-elite-store.cjs"
+    "smoke": "node scripts/smoke-load.cjs",
+    "test": "node scripts/check-project.cjs && node scripts/smoke-load.cjs && node scripts/test-elite-store.cjs"
   },
   "engines": {
     "node": ">=18"

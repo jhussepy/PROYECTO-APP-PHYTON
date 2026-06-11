@@ -57,7 +57,7 @@ function renderHome() {
       <span class="eyebrow">ETHICAL CYBER LEARNING OS · ${rankInfo.current.title.toUpperCase()}</span>
       <h1 class="hero-title">PySec Elite</h1>
       <span class="hero-kicker">Secure Cyber Lab</span>
-      <span class="version-chip">v10.0.0 · Learning OS</span>
+      <span class="version-chip">v${typeof APP_VERSION !== 'undefined' ? APP_VERSION : '11.3.0'} · Learning OS</span>
       <p class="hero-subtitle">Entrena Python, defensa y hacking ético con misiones tácticas, agente IA local, CTF simulado y Threat Defense Lab.</p>
       <div class="hero-status-grid">
         ${chip(`${total} LABS`)}
@@ -581,7 +581,7 @@ function renderProfile() {
   }).join('');
   const rankInfo = typeof getRankInfo === 'function' ? getRankInfo(state.xp) : { current: { title: state.agentRank || 'Recluta', icon:'🟢' }, progress: 0, xpToNext: 0 };
   const certificateContent = state.certificates.length
-    ? state.certificates.map(cert => `<div class="profile-course-row compact" onclick="renderView('certificate',{courseId:'${cert.courseId}'})"><span>🏅 ${shortTitle(cert.title)}</span><strong>${cert.percent}%</strong></div>`).join('')
+    ? state.certificates.map(cert => `<div class="profile-course-row compact" onclick="renderView('certificate',{courseId:'${escapeHtml(cert.courseId)}'})"><span>🏅 ${escapeHtml(shortTitle(cert.title))}</span><strong>${Number(cert.percent) || 0}%</strong></div>`).join('')
     : `<div class="empty-certificate"><div class="empty-icon">🏆</div><strong>Sin certificados aún</strong><p>Aprueba tu primer examen para desbloquear un certificado local imprimible.</p></div>`;
   mainContainer.innerHTML = `
     <section class="welcome-card profile-hero animated-card">

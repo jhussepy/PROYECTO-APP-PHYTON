@@ -38,6 +38,7 @@ function syncHash(view, params = {}) {
 
 function renderView(view, params = {}) {
   syncHash(view, params);
+  if (view !== 'focus' && typeof pauseFocusTimer === 'function') pauseFocusTimer();
   state.view = view;
   mainContainer.innerHTML = '';
   mainContainer.focus();

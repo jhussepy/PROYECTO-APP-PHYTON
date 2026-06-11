@@ -801,164 +801,6 @@ function closeStockDetail() {
   renderMarketContent();
 }
 
-function renderMarket() {
-  marketState.userWatchlist = readUserWatchlist();
-  marketState.detailSymbol = readSelectedSymbol();
-  mainContainer.innerHTML = `
-    <section class="panel-card market-shell">
-      <div class="card-topline">
-        <div>
-          <span class="eyebrow">MARKET OPS · PRO CENTER</span>
-          <h1 class="section-heading">Acciones Pro</h1>
-        </div>
-        <span class="status-pill green">FINNHUB</span>
-      </div>
-      <p class="hero-subtitle">Mapa de calor, sentimiento, scanner, watchlist, alertas locales, notas, sparkline, sectores avanzados y Market Agent local con datos en vivo/caché. Módulo educativo: no constituye asesoría financiera.</p>
-      <div class="market-api-box">
-        <div>
-          <span class="eyebrow">FINNHUB API</span>
-          <strong>${hasFinnhubKey() ? 'Conectada' : 'No configurada'}</strong>
-          <small>${hasFinnhubKey() ? 'Key local: ' + maskFinnhubKey() : 'Pega tu key para datos live prioritarios.'}</small>
-        </div>
-        <input id="finnhub-key-input" class="market-api-input" placeholder="Pega tu API key de Finnhub" value="">
-        <div class="market-api-actions">
-          <button class="btn btn-success" onclick="saveFinnhubKeyFromInput()">GUARDAR API</button>
-          <button class="btn btn-outline" onclick="clearFinnhubKey()">BORRAR</button>
-        </div>
-      </div>
-      <div class="market-actions">
-        <button class="btn btn-success" onclick="refreshMarket(true)">↻ ACTUALIZAR</button>
-        <button class="btn btn-outline" onclick="renderView('courses')">VOLVER A RUTAS</button>
-      </div>
-      <div class="market-status" id="market-status-box">Inicializando feed...</div>
-    </section>
-    <section id="market-content" class="market-content">
-      <div class="panel-card"><div class="loader small"></div><p class="hero-subtitle">Cargando datos de acciones...</p></div>
-    </section>
-    <div class="bottom-spacer"></div>
-  `;
-  refreshMarket(false);
-}
-
-function renderMarketContent() {
-  const host = document.getElementById('market-content');
-  const statusBox = document.getElementById('market-status-box');
-  if (!host) return;
-  marketState.userWatchlist = readUserWatchlist();
-  marketState.alerts = readMarketAlerts();
-  marketState.notes = readMarketNotes();
-  marketState.priceHistory = readMarketHistory();
-  const quotes = getVisibleQuotes();
-  const allQuotes = marketState.quotes || [];
-  const sectors = marketSectors();
-  const totalCap = Math.max(1, quotes.reduce((sum, q) => sum + Number(q.cap || 0), 0));
-  const sentiment = marketSentiment(allQuotes);
-  const gainers = [...allQuotes].sort((a, b) => Number(b.changePercent) - Number(a.changePercent)).slice(0, 4);
-  const losers = [...allQuotes].sort((a, b) => Number(a.changePercent) - Number(b.changePercent)).slice(0, 4);
-  const watchQuotes = marketState.userWatchlist.map(getQuoteBySymbol).filter(Boolean);
-  const selected = getQuoteBySymbol(marketState.detailSymbol) || quotes[0] || null;
-  const sourceLabel = marketState.status === 'live' ? 'DATOS EN VIVO' : marketState.status === 'cached' ? 'CACHÉ LOCAL' : marketState.status === 'loading' ? 'CARGANDO' : 'MODO DEMO';
-  if (statusBox) {
-    statusBox.innerHTML = `
-      <span class="market-dot ${marketState.status === 'live' ? 'online' : 'offline'}"></span>
-      <strong>${sourceLabel}</strong>
-      <small>${safeMarketEscape(marketState.source || 'Pendiente')} · ${formatMarketTime(marketState.updatedAt)}</small>
-    `;
-  }
-  host.innerHTML = `
-    <section class="panel-card market-intel-card market-sentiment-card ${sentiment.tone}">
-      <div class="card-topline compact">
-        <div>
-          <span class="eyebrow">SENTIMIENTO DEL MERCADO</span>
-          <h2>${safeMarketEscape(sentiment.label)}</h2>
-        </div>
-        <span class="status-pill ${sentiment.tone === 'bearish' ? 'danger' : sentiment.tone === 'bullish' ? 'green' : ''}">${formatPercent(sentiment.avg)}</span>
-      </div>
-      <div class="market-sentiment-grid">
-        <div><strong>${sentiment.up}</strong><small>Verdes</small></div>
-        <div><strong>${sentiment.down}</strong><small>Rojas</small></div>
-        <div><strong>${sentiment.flat}</strong><small>Neutras</small></div>
-      </div>
-      <p class="market-agent-text">${safeMarketEscape(buildMarketAgentText())}</p>
-    </section>
-
-    <section class="panel-card market-scanner">
-      ${sectionTitle('Scanner del mercado', 'TOP')}
-      <div class="scanner-grid">
-        <div class="scanner-box">
-          <span class="eyebrow">Top ganadoras</span>
-          ${gainers.map(q => renderMiniQuote(q)).join('')}
-        </div>
-        <div class="scanner-box">
-          <span class="eyebrow">Top perdedoras</span>
-          ${losers.map(q => renderMiniQuote(q)).join('')}
-        </div>
-      </div>
-    </section>
-
-    ${renderAdvancedSectors(sentiment)}
-
-    <section class="panel-card market-controls">
-      <input class="market-search" placeholder="Buscar acción, sector o símbolo..." value="${safeMarketEscape(marketState.query || '')}" oninput="setMarketQuery(this.value)">
-      <div class="market-filters">
-        <button class="filter-pill ${marketState.filter === 'all' ? 'active' : ''}" onclick="setMarketFilter('all')">Todos</button>
-        ${sectors.map(sector => `<button class="filter-pill ${marketState.filter === sector ? 'active' : ''}" onclick="setMarketFilter('${safeMarketEscape(sector)}')">${safeMarketEscape(shortSector(sector))}</button>`).join('')}
-      </div>
-    </section>
-
-    <section class="panel-card">
-      ${sectionTitle('Mapa de calor', `${quotes.length} símbolos`)}
-      <div class="stock-heatmap">
-        ${quotes.map(q => renderHeatTile(q, totalCap)).join('') || `<div class="empty-state">Sin resultados para el filtro actual.</div>`}
-      </div>
-      <div class="heat-legend"><span>-3%</span><div></div><span>0%</span><div></div><span>+3%</span></div>
-    </section>
-
-    ${selected ? renderStockDetail(selected) : ''}
-
-    <section class="panel-card">
-      ${sectionTitle('Mi Watchlist', `${watchQuotes.length} símbolos`)}
-      ${watchQuotes.length ? `<div class="watchlist-strip">${watchQuotes.map(renderWatchChip).join('')}</div>` : `<div class="empty-state">Toca una acción y usa ⭐ Seguir para crear tu lista personal.</div>`}
-    </section>
-
-    <section class="panel-card">
-      ${sectionTitle('Lista de seguimiento', marketState.status === 'live' ? 'LIVE' : 'TRAINING')}
-      <div class="stock-table">
-        ${quotes.map(renderStockRow).join('') || `<div class="empty-state">No hay acciones visibles.</div>`}
-      </div>
-    </section>
-
-    ${renderMarketAlertsPanel()}
-
-    ${renderMarketNotesPanel()}
-
-    <section class="panel-card compact-panel">
-      ${sectionTitle('Market Agent local', 'EDUCATIVO')}
-      <p class="hero-subtitle">${safeMarketEscape(buildMarketAgentText())}</p>
-      <div class="market-agent-actions">
-        <button class="btn btn-outline" onclick="setMarketFilter('all')">VER TODO</button>
-        <button class="btn btn-outline" onclick="document.getElementById('market-note-input')?.focus()">CREAR NOTA</button>
-      </div>
-    </section>
-  `;
-}
-
-
-function renderAdvancedSectors(sentiment = marketSentiment()) {
-  const sectors = sentiment.sectors || [];
-  return `<section class="panel-card sector-advanced">
-    ${sectionTitle('Sectores avanzados', `${sectors.length} sectores`)}
-    <div class="sector-summary-grid">
-      <div><small>Sector fuerte</small><strong>${safeMarketEscape(shortSector(sentiment.bestSector?.sector || '—'))}</strong><span>${formatPercent(sentiment.bestSector?.avg || 0)}</span></div>
-      <div><small>Sector débil</small><strong>${safeMarketEscape(shortSector(sentiment.worstSector?.sector || '—'))}</strong><span>${formatPercent(sentiment.worstSector?.avg || 0)}</span></div>
-      <div><small>Líder</small><strong>${safeMarketEscape(sentiment.strongest?.symbol || '—')}</strong><span>${formatPercent(sentiment.strongest?.changePercent || 0)}</span></div>
-    </div>
-    <div class="sector-list">
-      ${sectors.map(renderSectorRow).join('') || `<div class="empty-state">Sin datos sectoriales.</div>`}
-    </div>
-  </section>`;
-}
-
 function renderSectorRow(sector) {
   const avg = Number(sector.avg || 0);
   const width = Math.min(100, Math.max(4, Math.abs(avg) * 18));
@@ -1082,58 +924,6 @@ function renderStockRow(q) {
   </article>`;
 }
 
-function renderStockDetail(q) {
-  const pct = Number(q.changePercent || 0);
-  const isWatch = isInUserWatchlist(q.symbol);
-  const bias = pct > 0.7 ? 'Fuerza positiva' : pct < -0.7 ? 'Presión negativa' : 'Movimiento neutral';
-  return `<section class="panel-card stock-detail" id="stock-detail-card">
-    <div class="card-topline compact">
-      <div class="stock-detail-head">
-        <span class="stock-detail-icon">${safeMarketEscape(q.icon)}</span>
-        <div><span class="eyebrow">DETALLE DE ACCIÓN</span><h2>${safeMarketEscape(q.symbol)}</h2><small>${safeMarketEscape(q.name)}</small></div>
-      </div>
-      <button class="icon-btn" onclick="closeStockDetail()">×</button>
-    </div>
-    <div class="stock-detail-price ${quoteClass(pct)}">
-      <strong>${formatUSD(q.price)}</strong>
-      <span>${formatPercent(pct)}</span>
-    </div>
-    <div class="detail-sparkline-wrap">
-      <span class="eyebrow">SPARKLINE LOCAL</span>
-      ${renderSparkline(q.symbol, 'detail-spark')}
-    </div>
-    <div class="stock-detail-grid">
-      <div><small>Sector</small><strong>${safeMarketEscape(shortSector(q.sector))}</strong></div>
-      <div><small>Sesgo</small><strong>${bias}</strong></div>
-      <div><small>Apertura</small><strong>${formatUSD(q.open)}</strong></div>
-      <div><small>Máximo</small><strong>${formatUSD(q.high)}</strong></div>
-      <div><small>Mínimo</small><strong>${formatUSD(q.low)}</strong></div>
-      <div><small>Volumen</small><strong>${formatLargeNumber(q.volume)}</strong></div>
-    </div>
-    <div class="market-detail-agent">
-      <span class="eyebrow">LECTURA DEL MARKET AGENT</span>
-      <p>${safeMarketEscape(describeSingleStock(q))}</p>
-    </div>
-    <div class="stock-alert-builder">
-      <span class="eyebrow">CREAR ALERTA LOCAL</span>
-      <div class="alert-builder-grid">
-        <select id="alert-type-${safeMarketEscape(q.symbol)}">
-          <option value="priceAbove">Precio ≥</option>
-          <option value="priceBelow">Precio ≤</option>
-          <option value="changeAbove">Cambio % ≥</option>
-          <option value="changeBelow">Cambio % ≤</option>
-        </select>
-        <input id="alert-target-${safeMarketEscape(q.symbol)}" type="number" step="0.01" placeholder="Objetivo">
-        <button class="btn btn-success" onclick="createMarketAlert('${safeMarketEscape(q.symbol)}')">ACTIVAR</button>
-      </div>
-    </div>
-    <div class="market-actions detail-actions">
-      <button class="btn ${isWatch ? 'btn-outline' : 'btn-success'}" onclick="toggleWatchlist('${safeMarketEscape(q.symbol)}')">${isWatch ? '☆ QUITAR' : '⭐ SEGUIR'}</button>
-      <button class="btn btn-outline" onclick="setMarketFilter('${safeMarketEscape(q.sector)}')">VER SECTOR</button>
-    </div>
-  </section>`;
-}
-
 function describeSingleStock(q) {
   const pct = Number(q.changePercent || 0);
   const sectorStats = marketSectorStats().find(s => s.sector === q.sector);
@@ -1147,9 +937,11 @@ function shortSector(sector) {
   return String(sector || '').replace('Tecnología electrónica', 'Tech').replace('Servicios tecnológicos', 'Servicios Tech').replace('Comercio minorista', 'Retail').replace('Tecnologías sanitarias', 'Salud').replace('Fabricación de productos', 'Industria');
 }
 
+let _marketQueryDebounce = null;
 function setMarketQuery(value) {
   marketState.query = String(value || '');
-  renderMarketContent();
+  clearTimeout(_marketQueryDebounce);
+  _marketQueryDebounce = setTimeout(() => renderMarketContent(), 160);
 }
 
 function setMarketFilter(value) {

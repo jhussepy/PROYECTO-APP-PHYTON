@@ -165,80 +165,6 @@ function commandMarketScore(sentiment = marketSentiment()) {
   return Math.max(5, Math.min(95, Math.round(50 + breadth + momentum)));
 }
 
-function commandPortfolioValue(quotes = marketState.quotes || []) {
-  const top = [...quotes].sort((a, b) => Number(b.cap || 0) - Number(a.cap || 0)).slice(0, 8);
-  const base = top.reduce((sum, q) => sum + (Number(q.price || 0) * (1 + Number(q.cap || 1) / 1000)), 0);
-  const dayPct = quotes.length ? quotes.reduce((s, q) => s + Number(q.changePercent || 0), 0) / quotes.length : 0;
-  const value = Math.max(1000, base * 14.2);
-  const pnl = value * (dayPct / 100);
-  return { value, pnl, pct: dayPct };
-}
-
-function commandTopSignal(quotes = marketState.quotes || []) {
-  const sorted = [...quotes].sort((a, b) => Number(b.changePercent) - Number(a.changePercent));
-  return sorted[0] || null;
-}
-
-function renderCommandGauge(score, sentiment) {
-  const clamped = Math.max(0, Math.min(100, Number(score || 0)));
-  const angle = -122 + (clamped / 100) * 244;
-  const bullish = Math.round((sentiment.up / Math.max(1, sentiment.total)) * 100);
-  const bearish = Math.round((sentiment.down / Math.max(1, sentiment.total)) * 100);
-  const neutral = Math.max(0, 100 - bullish - bearish);
-  return `<div class="command-gauge-wrap">
-    <div class="command-gauge" style="--score:${clamped}; --needle:${angle}deg">
-      <span class="gauge-needle"></span>
-      <b>${clamped}</b>
-      <small>Market Score</small>
-    </div>
-    <div class="gauge-legend">
-      <span><i class="bull"></i>Bullish <b>${bullish}%</b></span>
-      <span><i class="neutral"></i>Neutral <b>${neutral}%</b></span>
-      <span><i class="bear"></i>Bearish <b>${bearish}%</b></span>
-    </div>
-  </div>`;
-}
-
-function renderCommandPortfolioCard(quotes = marketState.quotes || [], sentiment = marketSentiment(quotes)) {
-  const p = commandPortfolioValue(quotes);
-  const cls = p.pnl >= 0 ? 'is-up' : 'is-down';
-  return `<section class="command-card command-portfolio ${cls}">
-    <div class="command-card-head"><span>Portafolio</span><small>Vista educativa</small></div>
-    <strong class="portfolio-value">$${p.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
-    <small class="portfolio-sub">P&amp;L diario</small>
-    <b class="portfolio-pnl">${p.pnl >= 0 ? '+' : ''}$${Math.abs(p.pnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${formatPercent(p.pct)})</b>
-    <div class="portfolio-chart">${renderCommandPortfolioSpark(quotes)}</div>
-  </section>`;
-}
-
-function renderCommandPortfolioSpark(quotes = marketState.quotes || []) {
-  const values = quotes.slice(0, 14).map((q, i) => 40 + Number(q.changePercent || 0) * 6 + i * 2.5);
-  const data = values.length >= 6 ? values : deterministicMiniSeries('PORTFOLIO', marketSentiment(quotes).avg, 18);
-  const min = Math.min(...data), max = Math.max(...data), spread = Math.max(.0001, max - min);
-  const coords = data.map((v, i) => `${((i/(data.length-1))*100).toFixed(2)},${(34 - ((v-min)/spread)*28).toFixed(2)}`).join(' ');
-  return `<svg viewBox="0 0 100 38" preserveAspectRatio="none" aria-hidden="true"><polyline points="${coords}" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="100" cy="${coords.split(' ').pop().split(',')[1]}" r="3" fill="currentColor"/></svg>`;
-}
-
-function renderCommandSentimentCard(sentiment = marketSentiment()) {
-  const score = commandMarketScore(sentiment);
-  return `<section class="command-card command-sentiment ${sentiment.tone}">
-    <div class="command-card-head"><span>Sentimiento del mercado</span><small>${safeMarketEscape(sentiment.label)}</small></div>
-    ${renderCommandGauge(score, sentiment)}
-  </section>`;
-}
-
-function renderCommandToolsRow() {
-  const watchCount = readUserWatchlist().length;
-  const alertCount = readMarketAlerts().filter(a => a.active).length;
-  return `<section class="command-tools-row" aria-label="Herramientas de mercado">
-    <button onclick="setMarketTab('alerts')"><span>🔔</span><b>Alertas</b>${alertCount ? `<em>${alertCount}</em>` : ''}</button>
-    <button onclick="setMarketTab('summary')"><span>⏱</span><b>Scanner</b></button>
-    <button onclick="scrollToMarketInsight()"><span>🧠</span><b>AI Insights</b><em>Nuevo</em></button>
-    <button onclick="setMarketTab('watchlist')"><span>👁</span><b>Watchlist</b>${watchCount ? `<em>${watchCount}</em>` : ''}</button>
-    <button onclick="renderMarketNewsToast()"><span>▤</span><b>Noticias</b></button>
-  </section>`;
-}
-
 function renderMarketNewsToast() {
   if (typeof showToast === 'function') showToast('📰 Noticias', 'Módulo educativo listo para integrar noticias financieras en una versión futura.');
 }
@@ -247,182 +173,6 @@ function scrollToMarketInsight() {
   const el = document.getElementById('market-ai-insight');
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
-
-function renderCommandSearchAndFilters(sectors = marketSectors()) {
-  return `<section class="command-filter-panel">
-    <div class="command-search-shell">
-      <span class="command-search-icon">⌕</span>
-      <input class="market-search command-search" placeholder="Buscar acción, sector o símbolo..." value="${safeMarketEscape(marketState.query || '')}" oninput="setMarketQuery(this.value)">
-      <button class="command-filter-button" type="button" onclick="setMarketTab('heatmap')">☷</button>
-      <button class="command-filter-button" type="button" onclick="refreshMarket(true)">↻</button>
-    </div>
-    <div class="command-select-row">
-      <button class="filter-pill ${marketState.filter === 'all' ? 'active' : ''}" onclick="setMarketFilter('all')">Todos los sectores</button>
-      <button class="filter-pill">1D</button>
-      <button class="filter-pill">Orden: % Cambio</button>
-    </div>
-    <div class="market-filters command-sector-pills">
-      <button class="filter-pill ${marketState.filter === 'all' ? 'active' : ''}" onclick="setMarketFilter('all')">Todos</button>
-      ${sectors.map(sector => `<button class="filter-pill ${marketState.filter === sector ? 'active' : ''}" onclick="setMarketFilter('${safeMarketEscape(sector)}')">${safeMarketEscape(shortSector(sector))}</button>`).join('')}
-    </div>
-  </section>`;
-}
-
-function renderCommandMiniChart(q, className = '') {
-  const chart = renderMarketMiniChart(q, `command-chart ${className}`);
-  return chart.replace('viewBox="0 0 100 100"', 'viewBox="0 0 100 54"');
-}
-
-function renderCommandTile(q, index = 0) {
-  const pct = Number(q.changePercent || 0);
-  const cls = quoteClass(pct);
-  const sector = shortSector(q.sector);
-  return `<article class="command-stock-card ${cls}" onclick="selectStock('${safeMarketEscape(q.symbol)}')">
-    <div class="command-stock-top">
-      ${brandLogo(q)}
-      <div>
-        <strong>${safeMarketEscape(q.symbol)}</strong>
-        <small>${safeMarketEscape(shortCompanyName(q.name))}</small>
-        <em>${safeMarketEscape(sector)}</em>
-      </div>
-    </div>
-    <div class="command-stock-middle">
-      <b>${formatPercent(pct)}</b>
-      <small>${formatUSD(q.price)}</small>
-    </div>
-    <div class="command-stock-chart">${renderCommandMiniChart(q)}</div>
-  </article>`;
-}
-
-function renderCommandHeatmap(quotes) {
-  return `<section class="command-heatmap-panel">
-    <div class="command-section-title">
-      <h2>Mapa de calor</h2>
-      <span>▦ ${quotes.length} símbolos</span>
-    </div>
-    <div class="command-heatmap-grid">
-      ${quotes.map(renderCommandTile).join('') || `<div class="empty-state">Sin resultados para el filtro actual.</div>`}
-    </div>
-  </section>`;
-}
-
-function renderCommandScanner(gainers, losers) {
-  return `<section class="command-scanner-panel">
-    <div class="command-mini-list"><span>Top ganadoras</span>${gainers.slice(0,3).map(q => `<button class="${quoteClass(q.changePercent)}" onclick="selectStock('${safeMarketEscape(q.symbol)}')"><b>${q.symbol}</b><em>${formatPercent(q.changePercent)}</em></button>`).join('')}</div>
-    <div class="command-mini-list"><span>Top perdedoras</span>${losers.slice(0,3).map(q => `<button class="${quoteClass(q.changePercent)}" onclick="selectStock('${safeMarketEscape(q.symbol)}')"><b>${q.symbol}</b><em>${formatPercent(q.changePercent)}</em></button>`).join('')}</div>
-  </section>`;
-}
-
-function renderCommandAIInsight(sentiment, gainers, losers) {
-  const leader = gainers[0];
-  const weak = losers[0];
-  const confidence = Math.max(55, Math.min(96, commandMarketScore(sentiment) + 12));
-  return `<section id="market-ai-insight" class="command-ai-insight">
-    <div class="ai-orb">🧠</div>
-    <div class="ai-copy">
-      <div class="ai-head"><span>AI Insight</span><em>Señal fuerte</em></div>
-      <h3>Oportunidad detectada: ${safeMarketEscape(leader?.symbol || '—')}</h3>
-      <p>${safeMarketEscape(leader?.symbol || 'El líder')} muestra la mayor fuerza relativa del panel. El sesgo general es ${safeMarketEscape(sentiment.label.toLowerCase())}; compara liderazgo, sector y amplitud antes de sacar conclusiones.</p>
-      <div class="ai-progress"><span style="width:${confidence}%"></span></div>
-      <small>Confianza educativa: ${confidence}% · Débil del panel: ${safeMarketEscape(weak?.symbol || '—')}</small>
-    </div>
-    ${leader ? `<div class="ai-card-mini">${brandLogo(leader)}<b>${leader.symbol}</b>${renderCommandMiniChart(leader, 'ai-spark')}</div>` : ''}
-  </section>`;
-}
-
-function renderCommandDataStatus() {
-  const source = safeMarketEscape(marketState.source || 'Pendiente');
-  const online = marketState.status === 'live';
-  return `<div class="command-live-strip ${online ? 'online' : 'cache'}">
-    <span class="market-dot ${online ? 'online' : 'offline'}"></span>
-    <b>${online ? 'MERCADOS EN VIVO' : 'MODO CACHÉ / DEMO'}</b>
-    <small>${source} · ${safeMarketEscape(formatMarketTime(marketState.updatedAt))}</small>
-  </div>`;
-}
-
-function renderCommandSummaryTab(allQuotes, sentiment, gainers, losers, watchQuotes) {
-  const sectors = marketSectors();
-  const visible = getVisibleQuotes();
-  return `
-    <section class="command-top-grid">
-      ${renderCommandPortfolioCard(allQuotes, sentiment)}
-      ${renderCommandSentimentCard(sentiment)}
-    </section>
-    ${renderCommandToolsRow()}
-    ${renderCommandSearchAndFilters(sectors)}
-    ${renderCommandHeatmap(visible)}
-    ${renderCommandAIInsight(sentiment, gainers, losers)}
-  `;
-}
-
-function renderCommandHeatmapTab(quotes, sectors, totalCap, selected) {
-  return `
-    ${renderCommandSearchAndFilters(sectors)}
-    ${renderCommandHeatmap(quotes)}
-    ${selected ? renderStockDetail(selected) : ''}
-    ${renderSectorRotationCard(marketSentiment(marketState.quotes || []))}
-  `;
-}
-
-window.renderMarket = function renderMarket() {
-  marketState.userWatchlist = readUserWatchlist();
-  marketState.detailSymbol = readSelectedSymbol();
-  mainContainer.innerHTML = `
-    <section class="market-command-shell">
-      <div class="command-shell-head">
-        <div>
-          <span class="eyebrow">MARKET OPS · COMMAND CENTER</span>
-          <h1>Acciones Pro</h1>
-          <p>Panel educativo de mercado con datos live, sentimiento, scanner, heatmap, watchlist y agente local.</p>
-        </div>
-        <span class="command-version">v9.6</span>
-      </div>
-      <div id="market-status-box">${renderCommandDataStatus()}</div>
-      <div class="command-tab-row">
-        <button class="command-tab active" onclick="setMarketTab('summary')">Resumen</button>
-        <button class="command-tab" onclick="setMarketTab('heatmap')">Heatmap</button>
-        <button class="command-tab" onclick="setMarketTab('watchlist')">Watchlist</button>
-        <button class="command-tab" onclick="setMarketTab('alerts')">Alertas</button>
-      </div>
-    </section>
-    <section id="market-content" class="market-command-content"><div class="panel-card"><div class="loader small"></div><p class="hero-subtitle">Cargando inteligencia de mercado...</p></div></section>
-    <div class="bottom-spacer"></div>
-  `;
-  refreshMarket(false);
-};
-
-window.renderMarketContent = function renderMarketContent() {
-  const host = document.getElementById('market-content');
-  const statusBox = document.getElementById('market-status-box');
-  if (!host) return;
-  marketState.userWatchlist = readUserWatchlist();
-  marketState.alerts = readMarketAlerts();
-  marketState.notes = readMarketNotes();
-  marketState.priceHistory = readMarketHistory();
-
-  const quotes = getVisibleQuotes();
-  const allQuotes = marketState.quotes || [];
-  const sectors = marketSectors();
-  const totalCap = Math.max(1, quotes.reduce((sum, q) => sum + Number(q.cap || 0), 0));
-  const sentiment = marketSentiment(allQuotes);
-  const gainers = [...allQuotes].sort((a, b) => Number(b.changePercent) - Number(a.changePercent)).slice(0, 5);
-  const losers = [...allQuotes].sort((a, b) => Number(a.changePercent) - Number(b.changePercent)).slice(0, 5);
-  const watchQuotes = marketState.userWatchlist.map(getQuoteBySymbol).filter(Boolean);
-  const selected = getQuoteBySymbol(marketState.detailSymbol) || quotes[0] || null;
-
-  if (statusBox) statusBox.innerHTML = renderCommandDataStatus();
-  document.querySelectorAll('.command-tab').forEach(btn => {
-    const name = btn.textContent.trim().toLowerCase();
-    btn.classList.toggle('active', name === (marketActiveTab === 'summary' ? 'resumen' : marketActiveTab));
-  });
-
-  if (marketActiveTab === 'summary') host.innerHTML = renderCommandSummaryTab(allQuotes, sentiment, gainers, losers, watchQuotes);
-  else if (marketActiveTab === 'heatmap') host.innerHTML = renderCommandHeatmapTab(quotes, sectors, totalCap, selected);
-  else if (marketActiveTab === 'watchlist') host.innerHTML = renderMarketWatchlistTab(watchQuotes);
-  else if (marketActiveTab === 'alerts') host.innerHTML = renderMarketAlertsTab();
-  else host.innerHTML = renderCommandSummaryTab(allQuotes, sentiment, gainers, losers, watchQuotes);
-};
-
 
 /* PySec Academy Elite v9.6 - Market Command Pro Dashboard
    Rebuild visual de Acciones para acercarse al dashboard profesional enviado por el usuario:
@@ -503,8 +253,8 @@ function renderProSentimentCard(sentiment = marketSentiment()) {
 }
 
 function renderProToolsRow() {
-  const watchCount = readUserWatchlist().length;
-  const alertCount = readMarketAlerts().filter(a => a.active).length;
+  const watchCount = (marketState.userWatchlist || readUserWatchlist()).length;
+  const alertCount = (marketState.alerts || readMarketAlerts()).filter(a => a.active).length;
   return `<section class="pro-tools-row">
     <button onclick="setMarketTab('alerts')"><span>♢</span><b>Alertas</b>${alertCount ? `<em>${alertCount}</em>` : ''}</button>
     <button onclick="setMarketTab('summary')"><span>◎</span><b>Scanner</b></button>
@@ -587,11 +337,7 @@ function renderProAIInsight(sentiment, gainers, losers) {
 }
 
 function renderProDashboard() {
-  marketState.userWatchlist = readUserWatchlist();
-  marketState.alerts = readMarketAlerts();
-  marketState.notes = readMarketNotes();
-  marketState.priceHistory = readMarketHistory();
-
+  // marketState ya viene hidratado por renderMarketContent (lectura única por render).
   const allQuotes = marketState.quotes || [];
   const quotes = getVisibleQuotes();
   const sectors = marketSectors();
@@ -630,8 +376,13 @@ window.renderMarket = function renderMarket() {
 window.renderMarketContent = function renderMarketContent() {
   const host = document.getElementById('market-content');
   if (!host) return;
+  // Hidratación única por render: evita decenas de JSON.parse repetidos en las sub-funciones.
+  marketState.userWatchlist = readUserWatchlist();
+  marketState.alerts = readMarketAlerts();
+  marketState.notes = readMarketNotes();
+  marketState.priceHistory = readMarketHistory();
   if (marketActiveTab === 'watchlist') {
-    const watchQuotes = readUserWatchlist().map(getQuoteBySymbol).filter(Boolean);
+    const watchQuotes = marketState.userWatchlist.map(getQuoteBySymbol).filter(Boolean);
     host.innerHTML = `${renderProLiveHeader()}${renderProToolsRow()}${renderMarketWatchlistTab(watchQuotes)}`;
     return;
   }
