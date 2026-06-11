@@ -804,7 +804,7 @@ function closeStockDetail() {
 function renderSectorRow(sector) {
   const avg = Number(sector.avg || 0);
   const width = Math.min(100, Math.max(4, Math.abs(avg) * 18));
-  return `<button class="sector-row ${quoteClass(avg)}" onclick="setMarketFilter('${safeMarketEscape(sector.sector)}')">
+  return `<button class="sector-row ${quoteClass(avg)}" data-action="set-market-filter" data-sector="${safeMarketEscape(sector.sector)}">
     <div><strong>${safeMarketEscape(shortSector(sector.sector))}</strong><small>${sector.positive} verdes · ${sector.negative} rojas · líder ${safeMarketEscape(sector.leader?.symbol || '—')}</small></div>
     <div class="sector-meter"><span style="width:${width}%"></span></div>
     <b>${formatPercent(avg)}</b>
@@ -828,8 +828,8 @@ function renderAlertItem(alert) {
     <div><strong>${safeMarketEscape(alert.symbol)}</strong><small>${safeMarketEscape(describeAlertTarget(alert))}</small></div>
     <span class="status-pill ${triggered ? 'green' : ''}">${triggered ? 'ACTIVADA' : 'VIGILANDO'}</span>
     <div class="alert-actions">
-      ${triggered ? `<button onclick="resetMarketAlert('${safeMarketEscape(alert.id)}')">REARMAR</button>` : ''}
-      <button onclick="deleteMarketAlert('${safeMarketEscape(alert.id)}')">BORRAR</button>
+      ${triggered ? `<button data-action="reset-market-alert" data-id="${safeMarketEscape(alert.id)}">REARMAR</button>` : ''}
+      <button data-action="delete-market-alert" data-id="${safeMarketEscape(alert.id)}">BORRAR</button>
     </div>
   </article>`;
 }
@@ -850,18 +850,18 @@ function renderMarketNoteItem(note) {
   return `<article class="market-note-item">
     <div><strong>${safeMarketEscape(note.sentiment || 'Nota')}</strong><small>${formatMarketTime(note.createdAt)}</small></div>
     <p>${safeMarketEscape(note.text)}</p>
-    <button onclick="deleteMarketNote('${safeMarketEscape(note.id)}')">Eliminar</button>
+    <button data-action="delete-market-note" data-id="${safeMarketEscape(note.id)}">Eliminar</button>
   </article>`;
 }
 
 function renderMiniQuote(q) {
-  return `<button class="mini-quote ${quoteClass(q.changePercent)}" onclick="selectStock('${safeMarketEscape(q.symbol)}')">
+  return `<button class="mini-quote ${quoteClass(q.changePercent)}" data-action="select-stock" data-symbol="${safeMarketEscape(q.symbol)}">
     <span>${safeMarketEscape(q.symbol)}</span><strong>${formatPercent(q.changePercent)}</strong>
   </button>`;
 }
 
 function renderWatchChip(q) {
-  return `<button class="watch-chip ${quoteClass(q.changePercent)}" onclick="selectStock('${safeMarketEscape(q.symbol)}')">
+  return `<button class="watch-chip ${quoteClass(q.changePercent)}" data-action="select-stock" data-symbol="${safeMarketEscape(q.symbol)}">
     <strong>${safeMarketEscape(q.symbol)}</strong><span>${formatPercent(q.changePercent)}</span>
   </button>`;
 }
@@ -895,7 +895,7 @@ function renderHeatTile(q, totalCap) {
   const height = Math.round(224 + capShare * 44);
   const cls = quoteClass(pct);
   const strength = Math.min(100, Math.max(8, Math.round(Math.abs(pct) * 12)));
-  return `<article class="stock-tile market-pro-tile ${cls}" style="min-height:${height}px" title="${safeMarketEscape(q.name)}" onclick="selectStock('${safeMarketEscape(q.symbol)}')">
+  return `<article class="stock-tile market-pro-tile ${cls}" style="min-height:${height}px" title="${safeMarketEscape(q.name)}" data-action="select-stock" data-symbol="${safeMarketEscape(q.symbol)}">
     <div class="tile-noise" aria-hidden="true"></div>
     <header class="tile-head">
       ${brandLogo(q)}
@@ -917,7 +917,7 @@ function renderHeatTile(q, totalCap) {
 
 function renderStockRow(q) {
   const cls = quoteClass(q.changePercent);
-  return `<article class="stock-row ${cls}" onclick="selectStock('${safeMarketEscape(q.symbol)}')">
+  return `<article class="stock-row ${cls}" data-action="select-stock" data-symbol="${safeMarketEscape(q.symbol)}">
     <div class="stock-row-left">${brandLogo(q)}<div><strong>${safeMarketEscape(q.symbol)}</strong><small>${safeMarketEscape(q.name)}</small></div></div>
     <div class="stock-row-mid"><strong>${formatUSD(q.price)}</strong><small>${safeMarketEscape(shortSector(q.sector))}</small>${renderSparkline(q.symbol, 'row-spark')}</div>
     <div class="stock-change">${formatPercent(q.changePercent)}</div>

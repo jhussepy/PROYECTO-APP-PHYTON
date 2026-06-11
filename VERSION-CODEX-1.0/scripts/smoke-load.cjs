@@ -219,9 +219,32 @@ const dataActionScan = evalInCtx(`(function() {
     let m; re.lastIndex = 0;
     while ((m = re.exec(c.innerHTML || '')) !== null) found.add(m[1]);
   }
+  // Market sub-components (sector rows, alert/note items, stock tiles/chips/rows) only render
+  // after an async refresh fills marketState.quotes, so the static 'market' view scan never
+  // reaches them. Render each data-action-bearing sub-component directly with seeded demo data.
+  let marketError = null;
+  const marketActions = new Set();
+  try {
+    marketState.quotes = demoQuotes('demo');
+    const q = marketState.quotes[0];
+    const sector = marketSectorStats(marketState.quotes)[0];
+    const marketHtml = [
+      renderSectorRow(sector),
+      renderAlertItem({ id: 'alert_test', symbol: q.symbol, type: 'priceAbove', target: q.price, triggeredAt: new Date().toISOString() }),
+      renderMarketNoteItem({ id: 'note_test', symbol: q.symbol, text: 'nota de prueba', createdAt: new Date().toISOString() }),
+      renderMiniQuote(q),
+      renderWatchChip(q),
+      renderStockRow(q)
+    ].join('');
+    let mm; re.lastIndex = 0;
+    while ((mm = re.exec(marketHtml)) !== null) { found.add(mm[1]); marketActions.add(mm[1]); }
+  } catch (e) { marketError = e.message; }
   const orphans = [...found].filter(a => typeof ACTION_REGISTRY[a] !== 'function');
-  return { found: found.size, orphans };
-})()`) || { found: 0, orphans: [] };
+  return { found: found.size, orphans, marketActions: [...marketActions], marketError };
+})()`) || { found: 0, orphans: [], marketActions: [], marketError: 'scan eval failed' };
+if (dataActionScan.marketError) {
+  failures.push(`Render de sub-componentes de market falló en el sandbox: ${dataActionScan.marketError}`);
+}
 if (dataActionScan.orphans.length) {
   failures.push(`Acciones delegadas sin handler: ${dataActionScan.orphans.join(', ')}`);
 }
@@ -230,4 +253,4 @@ if (failures.length) {
   console.error('SMOKE FALLÓ:\n' + failures.map(f => ' - ' + f).join('\n'));
   process.exit(1);
 }
-console.log(`OK: ${SCRIPT_ORDER.length} scripts cargados, ${Object.keys(REQUIRED_GLOBALS).length} globales verificados, ${courseCount} cursos, ${viewsProbed} vistas renderizadas sin error. data-action: ${dataActionScan.found} únicas, ${dataActionScan.orphans.length} sin handler.`);
+console.log(`OK: ${SCRIPT_ORDER.length} scripts cargados, ${Object.keys(REQUIRED_GLOBALS).length} globales verificados, ${courseCount} cursos, ${viewsProbed} vistas renderizadas sin error. data-action: ${dataActionScan.found} únicas, ${dataActionScan.orphans.length} sin handler. market sub-componentes: ${dataActionScan.marketActions.length} acciones [${dataActionScan.marketActions.join(', ')}].`);
