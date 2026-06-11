@@ -151,6 +151,24 @@ const ACTION_REGISTRY = {
   // <button data-action="remove-portfolio-holding" data-symbol="NVDA">...</button>
   'remove-portfolio-holding': function(el) {
     removePortfolioHolding(el.dataset.symbol);
+  },
+
+  // --- Phase 3.1 Lote 4 · elite-store.js ---
+
+  // <button data-action="render-elite-store" data-id="themes">...</button>
+  'render-elite-store': function(el) {
+    renderEliteStore(el.dataset.id);
+  },
+
+  // <button data-action="equip-elite-item" data-category="themes" data-item-id="neon">...</button>
+  'equip-elite-item': function(el) {
+    equipEliteItem(el.dataset.category, el.dataset.itemId);
+  },
+
+  // <button data-action="buy-elite-item" data-category="themes" data-item-id="neon">...</button>
+  // Handles both normal items and packs (data-category="packs").
+  'buy-elite-item': function(el) {
+    buyEliteItem(el.dataset.category, el.dataset.itemId);
   }
 };
 

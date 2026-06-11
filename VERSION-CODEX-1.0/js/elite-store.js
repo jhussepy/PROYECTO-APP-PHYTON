@@ -545,7 +545,7 @@ function eliteTierClass(tier) {
 }
 
 function eliteStoreTabButton(id, label, active) {
-  return `<button class="elite-tab ${active === id ? 'active' : ''}" onclick="renderEliteStore('${id}')">${label}</button>`;
+  return `<button class="elite-tab ${active === id ? 'active' : ''}" data-action="render-elite-store" data-id="${escapeHtml(id)}">${label}</button>`;
 }
 
 function renderElitePreview(item, category) {
@@ -567,13 +567,13 @@ function renderEliteItemCard(category, item) {
   let action = '';
   if (owned && (config.equippedKey || config.multiEquip)) {
     const label = config.multiEquip ? (equipped ? 'DESACTIVAR' : 'ACTIVAR') : (equipped ? 'EQUIPADO' : 'EQUIPAR');
-    action = `<button class="elite-card-action ${equipped ? 'equipped' : ''}" onclick="equipEliteItem('${category}','${item.id}')">${label}</button>`;
+    action = `<button class="elite-card-action ${equipped ? 'equipped' : ''}" data-action="equip-elite-item" data-category="${escapeHtml(category)}" data-item-id="${escapeHtml(item.id)}">${label}</button>`;
   } else if (owned) {
     action = '<button class="elite-card-action equipped" disabled>EN COLECCIÓN</button>';
   } else if (requirementLocked) {
     action = `<button class="elite-card-action elite-locked" disabled>${escapeHtml(eliteRequirementLabel(item.unlockRequirement))}</button>`;
   } else {
-    action = `<button class="elite-card-action" onclick="buyEliteItem('${category}','${item.id}')">COMPRAR · ${item.price} 🪙</button>`;
+    action = `<button class="elite-card-action" data-action="buy-elite-item" data-category="${escapeHtml(category)}" data-item-id="${escapeHtml(item.id)}">COMPRAR · ${item.price} 🪙</button>`;
   }
   return `<article class="elite-item-card elite-store-card ${category === 'themes' ? 'theme-card' : ''} ${owned ? 'elite-owned' : 'is-locked'} ${equipped ? 'elite-equipped is-equipped' : ''} ${requirementLocked ? 'elite-locked' : ''}">
     ${renderElitePreview(item, category)}
@@ -603,7 +603,7 @@ function renderPackCard(pack) {
     ? '<button class="elite-card-action equipped" disabled>PACK DESBLOQUEADO</button>'
     : requirementLocked
       ? `<button class="elite-card-action elite-locked" disabled>${escapeHtml(eliteRequirementLabel(pack.unlockRequirement))}</button>`
-      : `<button class="elite-card-action" onclick="buyEliteItem('packs','${pack.id}')">COMPRAR PACK · ${pack.price} 🪙</button>`;
+      : `<button class="elite-card-action" data-action="buy-elite-item" data-category="packs" data-item-id="${escapeHtml(pack.id)}">COMPRAR PACK · ${pack.price} 🪙</button>`;
   return `<article class="elite-pack-card elite-item-card elite-store-card ${owned ? 'elite-owned' : 'is-locked'} ${requirementLocked ? 'elite-locked' : ''}">
     ${renderElitePreview(pack, 'packs')}
     <div class="elite-card-body">
