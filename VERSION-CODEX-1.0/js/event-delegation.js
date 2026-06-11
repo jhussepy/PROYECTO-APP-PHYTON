@@ -76,6 +76,33 @@ const ACTION_REGISTRY = {
   // <button data-action="accept-ethics" data-course-id="c">...</button>
   'accept-ethics': function(el) {
     acceptEthics(el.dataset.courseId);
+  },
+
+  // --- Phase 3.2 (market.js batch) ---
+
+  // <button data-action="set-market-filter" data-sector="Tech">...</button>
+  'set-market-filter': function(el) {
+    setMarketFilter(el.dataset.sector);
+  },
+
+  // <button data-action="reset-market-alert" data-id="alert_x">...</button>
+  'reset-market-alert': function(el) {
+    resetMarketAlert(el.dataset.id);
+  },
+
+  // <button data-action="delete-market-alert" data-id="alert_x">...</button>
+  'delete-market-alert': function(el) {
+    deleteMarketAlert(el.dataset.id);
+  },
+
+  // <button data-action="delete-market-note" data-id="note_x">...</button>
+  'delete-market-note': function(el) {
+    deleteMarketNote(el.dataset.id);
+  },
+
+  // Stock tile/chip/row/mini-quote → open the detail for that symbol.
+  'select-stock': function(el) {
+    selectStock(el.dataset.symbol);
   }
 };
 
