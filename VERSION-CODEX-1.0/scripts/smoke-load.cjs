@@ -228,13 +228,25 @@ const dataActionScan = evalInCtx(`(function() {
     marketState.quotes = demoQuotes('demo');
     const q = marketState.quotes[0];
     const sector = marketSectorStats(marketState.quotes)[0];
+    // renderPortfolioManager: empty portfolio shows the quick-add row (quick-add-portfolio);
+    // a seeded holding shows the holdings list (remove-portfolio-holding). Render both states.
+    writeMarketPortfolio([]);
+    const portfolioEmptyHtml = renderPortfolioManager();
+    writeMarketPortfolio([{ symbol: q.symbol, shares: 1, avgCost: Number(q.price || 1) }]);
+    const portfolioSeededHtml = renderPortfolioManager();
+    writeMarketPortfolio([]);
     const marketHtml = [
       renderSectorRow(sector),
       renderAlertItem({ id: 'alert_test', symbol: q.symbol, type: 'priceAbove', target: q.price, triggeredAt: new Date().toISOString() }),
       renderMarketNoteItem({ id: 'note_test', symbol: q.symbol, text: 'nota de prueba', createdAt: new Date().toISOString() }),
       renderMiniQuote(q),
       renderWatchChip(q),
-      renderStockRow(q)
+      renderStockRow(q),
+      renderStockDetail(q),          // create-market-alert, toggle-watchlist, set-market-filter
+      renderProSearchAndFilters(),   // set-market-filter (filter pills)
+      renderProStockCard(q),         // select-stock
+      portfolioEmptyHtml,            // quick-add-portfolio
+      portfolioSeededHtml            // remove-portfolio-holding
     ].join('');
     let mm; re.lastIndex = 0;
     while ((mm = re.exec(marketHtml)) !== null) { found.add(mm[1]); marketActions.add(mm[1]); }

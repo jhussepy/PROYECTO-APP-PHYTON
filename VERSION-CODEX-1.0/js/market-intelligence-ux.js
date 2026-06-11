@@ -129,7 +129,7 @@ function renderMarketVisibleAlerts() {
       <div><strong>${triggered.length}</strong><small>Disparadas</small></div>
       <div><strong>${alerts.filter(a => a.active && !a.triggeredAt).length}</strong><small>Activas</small></div>
     </div>
-    ${triggered.length ? `<div class="triggered-strip">${triggered.slice(0, 3).map(a => `<button onclick="selectStock('${safeMarketEscape(a.symbol)}')">🚨 ${safeMarketEscape(a.symbol)} · ${safeMarketEscape(describeAlertTarget(a))}</button>`).join('')}</div>` : `<div class="empty-state compact">Sin alertas disparadas. Crea una desde el detalle de cualquier acción.</div>`}
+    ${triggered.length ? `<div class="triggered-strip">${triggered.slice(0, 3).map(a => `<button data-action="select-stock" data-symbol="${safeMarketEscape(a.symbol)}">🚨 ${safeMarketEscape(a.symbol)} · ${safeMarketEscape(describeAlertTarget(a))}</button>`).join('')}</div>` : `<div class="empty-state compact">Sin alertas disparadas. Crea una desde el detalle de cualquier acción.</div>`}
   </section>`;
 }
 
@@ -201,7 +201,7 @@ function renderStockDetail(q) {
       <div><small>Volumen</small><strong>${formatLargeNumber(q.volume)}</strong></div>
     </div>
     <div class="market-detail-agent pro-agent-box"><span class="eyebrow">LECTURA DEL MARKET AGENT</span><p>${safeMarketEscape(describeSingleStock(q))}</p></div>
-    <div class="stock-alert-builder"><span class="eyebrow">CREAR ALERTA LOCAL</span><div class="alert-builder-grid"><select id="alert-type-${safeMarketEscape(q.symbol)}"><option value="priceAbove">Precio ≥</option><option value="priceBelow">Precio ≤</option><option value="changeAbove">Cambio % ≥</option><option value="changeBelow">Cambio % ≤</option></select><input id="alert-target-${safeMarketEscape(q.symbol)}" type="number" step="0.01" placeholder="Objetivo"><button class="btn btn-success" onclick="createMarketAlert('${safeMarketEscape(q.symbol)}')">ACTIVAR ALERTA</button></div></div>
-    <div class="market-actions detail-actions"><button class="btn ${isWatch ? 'btn-outline' : 'btn-success'}" onclick="toggleWatchlist('${safeMarketEscape(q.symbol)}')">${isWatch ? '☆ QUITAR' : '⭐ SEGUIR'}</button><button class="btn btn-outline" onclick="setMarketFilter('${safeMarketEscape(q.sector)}')">VER SECTOR</button><button class="btn btn-outline" onclick="document.getElementById('market-note-input')?.focus()">AGREGAR NOTA</button></div>
+    <div class="stock-alert-builder"><span class="eyebrow">CREAR ALERTA LOCAL</span><div class="alert-builder-grid"><select id="alert-type-${safeMarketEscape(q.symbol)}"><option value="priceAbove">Precio ≥</option><option value="priceBelow">Precio ≤</option><option value="changeAbove">Cambio % ≥</option><option value="changeBelow">Cambio % ≤</option></select><input id="alert-target-${safeMarketEscape(q.symbol)}" type="number" step="0.01" placeholder="Objetivo"><button class="btn btn-success" data-action="create-market-alert" data-symbol="${safeMarketEscape(q.symbol)}">ACTIVAR ALERTA</button></div></div>
+    <div class="market-actions detail-actions"><button class="btn ${isWatch ? 'btn-outline' : 'btn-success'}" data-action="toggle-watchlist" data-symbol="${safeMarketEscape(q.symbol)}">${isWatch ? '☆ QUITAR' : '⭐ SEGUIR'}</button><button class="btn btn-outline" data-action="set-market-filter" data-sector="${safeMarketEscape(q.sector)}">VER SECTOR</button><button class="btn btn-outline" onclick="document.getElementById('market-note-input')?.focus()">AGREGAR NOTA</button></div>
   </section>`;
 }

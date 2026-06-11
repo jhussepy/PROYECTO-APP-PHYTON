@@ -127,6 +127,48 @@ const ACTION_REGISTRY = {
   'delete-note': function(el) {
     deleteAgentNote(el.dataset.id);
     renderNotesMode(el.dataset.context);
+  },
+
+  // --- Phase 3.1 Lote 4 · market-intelligence-ux.js ---
+
+  // <button data-action="create-market-alert" data-symbol="NVDA">...</button>
+  'create-market-alert': function(el) {
+    createMarketAlert(el.dataset.symbol);
+  },
+
+  // <button data-action="toggle-watchlist" data-symbol="NVDA">...</button>
+  'toggle-watchlist': function(el) {
+    toggleWatchlist(el.dataset.symbol);
+  },
+
+  // --- Phase 3.1 Lote 4 · market-command-dashboard.js ---
+
+  // <button data-action="quick-add-portfolio" data-symbol="NVDA">...</button>
+  'quick-add-portfolio': function(el) {
+    quickAddPortfolio(el.dataset.symbol);
+  },
+
+  // <button data-action="remove-portfolio-holding" data-symbol="NVDA">...</button>
+  'remove-portfolio-holding': function(el) {
+    removePortfolioHolding(el.dataset.symbol);
+  },
+
+  // --- Phase 3.1 Lote 4 · elite-store.js ---
+
+  // <button data-action="render-elite-store" data-id="themes">...</button>
+  'render-elite-store': function(el) {
+    renderEliteStore(el.dataset.id);
+  },
+
+  // <button data-action="equip-elite-item" data-category="themes" data-item-id="neon">...</button>
+  'equip-elite-item': function(el) {
+    equipEliteItem(el.dataset.category, el.dataset.itemId);
+  },
+
+  // <button data-action="buy-elite-item" data-category="themes" data-item-id="neon">...</button>
+  // Handles both normal items and packs (data-category="packs").
+  'buy-elite-item': function(el) {
+    buyEliteItem(el.dataset.category, el.dataset.itemId);
   }
 };
 
