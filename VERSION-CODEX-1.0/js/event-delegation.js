@@ -127,6 +127,18 @@ const ACTION_REGISTRY = {
   'delete-note': function(el) {
     deleteAgentNote(el.dataset.id);
     renderNotesMode(el.dataset.context);
+  },
+
+  // --- Phase 3.1 Lote 4 · market-intelligence-ux.js ---
+
+  // <button data-action="create-market-alert" data-symbol="NVDA">...</button>
+  'create-market-alert': function(el) {
+    createMarketAlert(el.dataset.symbol);
+  },
+
+  // <button data-action="toggle-watchlist" data-symbol="NVDA">...</button>
+  'toggle-watchlist': function(el) {
+    toggleWatchlist(el.dataset.symbol);
   }
 };
 
