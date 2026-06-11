@@ -5767,24 +5767,35 @@ body::before {
   box-shadow: 0 18px 46px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.025);
 }
 
-.btn-primary,
-.btn-success {
-  color: #03120a;
-  background: linear-gradient(135deg, #00ff88, #00c973);
-  border-color: #00e07d;
-  box-shadow: 0 12px 28px rgba(0,230,118,.12);
+.btn-primary {
+  color: #fff;
+  background: var(--c-blue);
+  border-color: var(--c-blue);
+  box-shadow: 0 12px 28px var(--c-blue-dim);
+  animation: none;
 }
+.btn-primary:hover { box-shadow: 0 14px 32px var(--c-blue-glow), 0 0 0 1px var(--c-blue); }
+
+.btn-success {
+  color: var(--c-void);
+  background: var(--c-green);
+  border-color: var(--c-green);
+  box-shadow: 0 12px 28px var(--c-green-dim);
+  animation: none;
+}
+.btn-success:hover { box-shadow: 0 14px 32px var(--c-green-glow), 0 0 0 1px var(--c-green); }
 
 .btn-outline {
-  color: #c9f9df;
-  background: rgba(0,255,136,.035);
-  border-color: rgba(0,255,136,.18);
+  color: var(--c-bone);
+  background: transparent;
+  border: 1px solid var(--c-line);
 }
+.btn-outline:hover { border-color: var(--c-line-green); background: var(--c-green-dim); }
 
 .btn-danger {
-  color: #ff7892;
-  background: rgba(255,23,68,.07);
-  border-color: rgba(255,23,68,.28);
+  color: var(--c-red);
+  background: var(--c-red-dim);
+  border-color: rgba(255, 59, 92, .32);
 }
 
 .progress-bar > span,
