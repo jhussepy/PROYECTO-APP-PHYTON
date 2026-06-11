@@ -69,7 +69,7 @@ function renderHome() {
       <div class="progress-block"><div class="progress-label"><span>PROGRESO TOTAL</span><span>${percent}%</span></div>${progressBar(percent)}</div>
       <div class="metric-grid">${metricCard(`${completed}/${total}`, 'Labs', 'glow-blue')}${metricCard(state.xp, 'XP', 'glow-green')}${metricCard(state.certificates.length, 'Certificados', 'glow-purple')}</div>
       ${typeof renderRankStrip === 'function' ? renderRankStrip() : ''}
-      <div class="btn-row compact-actions">${challenge ? actionButton('CONTINUAR ▶', `openLessonGuarded('${challenge.lesson.courseId}', '${challenge.lesson.id}')`, 'btn-primary') : ''}${actionButton('VER RUTA', `renderView('courses')`, 'btn-outline')}</div>
+      <div class="btn-row compact-actions">${challenge ? actionButtonDelegated('CONTINUAR ▶', 'open-lesson-guarded', {'course-id': challenge.lesson.courseId, 'lesson-id': challenge.lesson.id}, 'btn-primary') : ''}${actionButton('VER RUTA', `renderView('courses')`, 'btn-outline')}</div>
     </section>
     ${challenge ? renderChallengeCard(challenge) : ''}
     ${renderAgentHomePanel(challenge)}
@@ -85,7 +85,7 @@ function renderMarketPreview() {
 }
 
 function renderChallengeCard(challenge) {
-  return `<section class="panel-card challenge-card animated-card">${sectionTitle('Reto recomendado', 'Siguiente')}<div class="challenge-body"><div class="challenge-icon">${challenge.course.icon}</div><div class="challenge-text"><h3>${escapeHtml(challenge.lesson.title)}</h3><p>${escapeHtml(challenge.lesson.objective)}</p><div class="chip-row">${chip(challenge.course.title)}${chip(`⚡ ${challenge.lesson.xp} XP`, 'orange')}${chip(`⏱ ${challenge.lesson.estimated_minutes} min`)}</div></div></div>${actionButton('ABRIR MISIÓN', `openLessonGuarded('${challenge.lesson.courseId}', '${challenge.lesson.id}')`, 'btn-success', 'full')}</section>`;
+  return `<section class="panel-card challenge-card animated-card">${sectionTitle('Reto recomendado', 'Siguiente')}<div class="challenge-body"><div class="challenge-icon">${challenge.course.icon}</div><div class="challenge-text"><h3>${escapeHtml(challenge.lesson.title)}</h3><p>${escapeHtml(challenge.lesson.objective)}</p><div class="chip-row">${chip(challenge.course.title)}${chip(`⚡ ${challenge.lesson.xp} XP`, 'orange')}${chip(`⏱ ${challenge.lesson.estimated_minutes} min`)}</div></div></div>${actionButtonDelegated('ABRIR MISIÓN', 'open-lesson-guarded', {'course-id': challenge.lesson.courseId, 'lesson-id': challenge.lesson.id}, 'btn-success', 'full')}</section>`;
 }
 
 function renderCareerPreview() {
@@ -96,7 +96,7 @@ function careerStageItem(stage, index) {
   const course = getCourse(stage.id);
   const stats = course ? getCourseStats(course) : { percent:0 };
   const status = stats.percent === 100 ? 'Completado' : stats.percent > 0 ? 'En progreso' : 'Disponible';
-  return `<div class="career-stage ${stats.percent === 100 ? 'done' : stats.percent > 0 ? 'active' : ''}" onclick="renderView('course-detail',{courseId:'${stage.id}'})"><div class="career-index">${String(index + 1).padStart(2, '0')}</div><div class="career-icon">${stage.icon}</div><div class="career-body"><div class="career-top"><strong>${escapeHtml(stage.title)}</strong><span class="career-status-label">STATUS ${escapeHtml(status.toUpperCase())}</span></div><span class="career-progress-text">${stats.percent}% operativo</span>${progressBar(stats.percent)}</div></div>`;
+  return `<div class="career-stage ${stats.percent === 100 ? 'done' : stats.percent > 0 ? 'active' : ''}" data-action="render-view" data-view="course-detail" data-course-id="${escapeHtml(stage.id)}"><div class="career-index">${String(index + 1).padStart(2, '0')}</div><div class="career-icon">${stage.icon}</div><div class="career-body"><div class="career-top"><strong>${escapeHtml(stage.title)}</strong><span class="career-status-label">STATUS ${escapeHtml(status.toUpperCase())}</span></div><span class="career-progress-text">${stats.percent}% operativo</span>${progressBar(stats.percent)}</div></div>`;
 }
 
 function renderCourses() {
@@ -134,7 +134,7 @@ function setupCourseSearch() {
 function createCourseCard(course) {
   const stats = getCourseStats(course);
   const exam = state.passedExams[course.id];
-  return `<article class="course-card premium-course" onclick="renderView('course-detail', {courseId:'${course.id}'})"><div class="course-icon">${course.icon}</div><div class="course-info"><div class="card-topline"><span class="level-badge">${escapeHtml(course.level)}</span>${exam?.passed ? statusPill('Certificado','green') : course.ethical ? statusPill('Ético','orange') : statusPill('Core','green')}</div><h3>${escapeHtml(course.title)}</h3><p>${escapeHtml(compactDescription(course.description))}</p><div class="progress-inline">${progressBar(stats.percent)}<span>${stats.percent}%</span></div><div class="chip-row">${chip(`${stats.completed}/${stats.total} completadas`)}${chip(`Examen ${exam?.passed ? 'OK' : 'pendiente'}`)}</div></div></article>`;
+  return `<article class="course-card premium-course" data-action="render-view" data-view="course-detail" data-course-id="${escapeHtml(course.id)}"><div class="course-icon">${course.icon}</div><div class="course-info"><div class="card-topline"><span class="level-badge">${escapeHtml(course.level)}</span>${exam?.passed ? statusPill('Certificado','green') : course.ethical ? statusPill('Ético','orange') : statusPill('Core','green')}</div><h3>${escapeHtml(course.title)}</h3><p>${escapeHtml(compactDescription(course.description))}</p><div class="progress-inline">${progressBar(stats.percent)}<span>${stats.percent}%</span></div><div class="chip-row">${chip(`${stats.completed}/${stats.total} completadas`)}${chip(`Examen ${exam?.passed ? 'OK' : 'pendiente'}`)}</div></div></article>`;
 }
 
 function renderCourseDetail(courseId) {
@@ -148,16 +148,16 @@ function renderCourseDetail(courseId) {
   const project = course.guidedLab || getCourseProject(course);
   mainContainer.innerHTML = `
     <button class="btn btn-outline back-btn" onclick="renderView('courses')">← VOLVER</button>
-    <section class="welcome-card course-banner animated-card"><div class="course-head"><div class="course-icon big">${course.icon}</div><div><span class="eyebrow">${escapeHtml(course.level)}</span><h1>${escapeHtml(course.title)}</h1><p>${escapeHtml(course.description)}</p></div></div><div class="mini-grid"><div class="mini-card"><span>Progreso</span><strong>${stats.percent}%</strong></div><div class="mini-card"><span>Lecciones</span><strong>${stats.completed}/${stats.total}</strong></div><div class="mini-card"><span>XP total</span><strong>${totalXp}</strong></div><div class="mini-card"><span>Examen</span><strong>${exam?.passed ? 'OK' : 'Pendiente'}</strong></div></div>${progressBar(stats.percent)}<div class="chip-row runtime-row">${runtimePill()}</div>${locked ? '' : actionButton('CONTINUAR ESTE CURSO ▶', `openLessonGuarded('${course.id}', '${next.id}')`, 'btn-success', 'full continue-course-btn')}</section>
+    <section class="welcome-card course-banner animated-card"><div class="course-head"><div class="course-icon big">${course.icon}</div><div><span class="eyebrow">${escapeHtml(course.level)}</span><h1>${escapeHtml(course.title)}</h1><p>${escapeHtml(course.description)}</p></div></div><div class="mini-grid"><div class="mini-card"><span>Progreso</span><strong>${stats.percent}%</strong></div><div class="mini-card"><span>Lecciones</span><strong>${stats.completed}/${stats.total}</strong></div><div class="mini-card"><span>XP total</span><strong>${totalXp}</strong></div><div class="mini-card"><span>Examen</span><strong>${exam?.passed ? 'OK' : 'Pendiente'}</strong></div></div>${progressBar(stats.percent)}<div class="chip-row runtime-row">${runtimePill()}</div>${locked ? '' : actionButtonDelegated('CONTINUAR ESTE CURSO ▶', 'open-lesson-guarded', {'course-id': course.id, 'lesson-id': next.id}, 'btn-success', 'full continue-course-btn')}</section>
     ${course.ethical ? ethicalBox(course.id, locked) : ''}
-    <section class="panel-card academic-card animated-card">${sectionTitle('Plan académico', 'Pro')}<div class="check-list"><span>🎯 Objetivo: completar laboratorios y quiz</span><span>📌 Prerrequisito: avanzar en orden recomendado</span><span>🧪 Proyecto: ${escapeHtml(project.title)}</span><span>🏅 Examen: aprobación mínima 70%</span></div><div class="btn-row">${actionButton('LAB GUIADO', `renderView('lab',{courseId:'${course.id}'})`, 'btn-outline')}${actionButton('EXAMEN', `renderView('exam',{courseId:'${course.id}'})`, 'btn-primary')}</div></section>
+    <section class="panel-card academic-card animated-card">${sectionTitle('Plan académico', 'Pro')}<div class="check-list"><span>🎯 Objetivo: completar laboratorios y quiz</span><span>📌 Prerrequisito: avanzar en orden recomendado</span><span>🧪 Proyecto: ${escapeHtml(project.title)}</span><span>🏅 Examen: aprobación mínima 70%</span></div><div class="btn-row">${actionButtonDelegated('LAB GUIADO', 'render-view', {view: 'lab', 'course-id': course.id}, 'btn-outline')}${actionButtonDelegated('EXAMEN', 'render-view', {view: 'exam', 'course-id': course.id}, 'btn-primary')}</div></section>
     ${renderCourseModules(course, locked)}
   `;
   setupModuleTabs(course, locked);
 }
 
 function ethicalBox(courseId, locked) {
-  return `<section class="ethic-box"><strong>⚖️ Modo ético</strong><p>Practica únicamente en laboratorios propios, 127.0.0.1, entornos simulados o sistemas con autorización.</p>${locked ? actionButton('ACEPTO Y DESBLOQUEO', `acceptEthics('${courseId}')`, 'btn-outline', 'full') : statusPill('Aceptado','green')}</section>`;
+  return `<section class="ethic-box"><strong>⚖️ Modo ético</strong><p>Practica únicamente en laboratorios propios, 127.0.0.1, entornos simulados o sistemas con autorización.</p>${locked ? actionButtonDelegated('ACEPTO Y DESBLOQUEO', 'accept-ethics', {'course-id': courseId}, 'btn-outline', 'full') : statusPill('Aceptado','green')}</section>`;
 }
 
 function renderCourseModules(course, locked) {
@@ -181,7 +181,7 @@ function setupModuleTabs(course, locked) {
 
 function createLessonRow(course, lesson, locked) {
   const done = state.completedLessons.includes(lesson.id);
-  return `<article class="lesson-card premium-lesson" onclick="${locked ? `alert('Primero acepta el modo ético del curso.')` : `openLessonGuarded('${course.id}', '${lesson.id}')`}"><div class="lesson-status ${done ? 'done' : ''}">${done ? '✓' : '•'}</div><div class="course-info"><h3>${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.objective)}</p><div class="chip-row">${chip(`⏱ ${lesson.estimated_minutes} min`)}${chip(`⚡ ${lesson.xp} XP`, 'orange')}${state.completedQuizzes.includes(lesson.id) ? chip('Quiz OK','green') : chip('Quiz pendiente')}</div></div></article>`;
+  return `<article class="lesson-card premium-lesson" ${locked ? `data-action="lesson-locked"` : `data-action="open-lesson-guarded" data-course-id="${escapeHtml(course.id)}" data-lesson-id="${escapeHtml(lesson.id)}"`}><div class="lesson-status ${done ? 'done' : ''}">${done ? '✓' : '•'}</div><div class="course-info"><h3>${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.objective)}</p><div class="chip-row">${chip(`⏱ ${lesson.estimated_minutes} min`)}${chip(`⚡ ${lesson.xp} XP`, 'orange')}${state.completedQuizzes.includes(lesson.id) ? chip('Quiz OK','green') : chip('Quiz pendiente')}</div></div></article>`;
 }
 
 function renderLesson(courseId, lessonId) {
@@ -191,7 +191,7 @@ function renderLesson(courseId, lessonId) {
   const index = lessons.findIndex(l => l.id === lesson.id) + 1;
   const briefing = getMissionBriefing(course, lesson);
   mainContainer.innerHTML = `
-    <button class="btn btn-outline back-btn" onclick="renderView('course-detail', {courseId:'${courseId}'})">← SALIR</button>
+    <button class="btn btn-outline back-btn" data-action="render-view" data-view="course-detail" data-course-id="${escapeHtml(courseId)}">← SALIR</button>
     <section class="panel-card mission-briefing animated-card">
       <span class="eyebrow">MISSION BRIEFING · ${escapeHtml(briefing.code)}</span>
       <h1>${escapeHtml(lesson.title)}</h1>
@@ -204,7 +204,7 @@ function renderLesson(courseId, lessonId) {
       </div>
       <div class="ai-agent-card"><span>🤖 AGENTE IA LOCAL</span><p>${escapeHtml(briefing.agentHint)}</p></div>
       <div class="chip-row">${chip(`Lección ${index}/${lessons.length}`)}${chip('+5 XP teoría','green')}${chip(`Lab ${lesson.xp} XP`,'orange')}${chip(`⏱ ${lesson.estimated_minutes} min`)}</div>
-      ${actionButton('INICIAR OPERACIÓN 💻', `openPracticeGuarded('${courseId}', '${lessonId}')`, 'btn-success', 'full top-practice')}
+      ${actionButtonDelegated('INICIAR OPERACIÓN 💻', 'open-practice-guarded', {'course-id': courseId, 'lesson-id': lessonId}, 'btn-success', 'full top-practice')}
     </section>
     <section class="panel-card animated-card">
       <h3 class="section-subtitle">Teoría táctica</h3>
@@ -219,7 +219,7 @@ function renderPractice(courseId, lessonId) {
   const course = getCourse(courseId); const lesson = getLesson(courseId, lessonId); if (!course || !lesson) return renderHome();
   const briefing = getMissionBriefing(course, lesson);
   mainContainer.innerHTML = `
-    <button class="btn btn-outline back-btn" onclick="renderView('lesson', {courseId:'${courseId}', lessonId:'${lessonId}'})">← BRIEFING</button>
+    <button class="btn btn-outline back-btn" data-action="render-view" data-view="lesson" data-course-id="${escapeHtml(courseId)}" data-lesson-id="${escapeHtml(lessonId)}">← BRIEFING</button>
     <section class="panel-card practice-shell animated-card">
       ${sectionTitle(lesson.title, `⚡ ${lesson.xp} XP`)}
       <div class="chip-row">${chip(course.title)}${runtimePill()}</div>
@@ -296,7 +296,7 @@ function renderGlossaryMode() {
 function renderSymbolBars() {
   const symbols = ['TAB',':','(',')','[',']','{','}','"','\'','=','_','.'];
   const snippets = ['print()','input()','if ','else:','for ','while ','def ','import '];
-  return `<div class="symbol-bar">${symbols.map(s => `<button class="symbol-btn" onclick="insertEncoded('${encodeURIComponent(s === 'TAB' ? '    ' : s)}')">${escapeHtml(s)}</button>`).join('')}</div><div class="symbol-bar">${snippets.map(s => `<button class="symbol-btn hotkey-btn" onclick="insertEncoded('${encodeURIComponent(s)}')">${escapeHtml(s)}</button>`).join('')}</div>`;
+  return `<div class="symbol-bar">${symbols.map(s => `<button class="symbol-btn" data-action="insert-encoded" data-snippet="${encodeURIComponent(s === 'TAB' ? '    ' : s)}">${escapeHtml(s)}</button>`).join('')}</div><div class="symbol-bar">${snippets.map(s => `<button class="symbol-btn hotkey-btn" data-action="insert-encoded" data-snippet="${encodeURIComponent(s)}">${escapeHtml(s)}</button>`).join('')}</div>`;
 }
 function insertEncoded(text) { insertCode(decodeURIComponent(text)); }
 function insertCode(text) { const editor = document.getElementById('code-editor'); const start = editor.selectionStart; const end = editor.selectionEnd; editor.value = editor.value.slice(0,start) + text + editor.value.slice(end); editor.focus(); const pos = start + (text.endsWith('()') ? text.length - 1 : text.length); editor.selectionStart = editor.selectionEnd = pos; }
@@ -380,7 +380,7 @@ function showMissionDebrief(payload, isNew) {
       <span><b>Siguiente</b>${escapeHtml(payload.nextTitle)}</span>
     </div>
     <p>Agente IA: buen trabajo. La salida fue validada y la misión queda registrada en tu ruta.</p>
-    <div class="btn-row"><button class="btn btn-primary" onclick="renderView('lesson',{courseId:'${payload.nextCourseId}',lessonId:'${payload.nextLessonId}'})">SIGUIENTE OBJETIVO</button><button class="btn btn-outline" onclick="renderView('courses')">VER RUTAS</button></div>`;
+    <div class="btn-row"><button class="btn btn-primary" data-action="render-view" data-view="lesson" data-course-id="${escapeHtml(payload.nextCourseId)}" data-lesson-id="${escapeHtml(payload.nextLessonId)}">SIGUIENTE OBJETIVO</button><button class="btn btn-outline" onclick="renderView('courses')">VER RUTAS</button></div>`;
   el.classList.remove('hidden');
 }
 
@@ -403,7 +403,7 @@ function renderCTFMode() {
 function renderCTFChallenge(challenge) {
   const done = (state.completedCTF || []).includes(challenge.id);
   const inputId = `ctf-input-${challenge.id}`;
-  return `<section class="panel-card ctf-challenge ${done ? 'done' : ''}"><div class="card-topline"><span class="level-badge">${escapeHtml(challenge.skill)}</span>${done ? statusPill('Flag OK','green') : statusPill('Pendiente','orange')}</div><h3>${escapeHtml(challenge.title)}</h3><p class="hero-subtitle">${escapeHtml(challenge.prompt)}</p><pre class="code-view">${codeHtml(challenge.code)}</pre><label class="field-label" for="${inputId}">Flag / salida esperada</label><input id="${inputId}" class="ctf-input" placeholder="Escribe la salida exacta del reto" value="${done ? escapeHtml(challenge.answer) : ''}" ${done ? 'disabled' : ''}><button class="btn ${done ? 'btn-outline' : 'btn-success'} full" onclick="completeCTF('${challenge.id}')">${done ? 'COMPLETADO' : 'VALIDAR FLAG'}</button><small class="microcopy">Pista: ejecuta mentalmente el código y escribe la salida que produciría.</small></section>`;
+  return `<section class="panel-card ctf-challenge ${done ? 'done' : ''}"><div class="card-topline"><span class="level-badge">${escapeHtml(challenge.skill)}</span>${done ? statusPill('Flag OK','green') : statusPill('Pendiente','orange')}</div><h3>${escapeHtml(challenge.title)}</h3><p class="hero-subtitle">${escapeHtml(challenge.prompt)}</p><pre class="code-view">${codeHtml(challenge.code)}</pre><label class="field-label" for="${inputId}">Flag / salida esperada</label><input id="${inputId}" class="ctf-input" placeholder="Escribe la salida exacta del reto" value="${done ? escapeHtml(challenge.answer) : ''}" ${done ? 'disabled' : ''}><button class="btn ${done ? 'btn-outline' : 'btn-success'} full" data-action="complete-ctf" data-challenge-id="${escapeHtml(challenge.id)}">${done ? 'COMPLETADO' : 'VALIDAR FLAG'}</button><small class="microcopy">Pista: ejecuta mentalmente el código y escribe la salida que produciría.</small></section>`;
 }
 
 function completeCTF(id) {
@@ -456,15 +456,15 @@ function renderCourseExam(courseId, mode = 'local') {
       }
     } catch (_) {}
   }
-  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('course-detail',{courseId:'${courseId}'})">← VOLVER</button>
+  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" data-action="render-view" data-view="course-detail" data-course-id="${escapeHtml(courseId)}">← VOLVER</button>
     <section class="panel-card animated-card exam-command-card">
       <span class="eyebrow">Examen del curso · ${escapeHtml(sourceLabel)}</span>
       <h1>${escapeHtml(course.title)}</h1>
       <p class="hero-subtitle">Responde ${questions.length} preguntas. Necesitas 70% para aprobar y obtener certificado local.</p>
       ${exam ? `<div class="result-card ${exam.passed ? 'success' : 'warn'}"><strong>Último resultado: ${exam.percent}%</strong><span>${exam.passed ? 'Aprobado' : 'No aprobado'}</span></div>` : ''}
       <div class="btn-row exam-ai-row">
-        <button class="btn btn-primary" type="button" onclick="generateAiCourseExam('${courseId}')">GENERAR EXAMEN LOCAL PRO</button>
-        <button class="btn btn-outline" type="button" onclick="renderCourseExam('${courseId}','local')">USAR EXAMEN LOCAL</button>
+        <button class="btn btn-primary" type="button" data-action="generate-ai-exam" data-course-id="${escapeHtml(courseId)}">GENERAR EXAMEN LOCAL PRO</button>
+        <button class="btn btn-outline" type="button" data-action="render-course-exam" data-course-id="${escapeHtml(courseId)}" data-mode="local">USAR EXAMEN LOCAL</button>
       </div>
       <p class="os-security-note">El examen se genera con plantillas inteligentes locales. No usa API, no consume créditos y funciona sin backend.</p>
     </section>
@@ -491,7 +491,7 @@ function renderCourseExam(courseId, mode = 'local') {
     form.querySelectorAll('input, button[type="submit"]').forEach(el => { el.disabled = true; });
     const summary = document.createElement('section');
     summary.className = `panel-card result-card ${result.passed ? 'success' : 'warn'}`;
-    summary.innerHTML = `<strong>Resultado: ${result.percent}%</strong><span>${score}/${questions.length} correctas · ${result.passed ? 'Certificado desbloqueado' : 'Repite la teoría y vuelve a intentar'}</span><button class="btn btn-outline full" onclick="renderCourseExam('${courseId}')">REINTENTAR</button>`;
+    summary.innerHTML = `<strong>Resultado: ${result.percent}%</strong><span>${score}/${questions.length} correctas · ${result.passed ? 'Certificado desbloqueado' : 'Repite la teoría y vuelve a intentar'}</span><button class="btn btn-outline full" data-action="render-course-exam" data-course-id="${escapeHtml(courseId)}">REINTENTAR</button>`;
     form.appendChild(summary);
   });
 }
@@ -557,12 +557,12 @@ function renderGuidedLab(courseId) {
   const course = getCourse(courseId); if (!course) return renderCourses();
   const project = course.guidedLab || getCourseProject(course);
   const done = state.completedLabs.includes(courseId);
-  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('course-detail',{courseId:'${courseId}'})">← VOLVER</button><section class="panel-card animated-card"><span class="eyebrow">Lab por pasos</span><h1>${escapeHtml(project.title)}</h1><p class="hero-subtitle">Completa el flujo profesional del curso: teoría, práctica, evidencia y cierre.</p></section><section class="panel-card lab-steps">${project.steps.map((step,i)=>`<div class="lab-step"><strong>${i+1}</strong><p>${escapeHtml(step)}</p></div>`).join('')}</section><button class="btn btn-success full" onclick="completeGuidedLab('${courseId}'); showToast('🧪 Lab guiado completado','+60 XP'); renderView('course-detail',{courseId:'${courseId}'})">${done ? 'LAB YA COMPLETADO' : 'MARCAR LAB COMPLETADO'}</button><div class="bottom-spacer"></div>`;
+  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" data-action="render-view" data-view="course-detail" data-course-id="${escapeHtml(courseId)}">← VOLVER</button><section class="panel-card animated-card"><span class="eyebrow">Lab por pasos</span><h1>${escapeHtml(project.title)}</h1><p class="hero-subtitle">Completa el flujo profesional del curso: teoría, práctica, evidencia y cierre.</p></section><section class="panel-card lab-steps">${project.steps.map((step,i)=>`<div class="lab-step"><strong>${i+1}</strong><p>${escapeHtml(step)}</p></div>`).join('')}</section><button class="btn btn-success full" data-action="complete-guided-lab" data-course-id="${escapeHtml(courseId)}">${done ? 'LAB YA COMPLETADO' : 'MARCAR LAB COMPLETADO'}</button><div class="bottom-spacer"></div>`;
 }
 
 function renderReviewMode() {
   const items = state.mistakes || [];
-  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('profile')">← PERFIL</button><section class="panel-card animated-card"><span class="eyebrow">Modo repaso</span><h1>Errores y prácticas fallidas</h1><p class="hero-subtitle">Aquí aparecen tus últimos errores para que puedas corregirlos y repetir la lección.</p></section>${items.length ? items.map(m => `<section class="panel-card review-card"><h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.reason || '')}</p><pre class="code-view">${codeHtml(m.code || '')}</pre><div class="btn-row"><button class="btn btn-primary" onclick="openPracticeGuarded('${escapeHtml(m.courseId)}','${escapeHtml(m.lessonId)}')">REINTENTAR</button><button class="btn btn-outline" onclick="removeMistake('${escapeHtml(m.id)}'); renderReviewMode()">RESUELTO</button></div></section>`).join('') : '<section class="panel-card"><p class="hero-subtitle">No tienes errores registrados todavía. Excelente ritmo.</p></section>'}<div class="bottom-spacer"></div>`;
+  mainContainer.innerHTML = `<button class="btn btn-outline back-btn" onclick="renderView('profile')">← PERFIL</button><section class="panel-card animated-card"><span class="eyebrow">Modo repaso</span><h1>Errores y prácticas fallidas</h1><p class="hero-subtitle">Aquí aparecen tus últimos errores para que puedas corregirlos y repetir la lección.</p></section>${items.length ? items.map(m => `<section class="panel-card review-card"><h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.reason || '')}</p><pre class="code-view">${codeHtml(m.code || '')}</pre><div class="btn-row"><button class="btn btn-primary" data-action="open-practice-guarded" data-course-id="${escapeHtml(m.courseId)}" data-lesson-id="${escapeHtml(m.lessonId)}">REINTENTAR</button><button class="btn btn-outline" data-action="remove-mistake" data-mistake-id="${escapeHtml(m.id)}">RESUELTO</button></div></section>`).join('') : '<section class="panel-card"><p class="hero-subtitle">No tienes errores registrados todavía. Excelente ritmo.</p></section>'}<div class="bottom-spacer"></div>`;
 }
 
 
@@ -573,11 +573,11 @@ function renderProfile() {
   const rows = COURSES.map(course => {
     const stats = getCourseStats(course);
     const exam = state.passedExams[course.id];
-    return `<div class="profile-course-row compact" onclick="renderView('course-detail',{courseId:'${course.id}'})"><span>${course.icon} ${shortTitle(course.title)}</span><strong>${stats.completed}/${stats.total} <small>${exam?.passed ? '🏅' : stats.percent + '%'}</small></strong></div>`;
+    return `<div class="profile-course-row compact" data-action="render-view" data-view="course-detail" data-course-id="${escapeHtml(course.id)}"><span>${course.icon} ${shortTitle(course.title)}</span><strong>${stats.completed}/${stats.total} <small>${exam?.passed ? '🏅' : stats.percent + '%'}</small></strong></div>`;
   }).join('');
   const rankInfo = typeof getRankInfo === 'function' ? getRankInfo(state.xp) : { current: { title: state.agentRank || 'Recluta', icon:'🟢' }, progress: 0, xpToNext: 0 };
   const certificateContent = state.certificates.length
-    ? state.certificates.map(cert => `<div class="profile-course-row compact" onclick="renderView('certificate',{courseId:'${escapeHtml(cert.courseId)}'})"><span>🏅 ${escapeHtml(shortTitle(cert.title))}</span><strong>${Number(cert.percent) || 0}%</strong></div>`).join('')
+    ? state.certificates.map(cert => `<div class="profile-course-row compact" data-action="render-view" data-view="certificate" data-course-id="${escapeHtml(cert.courseId)}"><span>🏅 ${escapeHtml(shortTitle(cert.title))}</span><strong>${Number(cert.percent) || 0}%</strong></div>`).join('')
     : `<div class="empty-certificate"><div class="empty-icon">🏆</div><strong>Sin certificados aún</strong><p>Aprueba tu primer examen para desbloquear un certificado local imprimible.</p></div>`;
   mainContainer.innerHTML = `
     <section class="welcome-card profile-hero animated-card">

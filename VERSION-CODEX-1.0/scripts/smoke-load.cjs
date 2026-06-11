@@ -200,7 +200,15 @@ const dataActionScan = evalInCtx(`(function() {
   const found = new Set();
   const c = document.getElementById('main-container');
   const simpleViews = ['home','courses','profile','market','notes','review','ctf','glossary','rank','mentor','store'];
-  const paramViews = [['course-detail', {courseId:'python_desde_cero'}]];
+  const paramViews = [
+    ['course-detail', {courseId:'python_desde_cero'}],
+    ['course-detail', {courseId:'python_ciberseguridad'}], // ethical course → renders the accept-ethics button
+    ['lesson', {courseId:'python_desde_cero', lessonId:'py_001'}],
+    ['practice', {courseId:'python_desde_cero', lessonId:'py_001'}],
+    ['exam', {courseId:'python_desde_cero'}],
+    ['lab', {courseId:'python_desde_cero'}],
+    ['certificate', {courseId:'python_desde_cero'}]
+  ];
   for (const v of simpleViews) {
     try { renderView(v); } catch (_) {}
     let m; re.lastIndex = 0;
