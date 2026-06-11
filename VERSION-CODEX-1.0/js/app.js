@@ -7,6 +7,7 @@ function initApp() {
   checkStreak();
   setupNavigation();
   setupAppControls();
+  initEventDelegation();
   if (typeof renderOperatorCosmetics === 'function') renderOperatorCosmetics();
   const initialView = getInitialViewFromHash();
   renderView(initialView.view, initialView.params);
