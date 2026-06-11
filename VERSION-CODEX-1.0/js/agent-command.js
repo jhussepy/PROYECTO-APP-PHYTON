@@ -47,7 +47,8 @@ function getAgentRecommendation() {
     return {
       title: 'Explorar rutas disponibles',
       reason: 'No encontré una misión pendiente directa. Revisa la ruta académica y elige el siguiente bloque.',
-      action: `renderView('courses')`,
+      action: 'render-view',
+      data: { view: 'courses' },
       cta: 'VER RUTAS'
     };
   }
@@ -63,7 +64,11 @@ function getAgentRecommendation() {
     title: lesson.title,
     course: course?.title || 'Ruta PySec',
     reason,
-    action: `renderView('lesson',{courseId:'${lesson.courseId}',lessonId:'${lesson.id}'})`,
+    action: 'render-view',
+    // Datos como objeto JS real (no string de código). Claves en kebab-case para que
+    // actionButtonDelegated genere data-course-id / data-lesson-id, leídas por el motor
+    // como el.dataset.courseId / el.dataset.lessonId.
+    data: { view: 'lesson', 'course-id': lesson.courseId, 'lesson-id': lesson.id },
     cta: 'INICIAR MISIÓN'
   };
 }
@@ -149,7 +154,7 @@ function renderAgentRecommendationCard() {
     <h3>${escapeHtml(rec.title)}</h3>
     ${rec.course ? `<span class="pill">${escapeHtml(rec.course)}</span>` : ''}
     <p>${escapeHtml(rec.reason)}</p>
-    ${actionButton(rec.cta, rec.action, 'btn-success', 'full')}
+    ${actionButtonDelegated(rec.cta, rec.action, rec.data, 'btn-success', 'full')}
   </section>`;
 }
 
