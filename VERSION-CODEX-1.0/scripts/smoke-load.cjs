@@ -239,11 +239,36 @@ const dataActionScan = evalInCtx(`(function() {
     let mm; re.lastIndex = 0;
     while ((mm = re.exec(marketHtml)) !== null) { found.add(mm[1]); marketActions.add(mm[1]); }
   } catch (e) { marketError = e.message; }
+  // Notes sub-components: edit-note and delete-note appear only when notes exist;
+  // save-note-edit appears only when editingNoteId matches a note. Render both modes.
+  // state/activeNotesFilter/editingNoteId are let-bindings (not on sandbox global), so they
+  // are driven exclusively through the global functions that close over them.
+  // Date.now is temporarily overridden to produce a fixed id ('note_1') for determinism.
+  let notesError = null;
+  const notesActions = new Set();
+  try {
+    const _orig = Date.now;
+    Date.now = () => 1;
+    addAgentNote('smoke test note', 'general');
+    Date.now = _orig;
+    // state.notes now has { id:'note_1', ... }; setNotesFilter renders all notes (edit-note, delete-note)
+    setNotesFilter('all');
+    let mn; re.lastIndex = 0;
+    while ((mn = re.exec(c.innerHTML || '')) !== null) { found.add(mn[1]); notesActions.add(mn[1]); }
+    // Editing mode: editStudentNote sets editingNoteId and re-renders (save-note-edit)
+    editStudentNote('note_1');
+    re.lastIndex = 0;
+    while ((mn = re.exec(c.innerHTML || '')) !== null) { found.add(mn[1]); notesActions.add(mn[1]); }
+    deleteAgentNote('note_1');
+  } catch (e) { notesError = e.message; }
   const orphans = [...found].filter(a => typeof ACTION_REGISTRY[a] !== 'function');
-  return { found: found.size, orphans, marketActions: [...marketActions], marketError };
-})()`) || { found: 0, orphans: [], marketActions: [], marketError: 'scan eval failed' };
+  return { found: found.size, orphans, marketActions: [...marketActions], marketError, notesActions: [...notesActions], notesError };
+})()`) || { found: 0, orphans: [], marketActions: [], marketError: 'scan eval failed', notesActions: [], notesError: 'scan eval failed' };
 if (dataActionScan.marketError) {
   failures.push(`Render de sub-componentes de market falló en el sandbox: ${dataActionScan.marketError}`);
+}
+if (dataActionScan.notesError) {
+  failures.push(`Render de sub-componentes de notes falló en el sandbox: ${dataActionScan.notesError}`);
 }
 if (dataActionScan.orphans.length) {
   failures.push(`Acciones delegadas sin handler: ${dataActionScan.orphans.join(', ')}`);
@@ -253,4 +278,4 @@ if (failures.length) {
   console.error('SMOKE FALLÓ:\n' + failures.map(f => ' - ' + f).join('\n'));
   process.exit(1);
 }
-console.log(`OK: ${SCRIPT_ORDER.length} scripts cargados, ${Object.keys(REQUIRED_GLOBALS).length} globales verificados, ${courseCount} cursos, ${viewsProbed} vistas renderizadas sin error. data-action: ${dataActionScan.found} únicas, ${dataActionScan.orphans.length} sin handler. market sub-componentes: ${dataActionScan.marketActions.length} acciones [${dataActionScan.marketActions.join(', ')}].`);
+console.log(`OK: ${SCRIPT_ORDER.length} scripts cargados, ${Object.keys(REQUIRED_GLOBALS).length} globales verificados, ${courseCount} cursos, ${viewsProbed} vistas renderizadas sin error. data-action: ${dataActionScan.found} únicas, ${dataActionScan.orphans.length} sin handler. market sub-componentes: ${dataActionScan.marketActions.length} acciones [${dataActionScan.marketActions.join(', ')}]. notes sub-componentes: ${dataActionScan.notesActions.length} acciones [${dataActionScan.notesActions.join(', ')}].`);

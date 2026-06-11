@@ -103,6 +103,30 @@ const ACTION_REGISTRY = {
   // Stock tile/chip/row/mini-quote → open the detail for that symbol.
   'select-stock': function(el) {
     selectStock(el.dataset.symbol);
+  },
+
+  // --- Phase 3.1 Lote 3 (learning-os.js batch) ---
+
+  // <button data-action="set-notes-filter" data-filter="python">...</button>
+  'set-notes-filter': function(el) {
+    setNotesFilter(el.dataset.filter);
+  },
+
+  // <button data-action="save-note-edit" data-id="note_123">...</button>
+  'save-note-edit': function(el) {
+    saveStudentNoteEdit(el.dataset.id);
+  },
+
+  // <button data-action="edit-note" data-id="note_123">...</button>
+  'edit-note': function(el) {
+    editStudentNote(el.dataset.id);
+  },
+
+  // Compound: delete note then re-render with the context that was active.
+  // <button data-action="delete-note" data-id="note_123" data-context="python">...</button>
+  'delete-note': function(el) {
+    deleteAgentNote(el.dataset.id);
+    renderNotesMode(el.dataset.context);
   }
 };
 
