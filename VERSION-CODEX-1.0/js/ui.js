@@ -69,7 +69,7 @@ function renderHome() {
       <div class="progress-block"><div class="progress-label"><span>PROGRESO TOTAL</span><span>${percent}%</span></div>${progressBar(percent)}</div>
       <div class="metric-grid">${metricCard(`${completed}/${total}`, 'Labs', 'glow-blue')}${metricCard(state.xp, 'XP', 'glow-green')}${metricCard(state.certificates.length, 'Certificados', 'glow-purple')}</div>
       ${typeof renderRankStrip === 'function' ? renderRankStrip() : ''}
-      <div class="btn-row compact-actions">${challenge ? actionButton('CONTINUAR ▶', `openLessonGuarded('${challenge.lesson.courseId}', '${challenge.lesson.id}')`, 'btn-primary') : ''}${actionButton('VER RUTA', `renderView('courses')`, 'btn-outline')}</div>
+      <div class="btn-row compact-actions">${challenge ? actionButtonDelegated('CONTINUAR ▶', 'open-lesson-guarded', {'course-id': challenge.lesson.courseId, 'lesson-id': challenge.lesson.id}, 'btn-primary') : ''}${actionButton('VER RUTA', `renderView('courses')`, 'btn-outline')}</div>
     </section>
     ${challenge ? renderChallengeCard(challenge) : ''}
     ${renderAgentHomePanel(challenge)}
@@ -85,7 +85,7 @@ function renderMarketPreview() {
 }
 
 function renderChallengeCard(challenge) {
-  return `<section class="panel-card challenge-card animated-card">${sectionTitle('Reto recomendado', 'Siguiente')}<div class="challenge-body"><div class="challenge-icon">${challenge.course.icon}</div><div class="challenge-text"><h3>${escapeHtml(challenge.lesson.title)}</h3><p>${escapeHtml(challenge.lesson.objective)}</p><div class="chip-row">${chip(challenge.course.title)}${chip(`⚡ ${challenge.lesson.xp} XP`, 'orange')}${chip(`⏱ ${challenge.lesson.estimated_minutes} min`)}</div></div></div>${actionButton('ABRIR MISIÓN', `openLessonGuarded('${challenge.lesson.courseId}', '${challenge.lesson.id}')`, 'btn-success', 'full')}</section>`;
+  return `<section class="panel-card challenge-card animated-card">${sectionTitle('Reto recomendado', 'Siguiente')}<div class="challenge-body"><div class="challenge-icon">${challenge.course.icon}</div><div class="challenge-text"><h3>${escapeHtml(challenge.lesson.title)}</h3><p>${escapeHtml(challenge.lesson.objective)}</p><div class="chip-row">${chip(challenge.course.title)}${chip(`⚡ ${challenge.lesson.xp} XP`, 'orange')}${chip(`⏱ ${challenge.lesson.estimated_minutes} min`)}</div></div></div>${actionButtonDelegated('ABRIR MISIÓN', 'open-lesson-guarded', {'course-id': challenge.lesson.courseId, 'lesson-id': challenge.lesson.id}, 'btn-success', 'full')}</section>`;
 }
 
 function renderCareerPreview() {
@@ -148,16 +148,16 @@ function renderCourseDetail(courseId) {
   const project = course.guidedLab || getCourseProject(course);
   mainContainer.innerHTML = `
     <button class="btn btn-outline back-btn" onclick="renderView('courses')">← VOLVER</button>
-    <section class="welcome-card course-banner animated-card"><div class="course-head"><div class="course-icon big">${course.icon}</div><div><span class="eyebrow">${escapeHtml(course.level)}</span><h1>${escapeHtml(course.title)}</h1><p>${escapeHtml(course.description)}</p></div></div><div class="mini-grid"><div class="mini-card"><span>Progreso</span><strong>${stats.percent}%</strong></div><div class="mini-card"><span>Lecciones</span><strong>${stats.completed}/${stats.total}</strong></div><div class="mini-card"><span>XP total</span><strong>${totalXp}</strong></div><div class="mini-card"><span>Examen</span><strong>${exam?.passed ? 'OK' : 'Pendiente'}</strong></div></div>${progressBar(stats.percent)}<div class="chip-row runtime-row">${runtimePill()}</div>${locked ? '' : actionButton('CONTINUAR ESTE CURSO ▶', `openLessonGuarded('${course.id}', '${next.id}')`, 'btn-success', 'full continue-course-btn')}</section>
+    <section class="welcome-card course-banner animated-card"><div class="course-head"><div class="course-icon big">${course.icon}</div><div><span class="eyebrow">${escapeHtml(course.level)}</span><h1>${escapeHtml(course.title)}</h1><p>${escapeHtml(course.description)}</p></div></div><div class="mini-grid"><div class="mini-card"><span>Progreso</span><strong>${stats.percent}%</strong></div><div class="mini-card"><span>Lecciones</span><strong>${stats.completed}/${stats.total}</strong></div><div class="mini-card"><span>XP total</span><strong>${totalXp}</strong></div><div class="mini-card"><span>Examen</span><strong>${exam?.passed ? 'OK' : 'Pendiente'}</strong></div></div>${progressBar(stats.percent)}<div class="chip-row runtime-row">${runtimePill()}</div>${locked ? '' : actionButtonDelegated('CONTINUAR ESTE CURSO ▶', 'open-lesson-guarded', {'course-id': course.id, 'lesson-id': next.id}, 'btn-success', 'full continue-course-btn')}</section>
     ${course.ethical ? ethicalBox(course.id, locked) : ''}
-    <section class="panel-card academic-card animated-card">${sectionTitle('Plan académico', 'Pro')}<div class="check-list"><span>🎯 Objetivo: completar laboratorios y quiz</span><span>📌 Prerrequisito: avanzar en orden recomendado</span><span>🧪 Proyecto: ${escapeHtml(project.title)}</span><span>🏅 Examen: aprobación mínima 70%</span></div><div class="btn-row">${actionButton('LAB GUIADO', `renderView('lab',{courseId:'${course.id}'})`, 'btn-outline')}${actionButton('EXAMEN', `renderView('exam',{courseId:'${course.id}'})`, 'btn-primary')}</div></section>
+    <section class="panel-card academic-card animated-card">${sectionTitle('Plan académico', 'Pro')}<div class="check-list"><span>🎯 Objetivo: completar laboratorios y quiz</span><span>📌 Prerrequisito: avanzar en orden recomendado</span><span>🧪 Proyecto: ${escapeHtml(project.title)}</span><span>🏅 Examen: aprobación mínima 70%</span></div><div class="btn-row">${actionButtonDelegated('LAB GUIADO', 'render-view', {view: 'lab', 'course-id': course.id}, 'btn-outline')}${actionButtonDelegated('EXAMEN', 'render-view', {view: 'exam', 'course-id': course.id}, 'btn-primary')}</div></section>
     ${renderCourseModules(course, locked)}
   `;
   setupModuleTabs(course, locked);
 }
 
 function ethicalBox(courseId, locked) {
-  return `<section class="ethic-box"><strong>⚖️ Modo ético</strong><p>Practica únicamente en laboratorios propios, 127.0.0.1, entornos simulados o sistemas con autorización.</p>${locked ? actionButton('ACEPTO Y DESBLOQUEO', `acceptEthics('${courseId}')`, 'btn-outline', 'full') : statusPill('Aceptado','green')}</section>`;
+  return `<section class="ethic-box"><strong>⚖️ Modo ético</strong><p>Practica únicamente en laboratorios propios, 127.0.0.1, entornos simulados o sistemas con autorización.</p>${locked ? actionButtonDelegated('ACEPTO Y DESBLOQUEO', 'accept-ethics', {'course-id': courseId}, 'btn-outline', 'full') : statusPill('Aceptado','green')}</section>`;
 }
 
 function renderCourseModules(course, locked) {
@@ -204,7 +204,7 @@ function renderLesson(courseId, lessonId) {
       </div>
       <div class="ai-agent-card"><span>🤖 AGENTE IA LOCAL</span><p>${escapeHtml(briefing.agentHint)}</p></div>
       <div class="chip-row">${chip(`Lección ${index}/${lessons.length}`)}${chip('+5 XP teoría','green')}${chip(`Lab ${lesson.xp} XP`,'orange')}${chip(`⏱ ${lesson.estimated_minutes} min`)}</div>
-      ${actionButton('INICIAR OPERACIÓN 💻', `openPracticeGuarded('${courseId}', '${lessonId}')`, 'btn-success', 'full top-practice')}
+      ${actionButtonDelegated('INICIAR OPERACIÓN 💻', 'open-practice-guarded', {'course-id': courseId, 'lesson-id': lessonId}, 'btn-success', 'full top-practice')}
     </section>
     <section class="panel-card animated-card">
       <h3 class="section-subtitle">Teoría táctica</h3>

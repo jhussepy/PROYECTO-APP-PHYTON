@@ -202,6 +202,7 @@ const dataActionScan = evalInCtx(`(function() {
   const simpleViews = ['home','courses','profile','market','notes','review','ctf','glossary','rank','mentor','store'];
   const paramViews = [
     ['course-detail', {courseId:'python_desde_cero'}],
+    ['course-detail', {courseId:'python_ciberseguridad'}], // ethical course → renders the accept-ethics button
     ['lesson', {courseId:'python_desde_cero', lessonId:'py_001'}],
     ['practice', {courseId:'python_desde_cero', lessonId:'py_001'}],
     ['exam', {courseId:'python_desde_cero'}],

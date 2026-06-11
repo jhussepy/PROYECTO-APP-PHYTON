@@ -14,6 +14,16 @@ function chip(text, variant = '') {
 function actionButton(label, onclick, variant = 'btn-primary', extra = '') {
   return `<button class="btn ${variant} ${extra}" onclick="${onclick}">${escapeHtml(label)}</button>`;
 }
+// Delegated variant: emits a declarative data-action button instead of an inline onclick code
+// string. dataAttrs keys become data-<key> attributes (use kebab-case, e.g. 'course-id' →
+// el.dataset.courseId). Values are escaped for defense in depth. Dispatched by the motor in
+// js/event-delegation.js. Prefer this over actionButton for any handler that carries user data.
+function actionButtonDelegated(label, action, dataAttrs = {}, variant = 'btn-primary', extra = '') {
+  const attrs = Object.entries(dataAttrs)
+    .map(([key, value]) => ` data-${key}="${escapeHtml(value)}"`)
+    .join('');
+  return `<button class="btn ${variant} ${extra}" data-action="${escapeHtml(action)}"${attrs}>${escapeHtml(label)}</button>`;
+}
 function statusPill(text, variant = '') { return `<span class="pill ${variant}">${escapeHtml(text)}</span>`; }
 function emptyState(text) { return `<section class="empty-state">${escapeHtml(text)}</section>`; }
 function safeAttr(value='') { return escapeHtml(String(value)); }

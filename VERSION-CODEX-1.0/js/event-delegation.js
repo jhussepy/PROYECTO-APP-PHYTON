@@ -71,6 +71,11 @@ const ACTION_REGISTRY = {
   'remove-mistake': function(el) {
     removeMistake(el.dataset.mistakeId);
     renderReviewMode();
+  },
+
+  // <button data-action="accept-ethics" data-course-id="c">...</button>
+  'accept-ethics': function(el) {
+    acceptEthics(el.dataset.courseId);
   }
 };
 
