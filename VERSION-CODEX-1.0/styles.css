@@ -5962,18 +5962,27 @@ h1, h2, h3 { font-family: var(--f-display); }
   align-content: center;
   gap: 5px;
   padding: 16px;
-  border: 1px solid rgba(0,255,136,.12);
+  border: 1px solid var(--c-line);
   border-radius: 16px;
-  background: linear-gradient(145deg, rgba(13,22,17,.94), rgba(7,11,9,.96));
+  background: linear-gradient(145deg, var(--c-panel), var(--c-graphite));
 }
 
 .os-metric-strip article strong {
-  color: #f2fff8;
+  color: var(--c-bone);
   font-size: clamp(1.5rem, 4vw, 2.35rem);
 }
 
+/* HORAS(1) LABS(3) → blue  |  RETOS(2) PROYECTOS(4) → green  |  ERRORES(5) → red */
+.os-metric-strip article:nth-child(1) strong,
+.os-metric-strip article:nth-child(3) strong { color: var(--c-blue); }
+
+.os-metric-strip article:nth-child(2) strong,
+.os-metric-strip article:nth-child(4) strong { color: var(--c-green); }
+
+.os-metric-strip article:nth-child(5) strong { color: var(--c-red); }
+
 .os-metric-strip article small {
-  color: var(--muted);
+  color: var(--c-ash);
 }
 
 .os-grid {
