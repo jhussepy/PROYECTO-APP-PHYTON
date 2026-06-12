@@ -5886,9 +5886,9 @@ h1, h2, h3 { font-family: var(--f-display); }
   display: grid;
   align-content: center;
   padding: 22px;
-  border: 1px solid rgba(0,255,136,.18);
+  border: 1px solid var(--c-line-green);
   border-radius: 18px;
-  background: rgba(0,0,0,.19);
+  background: linear-gradient(145deg, var(--c-graphite), var(--c-void));
 }
 
 .os-readiness-panel > span,
@@ -5900,26 +5900,31 @@ h1, h2, h3 { font-family: var(--f-display); }
 .os-roadmap-stack article > span,
 .os-note-card > div span {
   color: #62efa5;
-  font: 900 .61rem/1.3 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 900 .61rem/1.3 var(--f-mono);
   letter-spacing: .12em;
   text-transform: uppercase;
 }
 
 .os-readiness-panel > strong {
   margin: 12px 0 3px;
-  color: #f0fff7;
+  color: var(--c-bone);
   font-size: clamp(4.5rem, 10vw, 8rem);
   line-height: .8;
   letter-spacing: -.08em;
 }
 
 .os-readiness-panel > strong small {
-  color: #00ff88;
+  color: var(--c-green);
   font-size: .25em;
 }
 
 .os-readiness-panel p {
   color: var(--text-sec);
+}
+
+@keyframes os-progress-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
 .os-progress {
@@ -5934,8 +5939,14 @@ h1, h2, h3 { font-family: var(--f-display); }
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #00b86b, #00ff88);
-  box-shadow: 0 0 16px rgba(0,255,136,.26);
+  background: linear-gradient(90deg, var(--c-green), var(--c-green-glow));
+  box-shadow: 0 0 12px var(--c-green-glow);
+  transform-origin: left;
+  animation: os-progress-fill .8s cubic-bezier(.25,.46,.45,.94) .45s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-progress i { animation: none; }
 }
 
 .os-metric-strip {
