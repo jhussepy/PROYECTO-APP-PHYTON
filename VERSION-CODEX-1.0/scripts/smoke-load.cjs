@@ -15,7 +15,7 @@ const SCRIPT_ORDER = [
   'ui-components.js', 'elite-store.js', 'rank-system.js', 'agent-command.js', 'market.js',
   'strategy-engine.js', 'market-intelligence-ux.js', 'market-clean-flow.js',
   'market-command-dashboard.js', 'ai-agent.js', 'ui.js', 'learning-os.js', 'router.js',
-  'event-delegation.js', 'avatar3d.js', 'app.js'
+  'event-delegation.js', 'avatar3d.js', 'pyodide-engine.js', 'app.js'
 ];
 
 function makeElement() {

@@ -464,3 +464,36 @@ function quiz(question, options, answer) {
 })();
 
 BADGES.push({ id:'ctf_operator', title:'CTF Operator', description:'Completaste retos CTF simulados con enfoque defensivo y ético.', icon:'🏁' });
+
+/* ── PoC Pyodide: lección de prueba con engine:'pyodide' ──────────
+   Marcada con engine:'pyodide' → bifurcación en ui.js usa runPythonReal()
+   en vez de runPythonSafe(). Demuestra list comprehension + f-strings. */
+(function pyodidePoc(){
+  const courseById = id => COURSES.find(c => c.id === id);
+  const addModule = (courseId, module) => { const c = courseById(courseId); if (c) c.modules.push(module); };
+  addModule('python_desde_cero', {
+  id: 'pyodide_lab',
+  title: '🧪 Lab Python Real (PoC Pyodide)',
+  lessons: [
+    Object.assign(
+      lesson(
+        'py_poc_001',
+        'Python real: list comprehension + f-strings',
+        'Filtrar IPs con list comprehension y formatear con f-strings usando CPython real.',
+        'Pyodide ejecuta CPython real en el navegador mediante WebAssembly. List comprehensions y f-strings funcionan exactamente igual que en tu terminal — sin simulación.',
+        "ips = ['10.0.0.1', '192.168.1.5', '10.0.0.9']\ninternas = [ip for ip in ips if ip.startswith('192')]\nfor ip in internas:\n    print(f'Red interna: {ip}')",
+        ['List comprehension filtra en una sola línea.', 'f-strings insertan valores en el string sin concatenar.', 'Pyodide ejecuta esto con el mismo intérprete que tendrías en tu terminal.'],
+        "Filtra ips para quedarte con las que empiezan con '10.' e imprime cada una como: Privada: 10.0.0.1",
+        "ips = ['10.0.0.1', '192.168.1.5', '10.0.0.9']\n",
+        "Privada: 10.0.0.1\nPrivada: 10.0.0.9",
+        'output_equals',
+        "Usa [ip for ip in ips if ip.startswith('10.')] y luego f'Privada: {ip}'.",
+        "ips = ['10.0.0.1', '192.168.1.5', '10.0.0.9']\nprivadas = [ip for ip in ips if ip.startswith('10.')]\nfor ip in privadas:\n    print(f'Privada: {ip}')",
+        30, 10,
+        quiz('¿Qué devuelve una list comprehension?', ['Una lista nueva', 'Un diccionario', 'Un string vacío', 'Un error'], 'Una lista nueva')
+      ),
+      { engine: 'pyodide' }
+    )
+  ]
+});
+})();
