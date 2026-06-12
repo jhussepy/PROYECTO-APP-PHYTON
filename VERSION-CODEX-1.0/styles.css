@@ -339,10 +339,6 @@ code, pre, .code-editor, .console-output { font-family: var(--f-mono); }
   transition: transform .14s ease, opacity .14s ease;
 }
 .btn:active { transform: scale(.985); }
-.btn-primary { color: white; background: linear-gradient(135deg, #3b66ff, #8a43ff 58%, #14c8e8); box-shadow: var(--shadow-glow); }
-.btn-success { color: white; background: linear-gradient(135deg, #18b450, #37e7a0 72%, #55ddec); box-shadow: 0 14px 28px rgba(44,228,138,.16); }
-.btn-outline { color: var(--text-main); background: rgba(255,255,255,.045); border: 1px solid var(--border-soft); }
-.btn-danger { color: #ff6a7a; background: rgba(255, 91, 110, .09); border: 1px solid rgba(255, 91, 110, .32); }
 .full { width: 100%; }
 .compact-actions { margin-top: 16px; }
 .compact-actions .btn { flex: 1 1 120px; }
@@ -628,7 +624,7 @@ code, pre, .code-editor, .console-output { font-family: var(--f-mono); }
 html, body, #app, #main-container, button, input, textarea, select,
 .hero-card, .panel-card, .welcome-card, .course-card, .lesson-card,
 .metric, .pill, .btn, .profile-course-row, .badge-item {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+  font-family: var(--f-body) !important;
 }
 
 
@@ -636,7 +632,6 @@ html, body, #app, #main-container, button, input, textarea, select,
 @keyframes cardRise { from { opacity:0; transform:translateY(10px) scale(.99); } to { opacity:1; transform:translateY(0) scale(1); } }
 @keyframes pulseGlow { 0%,100% { box-shadow:0 0 0 rgba(47,109,255,0); } 50% { box-shadow:0 0 28px rgba(47,109,255,.18); } }
 .animated-card { animation: cardRise .24s ease both; }
-.btn-primary, .btn-success { animation: pulseGlow 5s ease-in-out infinite; }
 .search-input, .filter-select {
   width: 100%; min-height: 50px; border: 1px solid var(--border-soft); border-radius: 18px;
   background: rgba(255,255,255,.045); color: var(--text-main); padding: 0 14px; outline: none; margin: 10px 0 0;
@@ -733,13 +728,6 @@ code, pre, .code-editor, .console-output,
   font-family: var(--f-mono) !important;
 }
 
-.main-header {
-  background:
-    linear-gradient(180deg, rgba(4, 10, 25, .98), rgba(3, 8, 20, .88)),
-    radial-gradient(circle at 18% 0, rgba(35, 220, 255, .12), transparent 38%);
-  border-bottom: 1px solid rgba(134, 189, 255, .16);
-  box-shadow: 0 12px 28px rgba(0,0,0,.26), 0 1px 0 rgba(255,255,255,.04) inset;
-}
 .logo { gap: 10px; }
 .logo-mark {
   position: relative;
@@ -792,14 +780,6 @@ code, pre, .code-editor, .console-output,
 .hero-card, .welcome-card, .panel-card, .course-card, .lesson-card, .ethic-box {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(8, 19, 43, .9), rgba(4, 10, 24, .96)),
-    radial-gradient(circle at 12% 0, rgba(47,109,255,.12), transparent 36%);
-  border-color: rgba(134, 189, 255, .16);
-  box-shadow:
-    0 18px 42px rgba(0,0,0,.34),
-    inset 0 1px 0 rgba(255,255,255,.045),
-    0 0 0 1px rgba(35, 220, 255, .025);
 }
 .hero-card::after, .welcome-card::after, .panel-card::after, .course-card::after, .lesson-card::after {
   content: "";
@@ -909,28 +889,6 @@ code, pre, .code-editor, .console-output,
 .btn:hover::before { transform: translateX(120%); }
 .btn:hover { transform: translateY(-1px); }
 .btn:active { transform: translateY(0) scale(.985); }
-.btn-primary {
-  color: #fff;
-  background: linear-gradient(135deg, #245eff, #7b58ff 55%, #14d4ff);
-  box-shadow: 0 16px 34px rgba(47,109,255,.28), 0 0 28px rgba(35,220,255,.14);
-}
-.btn-outline {
-  color: var(--text-main);
-  background: linear-gradient(180deg, rgba(12,25,54,.72), rgba(5,12,28,.82));
-  border: 1px solid rgba(134, 189, 255, .18);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
-}
-.btn-outline:hover { border-color: rgba(35, 220, 255, .34); box-shadow: 0 0 22px rgba(35,220,255,.08); }
-.btn-success {
-  color: #eafff6;
-  background: linear-gradient(135deg, #0c7a4c, #14b878 70%, #22d6d6);
-  box-shadow: 0 14px 30px rgba(25,216,134,.15), 0 0 20px rgba(53,243,161,.09);
-}
-.btn-danger {
-  color: #ff8793;
-  background: linear-gradient(180deg, rgba(80, 15, 30, .44), rgba(35, 8, 18, .7));
-  border-color: rgba(255, 91, 110, .3);
-}
 
 .challenge-card { border-color: rgba(53,243,161,.18); }
 .challenge-icon, .course-icon, .career-icon {
@@ -1061,16 +1019,6 @@ code, pre, .code-editor, .console-output,
   letter-spacing: .02em;
 }
 
-.bottom-nav {
-  background: linear-gradient(180deg, rgba(5, 13, 30, .9), rgba(2, 7, 18, .98));
-  border-top-color: rgba(134, 189, 255, .15);
-  box-shadow: 0 -18px 40px rgba(0,0,0,.28);
-}
-.nav-btn.active {
-  background: linear-gradient(180deg, rgba(47,109,255,.2), rgba(35,220,255,.08));
-  border-color: rgba(35,220,255,.24);
-}
-
 .search-input, .filter-select, .note-input {
   background: linear-gradient(180deg, rgba(5, 12, 29, .88), rgba(3, 8, 19, .92));
   border-color: rgba(134, 189, 255, .14);
@@ -1147,29 +1095,8 @@ body::after {
   border-color: rgba(20, 56, 98, .66);
 }
 
-.main-header {
-  background:
-    linear-gradient(180deg, rgba(4, 7, 15, .98), rgba(7, 17, 31, .92)),
-    radial-gradient(circle at 18% 0, rgba(0, 208, 132, .11), transparent 34%);
-  border-bottom-color: rgba(20, 56, 98, .95);
-  box-shadow: 0 14px 30px rgba(0,0,0,.34), 0 0 22px rgba(0,208,132,.045);
-}
-.logo-mark {
-  background: linear-gradient(135deg, #2868ff, #22d3ee 52%, #00d084);
-  box-shadow: 0 0 0 1px rgba(34, 211, 238, .24), 0 0 24px rgba(0,208,132,.18);
-}
-.logo-subtitle { color: var(--green-python); }
-.theme-toggle, .stat-item {
-  background: linear-gradient(180deg, rgba(13, 22, 40, .88), rgba(4, 7, 15, .94));
-  border-color: rgba(20, 56, 98, .88);
-}
+.logo-subtitle { color: var(--c-green); }
 
-.hero-card, .welcome-card, .panel-card, .course-card, .lesson-card, .ethic-box {
-  background:
-    linear-gradient(180deg, rgba(13, 22, 40, .92), rgba(7, 17, 31, .96)),
-    radial-gradient(circle at 8% 0, rgba(0, 208, 132, .065), transparent 32%);
-  border-color: rgba(20, 56, 98, .82);
-}
 .premium-hero {
   background:
     linear-gradient(145deg, rgba(13, 22, 40, .96), rgba(7, 17, 31, .98) 58%, rgba(10, 19, 36, .96)),
@@ -1199,19 +1126,6 @@ body::after {
 .hero-status-grid .pill.green {
   border-color: rgba(0, 208, 132, .28);
   background: rgba(0, 208, 132, .07);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #2868ff, #8c6cff 56%, #22d3ee);
-  box-shadow: 0 16px 34px rgba(40,104,255,.24), 0 0 28px rgba(34,211,238,.12);
-}
-.btn-success {
-  background: linear-gradient(135deg, #08784f, #00d084 62%, #22d3ee);
-  box-shadow: 0 14px 30px rgba(0,208,132,.17), 0 0 20px rgba(34,211,238,.1);
-}
-.btn-outline {
-  background: linear-gradient(180deg, rgba(17,28,49,.72), rgba(7,17,31,.9));
-  border-color: rgba(20, 56, 98, .86);
 }
 
 .career-stage {
@@ -1277,16 +1191,6 @@ body::after {
 }
 .feedback.error {
   color: #ffb4bd;
-}
-
-.bottom-nav {
-  background: linear-gradient(180deg, rgba(7, 17, 31, .9), rgba(4, 7, 15, .98));
-  border-top-color: rgba(20, 56, 98, .9);
-}
-.nav-btn.active {
-  background: linear-gradient(180deg, rgba(0,208,132,.13), rgba(34,211,238,.08));
-  border-color: rgba(0, 208, 132, .24);
-  box-shadow: 0 0 22px rgba(0,208,132,.08), inset 0 1px 0 rgba(255,255,255,.04);
 }
 
 @media (max-width: 430px) {
@@ -1849,8 +1753,7 @@ body::after {
 }
 
 /* v9.2 Market Intelligence Center */
-.bottom-nav.cyber-dock { grid-template-columns: repeat(5, 1fr); gap: 6px; }
-.cyber-dock .nav-market span { color: var(--green-python); text-shadow: 0 0 18px rgba(0,208,132,.42); }
+.cyber-dock .nav-market span { color: var(--c-green); text-shadow: 0 0 18px var(--c-green-glow); }
 .cyber-dock .nav-market.active { border-color: rgba(34,211,238,.40); box-shadow: 0 0 28px rgba(34,211,238,.15), inset 0 0 18px rgba(0,208,132,.08); }
 @media (max-width: 390px) {
   .bottom-nav.cyber-dock { gap: 4px; padding-inline: 6px; }
@@ -3314,15 +3217,6 @@ body::after {
 }
 .market-pro-tile.is-up .tile-strength span { box-shadow: 0 0 14px rgba(0,240,164,.8); }
 .market-pro-tile.is-down .tile-strength span { box-shadow: 0 0 14px rgba(255,64,86,.75); }
-.bottom-nav {
-  background: linear-gradient(180deg, rgba(7,17,34,.86), rgba(3,8,18,.96));
-  border-color: rgba(0,225,255,.16);
-  box-shadow: 0 -18px 50px rgba(0,0,0,.60), inset 0 1px 0 rgba(255,255,255,.04);
-}
-.nav-item.active {
-  border-color: rgba(0, 255, 230, .75) !important;
-  box-shadow: 0 0 30px rgba(0, 225, 255, .26), inset 0 0 28px rgba(0, 225, 255, .10) !important;
-}
 @media (max-width: 430px) {
   .clean-heatmap-card { padding: 15px 14px 16px; }
   .pro-heatmap { gap: 12px; }
