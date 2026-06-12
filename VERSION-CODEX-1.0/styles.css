@@ -7635,3 +7635,191 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
   .avatar3d-ring::after,
   .avatar3d-hero { animation: none; }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   HUD KIT — componentes cabina reutilizables (v1)
+   Cada componente lee --hud-color / --hud-glow / --hud-line.
+   Las variantes .hud-frame--green / --blue / --red solo setean esas
+   custom props, así que valen para CUALQUIER componente del kit
+   (frame, radar, metric), no solo para .hud-frame.
+   Nota: clip-path recorta box-shadow; el glow del kit se hace con
+   filter: drop-shadow en acentos e iconos, los marcos quedan planos.
+   ════════════════════════════════════════════════════════════════ */
+
+/* .hud-frame — marco angular tipo cabina (octágono suave).
+   Uso: <section class="hud-frame hud-frame--green"> … </section>
+   Borde por técnica de 2 capas: el fondo del elemento es el color de
+   línea y ::before lo cubre con panel dejando ~1px visible. ::after
+   ilumina los 4 cortes diagonales de esquina con --hud-color.
+   --hud-cut controla el tamaño del corte. */
+.hud-frame {
+  --hud-color: var(--c-green);
+  --hud-glow: var(--c-green-glow);
+  --hud-line: var(--c-line);
+  --hud-cut: 14px;
+  position: relative;
+  isolation: isolate;
+  padding: 18px 16px;
+  background: var(--hud-line);
+  clip-path: polygon(
+    var(--hud-cut) 0, calc(100% - var(--hud-cut)) 0,
+    100% var(--hud-cut), 100% calc(100% - var(--hud-cut)),
+    calc(100% - var(--hud-cut)) 100%, var(--hud-cut) 100%,
+    0 calc(100% - var(--hud-cut)), 0 var(--hud-cut));
+}
+.hud-frame::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: linear-gradient(165deg, var(--c-panel), var(--c-graphite) 72%);
+  clip-path: inherit;
+}
+/* luces sobre los 4 cortes diagonales de esquina */
+.hud-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(135deg, transparent calc(50% - 1.5px), var(--hud-color) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(45deg,  transparent calc(50% - 1.5px), var(--hud-color) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(135deg, transparent calc(50% - 1.5px), var(--hud-color) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(45deg,  transparent calc(50% - 1.5px), var(--hud-color) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px));
+  background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  background-size: var(--hud-cut) var(--hud-cut);
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 6px var(--hud-glow));
+}
+
+/* variantes de color — setean las custom props del kit completo */
+.hud-frame--green { --hud-color: var(--c-green); --hud-glow: var(--c-green-glow); --hud-line: var(--c-line-green); }
+.hud-frame--blue  { --hud-color: var(--c-blue);  --hud-glow: var(--c-blue-glow);  --hud-line: rgba(61, 139, 255, .26); }
+.hud-frame--red   { --hud-color: var(--c-red);   --hud-glow: var(--c-red-glow);   --hud-line: var(--c-line-red); }
+
+/* .hud-corner-accents — marcas L iluminadas en las 4 esquinas.
+   Uso: primer hijo de un .hud-frame: <div class="hud-corner-accents"></div>
+   El inset evita que los cortes diagonales del frame recorten las L. */
+.hud-corner-accents {
+  position: absolute;
+  inset: calc(var(--hud-cut, 14px) - 4px);
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color));
+  background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+  background-size: 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px;
+  background-repeat: no-repeat;
+  opacity: .85;
+  filter: drop-shadow(0 0 4px var(--hud-glow));
+}
+
+/* .hud-radar — anillos concéntricos + barrido girando, para DETRÁS de
+   un medallón. Todo contenido en su caja (96×96 por defecto).
+   Uso: <div class="hud-radar hud-frame--green"><div class="avatar3d">…</div></div> */
+.hud-radar {
+  --hud-color: var(--c-green);
+  --hud-glow: var(--c-green-glow);
+  position: relative;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+.hud-radar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--hud-color);
+  background: repeating-radial-gradient(circle at 50% 50%,
+    transparent 0 13px, var(--hud-color) 13px 14px, transparent 14px 15px);
+  opacity: .26;
+  pointer-events: none;
+}
+.hud-radar::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--hud-glow) 0 26deg, transparent 78deg 360deg);
+  animation: hud-radar-sweep 5.5s linear infinite;
+  opacity: .55;
+  pointer-events: none;
+}
+@keyframes hud-radar-sweep { to { transform: rotate(360deg); } }
+
+/* .hud-metric — métrica HUD: número grande + label + icono enmarcado
+   en hexágono al lado. Combinar con .hud-frame para el marco angular.
+   Uso: <div class="hud-metric hud-frame hud-frame--blue">
+          <div class="hud-metric-data"><strong>120</strong><span>XP</span></div>
+          <span class="hud-metric-icon">📈</span>
+        </div> */
+.hud-metric {
+  --hud-cut: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+}
+.hud-metric-data strong {
+  display: block;
+  font: 800 1.3rem/1 var(--f-display);
+  color: var(--c-bone);
+}
+.hud-metric-data span {
+  display: block;
+  margin-top: 4px;
+  font: 700 .62rem/1 var(--f-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--c-ash);
+}
+/* icono en mini-marco hexagonal (misma técnica de 2 capas) */
+.hud-metric-icon {
+  position: relative;
+  isolation: isolate;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  font-size: 1.05rem;
+  line-height: 1;
+  background: var(--hud-color);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  filter: drop-shadow(0 0 6px var(--hud-glow));
+}
+.hud-metric-icon::before {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  z-index: -1;
+  background: var(--c-graphite);
+  clip-path: inherit;
+}
+
+/* grilla de métricas lista para usar (3 por fila) */
+.hud-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+@media (max-width: 480px) {
+  .hud-metric { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 8px; }
+  .hud-metric-icon { order: -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-radar::after { animation: none; }
+}
