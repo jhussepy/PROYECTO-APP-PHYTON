@@ -6098,6 +6098,22 @@ h1, h2, h3 { font-family: var(--f-display); }
   background: rgba(0,0,0,.15);
 }
 
+/* ── home boot sequence ───────────────────────────────── */
+@keyframes os-boot-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.os-command-hero { animation: os-boot-up .55s cubic-bezier(.25,.46,.45,.94) both; }
+.os-metric-strip { animation: os-boot-up .55s cubic-bezier(.25,.46,.45,.94) .18s both; }
+.os-grid-main    { animation: os-boot-up .55s cubic-bezier(.25,.46,.45,.94) .32s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .os-command-hero,
+  .os-metric-strip,
+  .os-grid-main { animation: none; }
+}
+
 .os-system-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
