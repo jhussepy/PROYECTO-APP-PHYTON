@@ -5726,11 +5726,9 @@ h1, h2, h3 { font-family: var(--f-display); }
 .os-path-section {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(0,255,136,.16);
-  border-radius: 22px;
-  background:
-    linear-gradient(145deg, rgba(14, 24, 19, .96), rgba(6, 11, 8, .985)),
-    #0a0f0d;
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius);
+  background: linear-gradient(145deg, var(--c-panel), var(--c-graphite));
   box-shadow: 0 22px 58px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.025);
 }
 
@@ -6066,18 +6064,19 @@ h1, h2, h3 { font-family: var(--f-display); }
 }
 
 .os-daily-mission {
-  border-color: rgba(255,23,68,.20);
+  border-color: var(--c-line-red);
+  border-top: 3px solid var(--c-red);
   background:
-    linear-gradient(135deg, rgba(255,23,68,.055), transparent 42%),
-    linear-gradient(145deg, rgba(15,24,20,.97), rgba(7,11,9,.99));
+    linear-gradient(135deg, var(--c-red-dim), transparent 42%),
+    linear-gradient(145deg, var(--c-panel), var(--c-graphite));
 }
 
 .os-daily-mission blockquote,
 .os-quote-panel blockquote {
   margin: 18px 0 0;
   padding-left: 16px;
-  border-left: 2px solid #00ff88;
-  color: #d8f9e7;
+  border-left: 2px solid var(--c-green);
+  color: var(--c-bone);
   font-size: 1.02rem;
   font-weight: 750;
 }
