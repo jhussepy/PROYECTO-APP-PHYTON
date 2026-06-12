@@ -25,10 +25,9 @@ function initPyodide(onStatus) {
   const notify = (msg) => { if (typeof onStatus === 'function') onStatus(msg); };
 
   _pending = (async () => {
-    notify('Descargando intérprete Python real (~8 MB)…');
-
-    // Inyectar el script del CDN si loadPyodide no está disponible aún
+    // Fase 1 — descargar el script del CDN si loadPyodide no está disponible aún
     if (typeof loadPyodide === 'undefined') {
+      notify('Descargando entorno Python…');
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
         s.src = PYODIDE_INDEX + 'pyodide.js';
@@ -40,10 +39,13 @@ function initPyodide(onStatus) {
       });
     }
 
-    notify('Iniciando intérprete Python…');
+    // Fase 2 — inicializar el intérprete (descarga el runtime WASM ~8 MB)
+    notify('Inicializando intérprete…');
     // eslint-disable-next-line no-undef
     _pyodide = await loadPyodide({ indexURL: PYODIDE_INDEX });
-    notify('Python real listo ✓');
+
+    // Fase 3 — listo para ejecutar
+    notify('Laboratorio listo');
     return _pyodide;
   })();
 
