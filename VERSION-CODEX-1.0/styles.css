@@ -7867,3 +7867,67 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
   font-size: .9rem;
   margin-bottom: 2px;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   PYODIDE LOADER — panel de carga del laboratorio Python real (PoC P2)
+   Se renderiza dentro de .console-output solo en la PRIMERA carga de una
+   lección con engine:'pyodide'. Estilo terminal/HUD con glow verde.
+   ════════════════════════════════════════════════════════════════ */
+.pyodide-loader {
+  display: grid;
+  gap: 13px;
+  place-items: center;
+  padding: 20px 16px;
+  text-align: center;
+}
+.pyodide-loader-glyph {
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 10px var(--c-green-glow));
+  animation: pyodide-pulse 1.6s ease-in-out infinite;
+}
+@keyframes pyodide-pulse {
+  0%, 100% { transform: scale(1); opacity: .85; }
+  50%      { transform: scale(1.12); opacity: 1; }
+}
+.pyodide-loader-bar {
+  position: relative;
+  width: 100%;
+  max-width: 290px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--c-green-dim);
+  overflow: hidden;
+}
+.pyodide-loader-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 38%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--c-green), transparent);
+  box-shadow: 0 0 12px var(--c-green-glow);
+  animation: pyodide-slide 1.15s ease-in-out infinite;
+}
+@keyframes pyodide-slide {
+  0%   { transform: translateX(-130%); }
+  100% { transform: translateX(330%); }
+}
+.pyodide-loader-status {
+  font-family: var(--f-mono);
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  color: var(--c-green);
+  text-shadow: 0 0 10px var(--c-green-glow);
+}
+.pyodide-loader-note {
+  font-family: var(--f-mono);
+  font-size: .67rem;
+  letter-spacing: .02em;
+  color: var(--c-ash);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pyodide-loader-glyph,
+  .pyodide-loader-bar::before { animation: none; }
+}

@@ -37,7 +37,10 @@ function compactDescription(text='') {
     .replace('Amenazas reales entendidas desde defensa: cuentas, credenciales, phishing, malware, persistencia, fuga de datos e incidentes.', 'Amenazas reales vistas desde defensa y respuesta.');
 }
 
-function runtimePill() {
+function runtimePill(engine) {
+  if (engine === 'pyodide') {
+    return `<span class="pill green">CPython real</span><span class="pill">Pyodide · WASM</span><span class="pill orange">1ª carga ~3s</span>`;
+  }
   return `<span class="pill green">Secure Worker</span><span class="pill">Sandbox local</span><span class="pill orange">Timeout 3.5s</span>`;
 }
 
@@ -222,7 +225,7 @@ function renderPractice(courseId, lessonId) {
     <button class="btn btn-outline back-btn" data-action="render-view" data-view="lesson" data-course-id="${escapeHtml(courseId)}" data-lesson-id="${escapeHtml(lessonId)}">← BRIEFING</button>
     <section class="panel-card practice-shell animated-card">
       ${sectionTitle(lesson.title, `⚡ ${lesson.xp} XP`)}
-      <div class="chip-row">${chip(course.title)}${runtimePill()}</div>
+      <div class="chip-row">${chip(course.title)}${runtimePill(lesson.engine)}</div>
       <div class="instruction-box"><strong>Instrucción:</strong><br>${escapeHtml(lesson.exercise.instruction)}</div>${renderGuidedChallenge(lesson)}
       <div class="ai-agent-card compact-agent"><span>🤖 AGENTE IA</span><p id="agent-hint">${escapeHtml(briefing.agentHint)}</p></div>
     </section>
@@ -301,15 +304,34 @@ function renderSymbolBars() {
 function insertEncoded(text) { insertCode(decodeURIComponent(text)); }
 function insertCode(text) { const editor = document.getElementById('code-editor'); const start = editor.selectionStart; const end = editor.selectionEnd; editor.value = editor.value.slice(0,start) + text + editor.value.slice(end); editor.focus(); const pos = start + (text.endsWith('()') ? text.length - 1 : text.length); editor.selectionStart = editor.selectionEnd = pos; }
 
+// Panel visual de carga de Pyodide — se renderiza en .console-output solo la
+// primera vez (cuando aún no hay instancia). El texto de estado se actualiza
+// con updatePyodideLoader() desde el callback onStatus del motor.
+function showPyodideLoader(consoleEl, statusText) {
+  consoleEl.innerHTML = `
+    <div class="pyodide-loader">
+      <div class="pyodide-loader-glyph">🐍</div>
+      <div class="pyodide-loader-bar"></div>
+      <div class="pyodide-loader-status" id="pyodide-status">${escapeHtml(statusText)}</div>
+      <div class="pyodide-loader-note">Solo la primera vez · ~3s · se descarga el entorno Python real</div>
+    </div>`;
+}
+function updatePyodideLoader(statusText) {
+  const el = document.getElementById('pyodide-status');
+  if (el) el.textContent = statusText;
+}
+
 async function runPythonSimulation(code, lesson, courseId) {
   const consoleEl = document.getElementById('console');
   const feedbackEl = document.getElementById('feedback-area');
   const runBtn = document.getElementById('run-btn');
   const agentHint = document.getElementById('agent-hint');
   const useRealPython = lesson && lesson.engine === 'pyodide';
-  consoleEl.textContent = useRealPython
-    ? '[pyodide] Preparando laboratorio Python real…\n'
-    : '[local simulation] Ejecutando en safe execution...\n';
+  // ¿primera carga de Pyodide en la sesión? → panel visual; si ya está listo → directo
+  const showLoader = useRealPython && (typeof isPyodideReady !== 'function' || !isPyodideReady());
+  if (useRealPython && !showLoader) consoleEl.textContent = '[pyodide] Ejecutando Python real…\n';
+  else if (!useRealPython) consoleEl.textContent = '[local simulation] Ejecutando en safe execution...\n';
+  if (showLoader) showPyodideLoader(consoleEl, 'Preparando laboratorio Python real…');
   feedbackEl.classList.add('hidden');
   if (agentHint) agentHint.textContent = getAgentHint(code, lesson, 'practice');
   runBtn.disabled = true; runBtn.textContent = '⏳ EJECUTANDO...';
@@ -317,14 +339,16 @@ async function runPythonSimulation(code, lesson, courseId) {
     let result;
     if (useRealPython) {
       if (typeof runPythonReal !== 'function') throw new Error('runPythonReal no disponible. ¿Se cargó pyodide-engine.js?');
-      result = await runPythonReal(code, (status) => { consoleEl.textContent = `[pyodide] ${status}\n`; });
+      result = await runPythonReal(code, (status) => { if (showLoader) updatePyodideLoader(status); });
     } else {
       result = await runPythonSafe(code);
     }
     const output = String(result?.output ?? '');
     if (!result || !result.ok) {
       const advice = result?.friendly || getAgentHint(code, lesson, 'practice', output);
-      consoleEl.textContent += `\n${result?.error || 'Error desconocido del simulador'}`;
+      // En pyodide el loader ocupa la consola (innerHTML); reemplazamos con el mensaje.
+      if (useRealPython) consoleEl.textContent = advice;
+      else consoleEl.textContent += `\n${result?.error || 'Error desconocido del simulador'}`;
       if (agentHint) agentHint.textContent = advice;
       showFeedback('error','🤖 Agente IA · error explicado',advice);
       return;

@@ -9,6 +9,13 @@ const PYODIDE_INDEX   = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/fu
 let _pyodide = null;  // instancia cacheada — se descarga solo una vez
 let _pending = null;  // promesa en vuelo — evita doble descarga concurrente
 
+/* ¿Pyodide ya está cargado y listo en esta sesión?
+   La UI lo usa para decidir si muestra el panel de descarga (primera vez)
+   o ejecuta directo y rápido (segunda vez en adelante). */
+function isPyodideReady() {
+  return !!_pyodide;
+}
+
 /* Carga (o reutiliza) la instancia de Pyodide.
    onStatus(msg) es un callback opcional para mostrar progreso en la UI. */
 function initPyodide(onStatus) {
