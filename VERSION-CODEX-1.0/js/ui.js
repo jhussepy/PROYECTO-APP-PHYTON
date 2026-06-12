@@ -257,6 +257,14 @@ function renderPractice(courseId, lessonId) {
     const text = document.getElementById('lesson-note').value;
     if (addAgentNote(text, `lesson:${lesson.id}`)) { showToast('📝 Nota de misión guardada','Disponible en Agente > Notas'); document.getElementById('lesson-note').value = ''; }
   });
+  // Precarga no-bloqueante: al ENTRAR a una lección Python real, empieza a cargar
+  // Pyodide en segundo plano para que 'EJECUTAR' se sienta instantáneo. Fire-and-forget;
+  // el error real (offline, CDN) se maneja al ejecutar, aquí solo se silencia.
+  if (lesson.engine === 'pyodide' && typeof initPyodide === 'function'
+      && (typeof isPyodideReady !== 'function' || !isPyodideReady())
+      && !(typeof navigator !== 'undefined' && navigator.onLine === false)) {
+    initPyodide().catch(() => {});
+  }
 }
 
 
