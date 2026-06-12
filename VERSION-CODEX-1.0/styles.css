@@ -5746,7 +5746,7 @@ h1, h2, h3 { font-family: var(--f-display); }
   right: -180px;
   top: -220px;
   border-radius: 50%;
-  background: rgba(0,255,136,.12);
+  background: var(--c-green-dim);
   filter: blur(55px);
   pointer-events: none;
 }
@@ -5757,7 +5757,8 @@ h1, h2, h3 { font-family: var(--f-display); }
   gap: 24px;
   padding: clamp(24px, 5vw, 54px);
   margin-bottom: 16px;
-  border-color: rgba(0,255,136,.23);
+  background: linear-gradient(135deg, var(--c-graphite), var(--c-void));
+  border-color: var(--c-line-green);
 }
 
 .os-hero-copy,
@@ -5773,9 +5774,10 @@ h1, h2, h3 { font-family: var(--f-display); }
 .os-eyebrow {
   display: block;
   margin-bottom: 12px;
-  font: 900 .68rem/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  font: 900 .68rem/1.2 var(--f-mono);
   letter-spacing: .16em;
   text-transform: uppercase;
+  color: var(--c-blue);
 }
 
 .os-command-hero h1,
@@ -5785,7 +5787,7 @@ h1, h2, h3 { font-family: var(--f-display); }
 .os-ethical-hero h1 {
   max-width: 880px;
   margin: 0;
-  color: #f2fff8;
+  color: var(--c-bone);
   font-size: clamp(2.2rem, 7vw, 5.8rem);
   line-height: .96;
   letter-spacing: -.055em;
