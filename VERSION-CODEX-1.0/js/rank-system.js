@@ -43,22 +43,35 @@ function syncRankState() {
   return info;
 }
 
+function rankAvatarColor(rankId) {
+  if (rankId === 'pysec_elite_operator') return 'red';
+  if (['analista_cyber','blue_sentinel','ethical_hacker','threat_defender'].includes(rankId)) return 'blue';
+  return 'green';
+}
+
 function renderRankStrip() {
   const info = syncRankState();
   const nextText = info.next ? `${info.xpToNext} XP para ${info.next.title}` : 'Rango máximo activo';
-  return `<div class="rank-strip" onclick="renderView('rank')">
-    <div class="rank-symbol">${info.current.icon}</div>
+  const av = typeof buildAvatar3D === 'function'
+    ? buildAvatar3D(info.current.icon, rankAvatarColor(info.current.id))
+    : `<div class="rank-symbol">${info.current.icon}</div>`;
+  const tone = rankAvatarColor(info.current.id);
+  return `<div class="rank-strip hud-frame hud-frame--${tone}" onclick="renderView('rank')">
     <div class="rank-strip-body"><span>Rango actual</span><strong>${escapeHtml(info.current.title)}</strong><small>${escapeHtml(nextText)}</small>${progressBar(info.progress)}</div>
+    <div class="hud-radar">${av}</div>
     <span class="rank-strip-action">VER</span>
   </div>`;
 }
 
 function renderRankMiniPanel() {
   const info = syncRankState();
+  const av = typeof buildAvatar3D === 'function'
+    ? buildAvatar3D(info.current.icon, rankAvatarColor(info.current.id))
+    : `<div class="rank-emblem">${info.current.icon}</div>`;
   return `<section class="panel-card rank-mini-panel animated-card">
     ${sectionTitle('Sistema de rango', `Nivel ${info.level}/${info.totalRanks}`)}
     <div class="rank-mini-card" onclick="renderView('rank')">
-      <div class="rank-emblem">${info.current.icon}</div>
+      ${av}
       <div><span class="eyebrow">${escapeHtml(info.current.theme)}</span><h3>${escapeHtml(info.current.title)}</h3><p>${escapeHtml(info.current.description)}</p></div>
     </div>
     <div class="progress-block compact-progress"><div class="progress-label"><span>${info.xp} XP</span><span>${info.next ? `${info.xpToNext} XP faltantes` : 'Completo'}</span></div>${progressBar(info.progress)}</div>

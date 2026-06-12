@@ -8,6 +8,7 @@ function initApp() {
   setupNavigation();
   setupAppControls();
   initEventDelegation();
+  if (typeof initAvatar3DTilt === 'function') initAvatar3DTilt();
   if (typeof renderOperatorCosmetics === 'function') renderOperatorCosmetics();
   const initialView = getInitialViewFromHash();
   renderView(initialView.view, initialView.params);

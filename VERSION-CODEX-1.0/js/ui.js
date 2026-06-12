@@ -580,12 +580,15 @@ function renderProfile() {
     ? state.certificates.map(cert => `<div class="profile-course-row compact" data-action="render-view" data-view="certificate" data-course-id="${escapeHtml(cert.courseId)}"><span>🏅 ${escapeHtml(shortTitle(cert.title))}</span><strong>${Number(cert.percent) || 0}%</strong></div>`).join('')
     : `<div class="empty-certificate"><div class="empty-icon">🏆</div><strong>Sin certificados aún</strong><p>Aprueba tu primer examen para desbloquear un certificado local imprimible.</p></div>`;
   mainContainer.innerHTML = `
-    <section class="welcome-card profile-hero animated-card">
+    <section class="welcome-card profile-hero animated-card hud-frame hud-frame--green">
+      <div class="hud-corner-accents"></div>
       <span class="eyebrow">Perfil profesional</span>
       <h1>${rankInfo.current.icon} ${escapeHtml(rankInfo.current.title)}</h1>
       <p>Nivel ${state.level}. XP, racha, rangos, exámenes y respaldo seguro.</p>
       ${progressBar(progress)}
-      <div class="metric-grid">${metricCard(state.xp,'XP','glow-blue')}${metricCard(state.completedLessons.length,'Labs','glow-green')}${metricCard(state.streak,'Racha','glow-purple')}</div>
+      ${typeof hudMetric === 'function'
+        ? `<div class="hud-metric-grid">${hudMetric(state.xp,'XP','📈','blue')}${hudMetric(state.completedLessons.length,'Labs','🧪','green')}${hudMetric(state.streak,'Racha','🔥','red')}</div>`
+        : `<div class="metric-grid">${metricCard(state.xp,'XP','glow-blue')}${metricCard(state.completedLessons.length,'Labs','glow-green')}${metricCard(state.streak,'Racha','glow-purple')}</div>`}
       ${typeof renderRankStrip === 'function' ? renderRankStrip() : ''}
     </section>
     ${typeof renderAgentCommandCenter === 'function' ? renderAgentCommandCenter() : ''}

@@ -784,12 +784,13 @@ window.renderProfile = function renderLearningOsProfile() {
   const platform = readPlatformState();
   const google = getGoogleOAuthStatus();
   const insertion = `
-    <section class="os-panel os-profile-operations">
+    <section class="os-panel os-profile-operations hud-frame hud-frame--green">
+      <div class="hud-corner-accents"></div>
       <div class="os-panel-heading"><div><span>OPERATIONS</span><h2>${escapeHtml(platform.profile.displayName)}</h2><p>${escapeHtml(platform.profile.goal)}</p></div>${learningOsPill(platform.profile.level, 'success')}</div>
       <div class="os-account-status-grid">
-        <button onclick="renderView('mentor')"><span>LOCAL AI</span><strong>${platform.localAI.status === 'online' ? 'ONLINE' : 'OFFLINE'}</strong></button>
-        <button onclick="renderView('settings')"><span>GOOGLE</span><strong>${escapeHtml(google.label)}</strong></button>
-        <button onclick="renderView('focus')"><span>FOCUS</span><strong>${platform.focus.sessions} SESIONES</strong></button>
+        <button class="hud-frame hud-frame--blue" onclick="renderView('mentor')"><span class="hud-metric-icon">🧠</span><span>LOCAL AI</span><strong>${platform.localAI.status === 'online' ? 'ONLINE' : 'OFFLINE'}</strong></button>
+        <button class="hud-frame hud-frame--green" onclick="renderView('settings')"><span class="hud-metric-icon">🌐</span><span>GOOGLE</span><strong>${escapeHtml(google.label)}</strong></button>
+        <button class="hud-frame hud-frame--red" onclick="renderView('focus')"><span class="hud-metric-icon">🎯</span><span>FOCUS</span><strong>${platform.focus.sessions} SESIONES</strong></button>
       </div>
       <div class="os-panel-actions"><button class="os-primary-action" onclick="renderView('store')">TIENDA ELITE</button><button class="os-secondary-action" onclick="renderView('settings')">CONFIGURACIÓN</button><button class="os-secondary-action" onclick="renderView('roadmap')">ROADMAP</button><button class="os-secondary-action" onclick="renderView('ethical-labs')">SAFE LABS</button></div>
     </section>`;

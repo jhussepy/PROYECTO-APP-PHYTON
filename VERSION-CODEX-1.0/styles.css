@@ -1537,16 +1537,18 @@ body::after {
 .stat-button { color: var(--text-main); }
 .rank-strip {
   display: grid;
-  grid-template-columns: 44px 1fr auto;
-  gap: 12px;
+  grid-template-columns: 80px 1fr auto;
+  gap: 16px;
   align-items: center;
-  padding: 12px;
+  padding: 12px 14px 12px 12px;
   margin-top: 12px;
   border-radius: 18px;
   border: 1px solid rgba(44, 228, 138, .22);
   background: linear-gradient(135deg, rgba(0, 208, 132, .1), rgba(47, 109, 255, .08));
   box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 0 28px rgba(0,208,132,.08);
+  overflow: visible;
 }
+/* fallback when avatar3d not available */
 .rank-symbol, .rank-emblem {
   width: 44px;
   height: 44px;
@@ -1563,13 +1565,14 @@ body::after {
 .rank-strip-action { font: 900 .68rem/1 "JetBrains Mono", monospace; color: var(--green-python); letter-spacing: .12em; }
 .rank-mini-card {
   display: grid;
-  grid-template-columns: 52px 1fr;
-  gap: 12px;
+  grid-template-columns: 80px 1fr;
+  gap: 14px;
   align-items: start;
   padding: 14px;
   border-radius: 18px;
   background: rgba(255,255,255,.035);
   border: 1px solid var(--border-soft);
+  overflow: visible;
   margin-bottom: 12px;
 }
 .rank-mini-card h3 { margin: 2px 0 6px; }
@@ -1628,9 +1631,13 @@ body::after {
 .rank-how .check-list span { border-color: rgba(44,228,138,.16); }
 .compact-progress { margin-top: 10px; }
 @media (max-width: 390px) {
-  .rank-strip { grid-template-columns: 40px 1fr; }
+  .rank-strip { grid-template-columns: 64px 1fr; gap: 12px; }
   .rank-strip-action { display: none; }
-  .rank-mini-card { grid-template-columns: 44px 1fr; }
+  .rank-mini-card { grid-template-columns: 64px 1fr; }
+  .rank-strip .avatar3d,
+  .rank-mini-card .avatar3d { width: 64px; height: 64px; }
+  .rank-strip .avatar3d-hero,
+  .rank-mini-card .avatar3d-hero { font-size: 1.8rem; }
 }
 
 
@@ -7496,4 +7503,367 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
 }
 @media (max-width: 350px) {
   .elite-store-grid { grid-template-columns: 1fr; }
+}
+
+/* ── avatar3d motor — falso-3D premium ────────────────── */
+.avatar3d {
+  --av-color: var(--c-green);
+  --av-glow:  var(--c-green-glow);
+  position: relative;
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  perspective: 600px;
+}
+.avatar3d.color-blue { --av-color: var(--c-blue); --av-glow: var(--c-blue-glow); }
+.avatar3d.color-red  { --av-color: var(--c-red);  --av-glow: var(--c-red-glow); }
+
+/* scene — recibe la rotación del tilt JS */
+.avatar3d-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: rotateX(0deg) rotateY(0deg);
+  transition: transform .35s cubic-bezier(.25,.46,.45,.94);
+}
+.avatar3d-scene.is-tilting { transition: none; }
+
+/* placa trasera: rejilla + radial-glow */
+.avatar3d-plate {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  border: 1px solid var(--av-color);
+  background:
+    radial-gradient(circle at 42% 32%, var(--av-glow), transparent 62%),
+    repeating-linear-gradient(0deg,  transparent, transparent 11px, rgba(255,255,255,.022) 11px, rgba(255,255,255,.022) 12px),
+    repeating-linear-gradient(90deg, transparent, transparent 11px, rgba(255,255,255,.022) 11px, rgba(255,255,255,.022) 12px),
+    var(--c-panel);
+  transform: translateZ(-60px) scale(1.22);
+  opacity: .85;
+}
+
+/* aura respirando */
+.avatar3d-aura {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, var(--av-glow), transparent 68%);
+  transform: translateZ(-20px);
+  animation: av-breathe 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes av-breathe {
+  0%, 100% { opacity: .25; transform: translateZ(-20px) scale(1); }
+  50%       { opacity: .65; transform: translateZ(-20px) scale(1.16); }
+}
+
+/* anillos orbitales (::before CW, ::after CCW) */
+.avatar3d-ring {
+  position: absolute;
+  inset: -14px;
+  transform: translateZ(-10px);
+  pointer-events: none;
+}
+.avatar3d-ring::before,
+.avatar3d-ring::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+.avatar3d-ring::before {
+  inset: 0;
+  border: 2px solid transparent;
+  border-top-color: var(--av-color);
+  border-bottom-color: var(--av-color);
+  opacity: .62;
+  animation: av-spin-cw 7s linear infinite;
+}
+.avatar3d-ring::after {
+  inset: 9px;
+  border: 1.5px solid transparent;
+  border-left-color: var(--av-color);
+  border-right-color: var(--av-color);
+  opacity: .36;
+  animation: av-spin-ccw 4.5s linear infinite;
+}
+@keyframes av-spin-cw  { to { transform: rotate(360deg); } }
+@keyframes av-spin-ccw { to { transform: rotate(-360deg); } }
+
+/* personaje — emoji flotante con glow */
+.avatar3d-hero {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 2.2rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 8px var(--av-glow));
+  transform: translateZ(40px);
+  animation: av-float 4s ease-in-out infinite;
+}
+@keyframes av-float {
+  0%, 100% { transform: translateZ(40px) translateY(0); }
+  50%       { transform: translateZ(40px) translateY(-4px); }
+}
+
+/* brillo especular diagonal */
+.avatar3d-gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,.20) 0%, transparent 44%);
+  transform: translateZ(60px);
+  pointer-events: none;
+}
+
+/* variante contenida: dentro de tiras/cards compactas el sangrado de
+   placa, aura y anillos se recoge para no pisar el texto adyacente */
+.rank-strip .avatar3d-plate,
+.rank-mini-card .avatar3d-plate { transform: translateZ(-60px) scale(1.04); }
+.rank-strip .avatar3d-aura,
+.rank-mini-card .avatar3d-aura { inset: -2px; }
+.rank-strip .avatar3d-ring,
+.rank-mini-card .avatar3d-ring { inset: -3px; }
+.rank-strip .avatar3d-ring::after,
+.rank-mini-card .avatar3d-ring::after { inset: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar3d-aura,
+  .avatar3d-ring::before,
+  .avatar3d-ring::after,
+  .avatar3d-hero { animation: none; }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HUD KIT — componentes cabina reutilizables (v1)
+   Cada componente lee --hud-color / --hud-glow / --hud-line.
+   Las variantes .hud-frame--green / --blue / --red solo setean esas
+   custom props, así que valen para CUALQUIER componente del kit
+   (frame, radar, metric), no solo para .hud-frame.
+   Nota: clip-path recorta box-shadow; el glow del kit se hace con
+   filter: drop-shadow en acentos e iconos, los marcos quedan planos.
+   ════════════════════════════════════════════════════════════════ */
+
+/* .hud-frame — marco angular tipo cabina (octágono suave).
+   Uso: <section class="hud-frame hud-frame--green"> … </section>
+   Borde por técnica de 2 capas: el fondo del elemento es el color de
+   línea y ::before lo cubre con panel dejando ~1px visible. ::after
+   ilumina los 4 cortes diagonales de esquina con --hud-color.
+   --hud-cut controla el tamaño del corte. */
+.hud-frame {
+  --hud-color: var(--c-green);
+  --hud-glow: var(--c-green-glow);
+  --hud-line: var(--c-line);
+  --hud-cut: 14px;
+  position: relative;
+  isolation: isolate;
+  padding: 18px 16px;
+  background: var(--hud-line);
+  clip-path: polygon(
+    var(--hud-cut) 0, calc(100% - var(--hud-cut)) 0,
+    100% var(--hud-cut), 100% calc(100% - var(--hud-cut)),
+    calc(100% - var(--hud-cut)) 100%, var(--hud-cut) 100%,
+    0 calc(100% - var(--hud-cut)), 0 var(--hud-cut));
+}
+.hud-frame::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: linear-gradient(165deg, var(--c-panel), var(--c-graphite) 72%);
+  clip-path: inherit;
+}
+/* luces sobre los 4 cortes diagonales de esquina */
+.hud-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(135deg, transparent calc(50% - 1.5px), var(--hud-color) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(45deg,  transparent calc(50% - 1.5px), var(--hud-color) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(135deg, transparent calc(50% - 1.5px), var(--hud-color) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px)),
+    linear-gradient(45deg,  transparent calc(50% - 1.5px), var(--hud-color) calc(50% - 1.5px) calc(50% + 1.5px), transparent calc(50% + 1.5px));
+  background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  background-size: var(--hud-cut) var(--hud-cut);
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 6px var(--hud-glow));
+}
+
+/* variantes de color — setean las custom props del kit completo */
+.hud-frame--green { --hud-color: var(--c-green); --hud-glow: var(--c-green-glow); --hud-line: var(--c-line-green); }
+.hud-frame--blue  { --hud-color: var(--c-blue);  --hud-glow: var(--c-blue-glow);  --hud-line: rgba(61, 139, 255, .26); }
+.hud-frame--red   { --hud-color: var(--c-red);   --hud-glow: var(--c-red-glow);   --hud-line: var(--c-line-red); }
+
+/* .hud-corner-accents — marcas L iluminadas en las 4 esquinas.
+   Uso: primer hijo de un .hud-frame: <div class="hud-corner-accents"></div>
+   El inset evita que los cortes diagonales del frame recorten las L. */
+.hud-corner-accents {
+  position: absolute;
+  inset: calc(var(--hud-cut, 14px) - 4px);
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color)),
+    linear-gradient(var(--hud-color), var(--hud-color));
+  background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+  background-size: 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px, 14px 2px, 2px 14px;
+  background-repeat: no-repeat;
+  opacity: .85;
+  filter: drop-shadow(0 0 4px var(--hud-glow));
+}
+
+/* .hud-radar — anillos concéntricos + barrido girando, para DETRÁS de
+   un medallón. Todo contenido en su caja (96×96 por defecto).
+   Uso: <div class="hud-radar hud-frame--green"><div class="avatar3d">…</div></div> */
+.hud-radar {
+  --hud-color: var(--c-green);
+  --hud-glow: var(--c-green-glow);
+  position: relative;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+.hud-radar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--hud-color);
+  background: repeating-radial-gradient(circle at 50% 50%,
+    transparent 0 13px, var(--hud-color) 13px 14px, transparent 14px 15px);
+  opacity: .26;
+  pointer-events: none;
+}
+.hud-radar::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--hud-glow) 0 26deg, transparent 78deg 360deg);
+  animation: hud-radar-sweep 5.5s linear infinite;
+  opacity: .55;
+  pointer-events: none;
+}
+@keyframes hud-radar-sweep { to { transform: rotate(360deg); } }
+
+/* .hud-metric — métrica HUD: número grande + label + icono enmarcado
+   en hexágono al lado. Combinar con .hud-frame para el marco angular.
+   Uso: <div class="hud-metric hud-frame hud-frame--blue">
+          <div class="hud-metric-data"><strong>120</strong><span>XP</span></div>
+          <span class="hud-metric-icon">📈</span>
+        </div> */
+.hud-metric {
+  --hud-cut: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+}
+.hud-metric-data strong {
+  display: block;
+  font: 800 1.3rem/1 var(--f-display);
+  color: var(--c-bone);
+}
+.hud-metric-data span {
+  display: block;
+  margin-top: 4px;
+  font: 700 .62rem/1 var(--f-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--c-ash);
+}
+/* icono en mini-marco hexagonal (misma técnica de 2 capas) */
+.hud-metric-icon {
+  position: relative;
+  isolation: isolate;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  font-size: 1.05rem;
+  line-height: 1;
+  background: var(--hud-color);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  filter: drop-shadow(0 0 6px var(--hud-glow));
+}
+.hud-metric-icon::before {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  z-index: -1;
+  background: var(--c-graphite);
+  clip-path: inherit;
+}
+
+/* grilla de métricas lista para usar (3 por fila) */
+.hud-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+@media (max-width: 480px) {
+  .hud-metric { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: 8px; }
+  .hud-metric-icon { order: -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-radar::after { animation: none; }
+}
+
+/* ── aplicación HUD · PERFIL ─────────────────────────────────────
+   Overrides para que .hud-frame conviva con los estilos legacy de
+   welcome-card / rank-strip / os-panel (radius, borde y sombra los
+   reemplaza el marco angular del kit). */
+.profile-hero.hud-frame,
+.os-profile-operations.hud-frame {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* welcome-card::after atenuaba con opacity .28 — las luces de esquina
+   del frame necesitan opacidad plena */
+.profile-hero.hud-frame::after { opacity: 1; }
+
+/* barra de rango HUD: texto a la izquierda, medalla (radar) a la derecha */
+.rank-strip.hud-frame {
+  --hud-cut: 12px;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 14px 16px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+.rank-strip .hud-radar { width: 88px; height: 88px; }
+@media (max-width: 390px) {
+  .rank-strip.hud-frame { grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; }
+  .rank-strip .hud-radar { width: 72px; height: 72px; }
+}
+
+/* filas de OPERATIONS: cada botón con marco angular + icono enmarcado */
+.os-account-status-grid button.hud-frame {
+  --hud-cut: 10px;
+  border: none;
+  border-radius: 0;
+  background: var(--hud-line);
+  justify-items: start;
+}
+.os-account-status-grid button.hud-frame .hud-metric-icon {
+  width: 30px;
+  height: 30px;
+  font-size: .9rem;
+  margin-bottom: 2px;
 }

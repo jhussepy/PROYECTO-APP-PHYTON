@@ -27,3 +27,15 @@ function actionButtonDelegated(label, action, dataAttrs = {}, variant = 'btn-pri
 function statusPill(text, variant = '') { return `<span class="pill ${variant}">${escapeHtml(text)}</span>`; }
 function emptyState(text) { return `<section class="empty-state">${escapeHtml(text)}</section>`; }
 function safeAttr(value='') { return escapeHtml(String(value)); }
+
+// Métrica HUD: número + label + icono en mini-marco hexagonal (kit .hud-*).
+// variant se restringe a la paleta del kit para no inyectar clases arbitrarias.
+function hudMetric(value, label, icon, variant = 'green') {
+  const tone = ['green', 'blue', 'red'].includes(variant) ? variant : 'green';
+  return `<div class="hud-metric hud-frame hud-frame--${tone}"><div class="hud-metric-data"><strong>${escapeHtml(value)}</strong><span>${escapeHtml(label)}</span></div><span class="hud-metric-icon">${escapeHtml(String(icon))}</span></div>`;
+}
+
+function buildAvatar3D(icon, colorClass = 'green') {
+  const safe = escapeHtml(String(icon));
+  return `<div class="avatar3d color-${colorClass}"><div class="avatar3d-scene"><div class="avatar3d-plate"></div><div class="avatar3d-aura"></div><div class="avatar3d-ring"></div><div class="avatar3d-hero">${safe}</div><div class="avatar3d-gloss"></div></div></div>`;
+}
