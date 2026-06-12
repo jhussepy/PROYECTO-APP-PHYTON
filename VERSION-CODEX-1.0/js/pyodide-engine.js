@@ -27,6 +27,11 @@ function initPyodide(onStatus) {
   _pending = (async () => {
     // Fase 1 — descargar el script del CDN si loadPyodide no está disponible aún
     if (typeof loadPyodide === 'undefined') {
+      // Sin conexión y sin nada cacheado → fallar rápido con un error claro,
+      // en vez de esperar el timeout del navegador con un mensaje técnico feo.
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        throw new Error('offline: sin conexión para descargar el entorno Python');
+      }
       notify('Descargando entorno Python…');
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -62,10 +67,13 @@ async function runPythonReal(code, onStatus) {
   try {
     py = await initPyodide(onStatus);
   } catch (e) {
+    const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
     return {
       ok: false,
-      error: `Pyodide no disponible: ${e.message}`,
-      friendly: 'Verifica tu conexión a internet. Pyodide se descarga desde CDN la primera vez (~8 MB).'
+      error: e.message || 'Pyodide no disponible',
+      friendly: offline
+        ? 'Esta lección usa Python real y necesita conexión la primera vez para descargar el entorno (~8 MB, solo una vez). Conéctate e inténtalo de nuevo. Las demás lecciones funcionan sin conexión.'
+        : 'No se pudo descargar el entorno Python real. Revisa tu conexión e inténtalo de nuevo — las demás lecciones siguen disponibles offline.'
     };
   }
 
