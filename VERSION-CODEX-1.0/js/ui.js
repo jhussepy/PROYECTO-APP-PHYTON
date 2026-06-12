@@ -306,12 +306,21 @@ async function runPythonSimulation(code, lesson, courseId) {
   const feedbackEl = document.getElementById('feedback-area');
   const runBtn = document.getElementById('run-btn');
   const agentHint = document.getElementById('agent-hint');
-  consoleEl.textContent = '[local simulation] Ejecutando en safe execution...\n';
+  const useRealPython = lesson && lesson.engine === 'pyodide';
+  consoleEl.textContent = useRealPython
+    ? '[pyodide] Preparando laboratorio Python real…\n'
+    : '[local simulation] Ejecutando en safe execution...\n';
   feedbackEl.classList.add('hidden');
   if (agentHint) agentHint.textContent = getAgentHint(code, lesson, 'practice');
   runBtn.disabled = true; runBtn.textContent = '⏳ EJECUTANDO...';
   try {
-    const result = await runPythonSafe(code);
+    let result;
+    if (useRealPython) {
+      if (typeof runPythonReal !== 'function') throw new Error('runPythonReal no disponible. ¿Se cargó pyodide-engine.js?');
+      result = await runPythonReal(code, (status) => { consoleEl.textContent = `[pyodide] ${status}\n`; });
+    } else {
+      result = await runPythonSafe(code);
+    }
     const output = String(result?.output ?? '');
     if (!result || !result.ok) {
       const advice = result?.friendly || getAgentHint(code, lesson, 'practice', output);
