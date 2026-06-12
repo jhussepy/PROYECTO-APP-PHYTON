@@ -728,13 +728,6 @@ code, pre, .code-editor, .console-output,
   font-family: var(--f-mono) !important;
 }
 
-.main-header {
-  background:
-    linear-gradient(180deg, rgba(4, 10, 25, .98), rgba(3, 8, 20, .88)),
-    radial-gradient(circle at 18% 0, rgba(35, 220, 255, .12), transparent 38%);
-  border-bottom: 1px solid rgba(134, 189, 255, .16);
-  box-shadow: 0 12px 28px rgba(0,0,0,.26), 0 1px 0 rgba(255,255,255,.04) inset;
-}
 .logo { gap: 10px; }
 .logo-mark {
   position: relative;
@@ -1120,22 +1113,7 @@ body::after {
   border-color: rgba(20, 56, 98, .66);
 }
 
-.main-header {
-  background:
-    linear-gradient(180deg, rgba(4, 7, 15, .98), rgba(7, 17, 31, .92)),
-    radial-gradient(circle at 18% 0, rgba(0, 208, 132, .11), transparent 34%);
-  border-bottom-color: rgba(20, 56, 98, .95);
-  box-shadow: 0 14px 30px rgba(0,0,0,.34), 0 0 22px rgba(0,208,132,.045);
-}
-.logo-mark {
-  background: linear-gradient(135deg, #2868ff, #22d3ee 52%, #00d084);
-  box-shadow: 0 0 0 1px rgba(34, 211, 238, .24), 0 0 24px rgba(0,208,132,.18);
-}
-.logo-subtitle { color: var(--green-python); }
-.theme-toggle, .stat-item {
-  background: linear-gradient(180deg, rgba(13, 22, 40, .88), rgba(4, 7, 15, .94));
-  border-color: rgba(20, 56, 98, .88);
-}
+.logo-subtitle { color: var(--c-green); }
 
 .hero-card, .welcome-card, .panel-card, .course-card, .lesson-card, .ethic-box {
   background:
