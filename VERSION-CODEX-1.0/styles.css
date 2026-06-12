@@ -7823,3 +7823,47 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
 @media (prefers-reduced-motion: reduce) {
   .hud-radar::after { animation: none; }
 }
+
+/* ── aplicación HUD · PERFIL ─────────────────────────────────────
+   Overrides para que .hud-frame conviva con los estilos legacy de
+   welcome-card / rank-strip / os-panel (radius, borde y sombra los
+   reemplaza el marco angular del kit). */
+.profile-hero.hud-frame,
+.os-profile-operations.hud-frame {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+/* welcome-card::after atenuaba con opacity .28 — las luces de esquina
+   del frame necesitan opacidad plena */
+.profile-hero.hud-frame::after { opacity: 1; }
+
+/* barra de rango HUD: texto a la izquierda, medalla (radar) a la derecha */
+.rank-strip.hud-frame {
+  --hud-cut: 12px;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 14px 16px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
+.rank-strip .hud-radar { width: 88px; height: 88px; }
+@media (max-width: 390px) {
+  .rank-strip.hud-frame { grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; }
+  .rank-strip .hud-radar { width: 72px; height: 72px; }
+}
+
+/* filas de OPERATIONS: cada botón con marco angular + icono enmarcado */
+.os-account-status-grid button.hud-frame {
+  --hud-cut: 10px;
+  border: none;
+  border-radius: 0;
+  background: var(--hud-line);
+  justify-items: start;
+}
+.os-account-status-grid button.hud-frame .hud-metric-icon {
+  width: 30px;
+  height: 30px;
+  font-size: .9rem;
+  margin-bottom: 2px;
+}

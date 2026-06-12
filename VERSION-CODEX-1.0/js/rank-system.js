@@ -55,9 +55,10 @@ function renderRankStrip() {
   const av = typeof buildAvatar3D === 'function'
     ? buildAvatar3D(info.current.icon, rankAvatarColor(info.current.id))
     : `<div class="rank-symbol">${info.current.icon}</div>`;
-  return `<div class="rank-strip" onclick="renderView('rank')">
-    ${av}
+  const tone = rankAvatarColor(info.current.id);
+  return `<div class="rank-strip hud-frame hud-frame--${tone}" onclick="renderView('rank')">
     <div class="rank-strip-body"><span>Rango actual</span><strong>${escapeHtml(info.current.title)}</strong><small>${escapeHtml(nextText)}</small>${progressBar(info.progress)}</div>
+    <div class="hud-radar">${av}</div>
     <span class="rank-strip-action">VER</span>
   </div>`;
 }
