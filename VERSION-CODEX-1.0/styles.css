@@ -1538,7 +1538,7 @@ body::after {
 .rank-strip {
   display: grid;
   grid-template-columns: 80px 1fr auto;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
   padding: 12px 14px 12px 12px;
   margin-top: 12px;
@@ -1631,9 +1631,13 @@ body::after {
 .rank-how .check-list span { border-color: rgba(44,228,138,.16); }
 .compact-progress { margin-top: 10px; }
 @media (max-width: 390px) {
-  .rank-strip { grid-template-columns: 40px 1fr; }
+  .rank-strip { grid-template-columns: 64px 1fr; gap: 12px; }
   .rank-strip-action { display: none; }
-  .rank-mini-card { grid-template-columns: 44px 1fr; }
+  .rank-mini-card { grid-template-columns: 64px 1fr; }
+  .rank-strip .avatar3d,
+  .rank-mini-card .avatar3d { width: 64px; height: 64px; }
+  .rank-strip .avatar3d-hero,
+  .rank-mini-card .avatar3d-hero { font-size: 1.8rem; }
 }
 
 
@@ -7613,6 +7617,17 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
   transform: translateZ(60px);
   pointer-events: none;
 }
+
+/* variante contenida: dentro de tiras/cards compactas el sangrado de
+   placa, aura y anillos se recoge para no pisar el texto adyacente */
+.rank-strip .avatar3d-plate,
+.rank-mini-card .avatar3d-plate { transform: translateZ(-60px) scale(1.04); }
+.rank-strip .avatar3d-aura,
+.rank-mini-card .avatar3d-aura { inset: -2px; }
+.rank-strip .avatar3d-ring,
+.rank-mini-card .avatar3d-ring { inset: -3px; }
+.rank-strip .avatar3d-ring::after,
+.rank-mini-card .avatar3d-ring::after { inset: 6px; }
 
 @media (prefers-reduced-motion: reduce) {
   .avatar3d-aura,
