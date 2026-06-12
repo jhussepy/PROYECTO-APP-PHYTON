@@ -3,7 +3,7 @@ const STATIC_CACHE = `pysec-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `pysec-runtime-${CACHE_VERSION}`;
 const ASSETS = [
   './', './index.html', './offline.html', './styles.css', './manifest.json',
-  './js/config.js', './js/data.js', './js/curriculum-upgrade.js', './js/learning-paths.js', './js/state.js', './js/validation.js', './js/platform-core.js', './js/local-ai-core.js', './js/ai-mentor-cloud.js', './js/runner.js', './js/runner-worker.js', './js/ui-components.js', './js/elite-store.js', './js/rank-system.js', './js/agent-command.js', './js/market.js', './js/strategy-engine.js', './js/market-intelligence-ux.js', './js/market-clean-flow.js', './js/market-command-dashboard.js', './js/ai-agent.js', './js/ui.js', './js/learning-os.js', './js/router.js', './js/event-delegation.js', './js/app.js',
+  './js/config.js', './js/data.js', './js/curriculum-upgrade.js', './js/learning-paths.js', './js/state.js', './js/validation.js', './js/platform-core.js', './js/local-ai-core.js', './js/ai-mentor-cloud.js', './js/runner.js', './js/runner-worker.js', './js/ui-components.js', './js/elite-store.js', './js/rank-system.js', './js/agent-command.js', './js/market.js', './js/strategy-engine.js', './js/market-intelligence-ux.js', './js/market-clean-flow.js', './js/market-command-dashboard.js', './js/ai-agent.js', './js/ui.js', './js/learning-os.js', './js/router.js', './js/event-delegation.js', './js/avatar3d.js', './js/pyodide-engine.js', './js/app.js',
   './assets/icon-192.png', './assets/icon-512.png', './assets/screenshot-mobile.png', './assets/screenshot-wide.png',
   './assets/market-logos/aapl.svg', './assets/market-logos/amd.svg', './assets/market-logos/amzn.svg', './assets/market-logos/avgo.svg', './assets/market-logos/cat.svg', './assets/market-logos/crm.svg', './assets/market-logos/googl.svg', './assets/market-logos/intc.svg', './assets/market-logos/jpm.svg', './assets/market-logos/lly.svg', './assets/market-logos/meta.svg', './assets/market-logos/msft.svg', './assets/market-logos/nflx.svg', './assets/market-logos/nvda.svg', './assets/market-logos/tsla.svg', './assets/market-logos/v.svg', './assets/market-logos/wmt.svg', './assets/market-logos/xom.svg'
 ];
@@ -42,6 +42,11 @@ async function staleWhileRevalidate(request) {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
+  // Pyodide CDN: saltar completamente — el navegador gestiona su propio caché.
+  // Almacenar ~8 MB de Pyodide en el SW saturaría el caché y rompería el offline.
+  // Nota: la línea `url.origin !== self.location.origin` ya cubre esto; esta
+  // comprobación explícita documenta la intención y protege ante futuros refactors.
+  if (url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'cdn.pyodide.org') return;
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/api/chat')) {
     event.respondWith(fetch(event.request));
