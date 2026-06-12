@@ -780,14 +780,6 @@ code, pre, .code-editor, .console-output,
 .hero-card, .welcome-card, .panel-card, .course-card, .lesson-card, .ethic-box {
   position: relative;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(8, 19, 43, .9), rgba(4, 10, 24, .96)),
-    radial-gradient(circle at 12% 0, rgba(47,109,255,.12), transparent 36%);
-  border-color: rgba(134, 189, 255, .16);
-  box-shadow:
-    0 18px 42px rgba(0,0,0,.34),
-    inset 0 1px 0 rgba(255,255,255,.045),
-    0 0 0 1px rgba(35, 220, 255, .025);
 }
 .hero-card::after, .welcome-card::after, .panel-card::after, .course-card::after, .lesson-card::after {
   content: "";
@@ -1105,12 +1097,6 @@ body::after {
 
 .logo-subtitle { color: var(--c-green); }
 
-.hero-card, .welcome-card, .panel-card, .course-card, .lesson-card, .ethic-box {
-  background:
-    linear-gradient(180deg, rgba(13, 22, 40, .92), rgba(7, 17, 31, .96)),
-    radial-gradient(circle at 8% 0, rgba(0, 208, 132, .065), transparent 32%);
-  border-color: rgba(20, 56, 98, .82);
-}
 .premium-hero {
   background:
     linear-gradient(145deg, rgba(13, 22, 40, .96), rgba(7, 17, 31, .98) 58%, rgba(10, 19, 36, .96)),
