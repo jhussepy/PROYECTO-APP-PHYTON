@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v11.3.0-elite-collection-expansion-chesslib';
+const CACHE_VERSION = 'v12.0.0-chess-visual-upgrade';
 const STATIC_CACHE = `pysec-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `pysec-runtime-${CACHE_VERSION}`;
 const ASSETS = [
