@@ -261,13 +261,13 @@ function renderProToolsRow() {
   const watchCount = (marketState.userWatchlist || readUserWatchlist()).length;
   const alertCount = (marketState.alerts || readMarketAlerts()).filter(a => a.active).length;
   return `<section class="pro-tools-row">
-    <button onclick="setMarketTab('alerts')"><span>♢</span><b>Alertas</b>${alertCount ? `<em>${alertCount}</em>` : ''}</button>
-    <button onclick="setMarketTab('summary')"><span>◎</span><b>Scanner</b></button>
-    <button onclick="scrollToMarketInsight()"><span>✺</span><b>AI Insights</b><em>Nuevo</em></button>
-    <button onclick="setMarketTab('watchlist')"><span>◉</span><b>Watchlist</b>${watchCount ? `<em>${watchCount}</em>` : ''}</button>
-    <button onclick="renderMarketNewsToast()"><span>▤</span><b>Noticias</b></button>
-    <button onclick="openStrategyEngine()"><span>⌬</span><b>Estrategia</b></button>
-    <button onclick="openMarketApiSettings()"><span>⌘</span><b>API</b></button>
+    <button data-tool="alerts"   onclick="setMarketTab('alerts')"><span>♢</span><b>Alertas</b>${alertCount ? `<em>${alertCount}</em>` : ''}</button>
+    <button data-tool="scanner"  onclick="setMarketTab('summary')"><span>◎</span><b>Scanner</b></button>
+    <button data-tool="ai"       onclick="scrollToMarketInsight()"><span>✺</span><b>AI Insights</b><em>Nuevo</em></button>
+    <button data-tool="watchlist" onclick="setMarketTab('watchlist')"><span>◉</span><b>Watchlist</b>${watchCount ? `<em>${watchCount}</em>` : ''}</button>
+    <button data-tool="news"     onclick="renderMarketNewsToast()"><span>▤</span><b>Noticias</b></button>
+    <button data-tool="strategy" onclick="openStrategyEngine()"><span>⌬</span><b>Estrategia</b></button>
+    <button data-tool="api"      onclick="openMarketApiSettings()"><span>⌘</span><b>API</b></button>
   </section>`;
 }
 
