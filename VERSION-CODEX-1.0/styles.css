@@ -7997,3 +7997,102 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
   padding: 2px 6px;
   white-space: nowrap;
 }
+
+/* ===== v12.0 Chess ===== */
+.chess-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 0;
+}
+.chess-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.chess-back-btn, .chess-new-btn { white-space: nowrap; flex-shrink: 0; }
+.chess-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+.chess-turn {
+  font-family: var(--f-mono);
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+}
+.chess-turn--over {
+  color: var(--c-green);
+  text-shadow: 0 0 12px var(--c-green-glow);
+}
+.chess-check {
+  font-family: var(--f-mono);
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  color: var(--c-red);
+  text-shadow: 0 0 10px var(--c-red-glow);
+  animation: chess-pulse .55s ease-in-out infinite alternate;
+}
+.chess-gameover {
+  font-family: var(--f-mono);
+  font-size: .72rem;
+  font-weight: 900;
+  color: var(--c-green);
+  text-shadow: 0 0 14px var(--c-green-glow);
+  text-align: center;
+}
+@keyframes chess-pulse { to { opacity: .45; } }
+.chess-board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  width: min(calc(100vw - 32px), 480px);
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(45, 245, 126, .28);
+  box-shadow: 0 0 40px rgba(45, 245, 126, .10), 0 8px 32px rgba(0,0,0,.55);
+}
+.chess-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.2rem, 5.5vw, 2.1rem);
+  line-height: 1;
+  cursor: pointer;
+  position: relative;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: background .1s;
+}
+.chess-cell--light { background: #b8c8a8; }
+.chess-cell--dark  { background: #4a6741; }
+.chess-cell--sel   { background: rgba(45, 245, 126, .68) !important; }
+.chess-cell--tgt   { background: rgba(45, 245, 126, .26) !important; cursor: pointer; }
+.chess-dot {
+  position: absolute;
+  width: 30%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: rgba(45, 245, 126, .70);
+  box-shadow: 0 0 8px rgba(45, 245, 126, .55);
+  pointer-events: none;
+}
+.chess-hint {
+  font-family: var(--f-mono);
+  font-size: .58rem;
+  color: var(--c-faint);
+  text-align: center;
+  margin: 0;
+  padding: 0 8px;
+}
