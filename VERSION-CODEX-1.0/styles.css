@@ -4284,22 +4284,9 @@ body::after {
 .ptf-row.is-down .ptf-row-vals em { color: var(--c-red); }
 
 .portfolio-custom-empty strong { color:#8ea1bd!important; }
-.portfolio-chart.empty-line {
-  position:absolute;
-  right:12px;
-  bottom:17px;
-  width:48%;
-  height:48px;
-  display:grid;
-  place-items:center;
-  border:1px dashed rgba(24,232,255,.20);
-  border-radius:13px;
-  color:#6f829f;
-  font-size:.62rem;
-  font-family:var(--mono-font, monospace);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
+/* .portfolio-chart.empty-line removed in C4 (no longer rendered).
+   Hidden here to prevent overlay if served from old SW cache. */
+.portfolio-chart.empty-line { display: none !important; }
 .pro-portfolio-manager {
   position:relative;
   display:grid;
@@ -5039,16 +5026,7 @@ body::after {
   color: #13f1a4;
 }
 .pro-portfolio.is-down em { color: #ff4965; }
-.portfolio-chart.empty-line {
-  right: 10px;
-  bottom: 10px;
-  width: 86px;
-  height: 50px;
-  border-radius: 13px;
-  font-size: .48rem;
-  line-height: 1.45;
-  opacity: .72;
-}
+/* second override block removed — see display:none above */
 .pro-portfolio .portfolio-chart:not(.empty-line) {
   position: absolute;
   right: 8px;
@@ -5250,7 +5228,7 @@ body::after {
   .pro-metric-card, .pro-sentiment-pro { min-height: 134px; padding: 10px; border-radius: 15px; }
   .pro-portfolio strong { font-size: 1.32rem; }
   .pro-portfolio small { font-size: .64rem; }
-  .portfolio-chart.empty-line { width: 72px; height: 42px; }
+  /* .portfolio-chart.empty-line no longer rendered — removed */
   .sentiment-pro-content { grid-template-columns: 72px 1fr; gap: 5px; }
   .sentiment-pro-gauge { width: 70px; height: 61px; }
   .sentiment-pro-needle { height: 26px; top: 22px; }
