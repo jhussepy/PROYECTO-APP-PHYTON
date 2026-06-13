@@ -181,32 +181,80 @@ const MARKET_COMMAND_PRO_BUILD = '9.9.0';
 
 function renderProLiveHeader() {
   const finnhubLive = isFinnhubLiveMarket();
-  return `<section class="pro-live-line ${finnhubLive ? 'online' : 'cache'}">
-    <span class="market-dot ${finnhubLive ? 'online' : 'offline'}"></span>
-    <b>${finnhubLive ? 'FINNHUB LIVE' : 'MERCADO EDUCATIVO / CACHÉ'}</b>
-    <small>${safeMarketEscape(marketState.source || 'Pendiente')} · ${safeMarketEscape(formatMarketTime(marketState.updatedAt))}</small>
-  </section>`;
+  const sourceLabel = safeMarketEscape(marketState.source || 'Demo local');
+  const timeLabel   = safeMarketEscape(formatMarketTime(marketState.updatedAt));
+  return `<header class="pro-live-line${finnhubLive ? ' online' : ''}">
+    <div class="mkt-hdr-status">
+      <span class="market-dot ${finnhubLive ? 'online' : 'offline'}"></span>
+      <b>MERCADO EDUCATIVO</b>
+    </div>
+    <span class="mkt-hdr-chip${finnhubLive ? ' live' : ''}">${finnhubLive ? 'Finnhub Live' : sourceLabel}</span>
+    <small>${timeLabel}</small>
+  </header>`;
 }
 
 function renderProPortfolioCard(quotes = marketState.quotes || []) {
   const p = portfolioSummary();
-  const cls = p.dayPnl >= 0 ? 'is-up' : 'is-down';
+
+  // ── Empty state: premium CTA ──────────────────────────────────────────────
   if (!p.rows.length) {
     return `<section class="pro-metric-card pro-portfolio portfolio-custom-empty">
-      <div class="pro-card-title"><b>MI PORTAFOLIO</b><button onclick="portfolioEditorOpen=true; renderMarketContent()">CONFIGURAR</button></div>
-      <small>Solo empresas elegidas por ti</small>
-      <strong>$0.00</strong>
-      <small>Agrega NVDA, AAPL, TSLA u otra empresa del panel.</small>
-      <div class="portfolio-chart empty-line">Configura tu cartera</div>
+      <div class="pro-card-title">
+        <b>MI PORTAFOLIO</b>
+        <button onclick="portfolioEditorOpen=true; renderMarketContent()">CONFIGURAR</button>
+      </div>
+      <p class="ptf-cta-title">Construye tu portafolio<br>de seguimiento</p>
+      <div class="ptf-cta-chips">
+        <button class="ptf-chip" onclick="quickAddPortfolio('NVDA')">NVDA</button>
+        <button class="ptf-chip" onclick="quickAddPortfolio('AAPL')">AAPL</button>
+        <button class="ptf-chip" onclick="quickAddPortfolio('MSFT')">MSFT</button>
+      </div>
     </section>`;
   }
-  return `<section class="pro-metric-card pro-portfolio ${cls}">
-    <div class="pro-card-title"><b>MI PORTAFOLIO</b><button onclick="portfolioEditorOpen=!portfolioEditorOpen; renderMarketContent()">GESTIONAR</button></div>
-    <small>${p.rows.length} empresas · valor live/caché</small>
-    <strong>$${p.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
-    <small>P&amp;L diario</small>
-    <em>${p.dayPnl >= 0 ? '+' : '-'}$${Math.abs(p.dayPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (${formatPercent(p.dayPct)})</em>
-    <div class="portfolio-chart">${renderPortfolioSparkline(p.rows)}</div>
+
+  // ── With positions: telemetry panel ──────────────────────────────────────
+  const cls     = p.dayPnl >= 0 ? 'is-up' : 'is-down';
+  const hasData = p.rows.some(r => r.price > 0);
+
+  function fmtUSD(n) {
+    if (!hasData || !Number.isFinite(n)) return '—';
+    return '$' + Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  const valueStr  = hasData ? '$' + p.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+  const costStr   = p.cost > 0 ? '$' + p.cost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+  const dayPnlStr = hasData ? (p.dayPnl >= 0 ? '+' : '−') + fmtUSD(p.dayPnl) : '—';
+  const dayPctStr = hasData ? formatPercent(p.dayPct) : '—';
+
+  const bestHtml  = (p.best  && p.best.price  > 0) ? `<span class="ptf-stat ptf-best">${safeMarketEscape(p.best.symbol)} ${formatPercent(p.best.dayPct)}</span>` : `<span class="ptf-stat ptf-best">—</span>`;
+  const worstHtml = (p.worst && p.worst.price > 0) ? `<span class="ptf-stat ptf-worst">${safeMarketEscape(p.worst.symbol)} ${formatPercent(p.worst.dayPct)}</span>` : `<span class="ptf-stat ptf-worst">—</span>`;
+
+  const holdingsHtml = p.rows.map(r => {
+    const rowCls  = r.totalPnl >= 0 ? 'is-up' : 'is-down';
+    const valStr  = r.price > 0 ? '$' + r.value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+    const pnlStr  = r.price > 0 ? (r.totalPnl >= 0 ? '+' : '−') + '$' + Math.abs(r.totalPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+    return `<div class="ptf-row ${rowCls}">
+      ${brandLogo(r.quote)}
+      <div class="ptf-row-info"><b>${safeMarketEscape(r.symbol)}</b><small>${r.shares.toLocaleString('es-PE')} acc</small></div>
+      <div class="ptf-row-vals"><strong>${valStr}</strong><em>${pnlStr}</em></div>
+    </div>`;
+  }).join('');
+
+  return `<section class="pro-metric-card pro-portfolio ptf-telemetry ${cls}">
+    <div class="pro-card-title">
+      <b>MI PORTAFOLIO</b>
+      <button onclick="portfolioEditorOpen=!portfolioEditorOpen; renderMarketContent()">GESTIONAR</button>
+    </div>
+    <div class="ptf-telem-kpis">
+      <div class="ptf-kpi"><span class="ptf-kpi-label">VALOR</span><span class="ptf-kpi-val">${valueStr}</span></div>
+      <div class="ptf-kpi"><span class="ptf-kpi-label">INVERTIDO</span><span class="ptf-kpi-val ptf-kpi-cost">${costStr}</span></div>
+      <div class="ptf-kpi ptf-kpi-pnl ${cls}"><span class="ptf-kpi-label">P&amp;L HOY</span><span class="ptf-kpi-val">${dayPnlStr}</span><span class="ptf-kpi-pct">${dayPctStr}</span></div>
+    </div>
+    <div class="ptf-leaders">
+      <div><span class="ptf-lead-lbl">↑ Mejor</span>${bestHtml}</div>
+      <div><span class="ptf-lead-lbl">↓ Peor</span>${worstHtml}</div>
+    </div>
+    <div class="ptf-rows">${holdingsHtml}</div>
   </section>`;
 }
 
@@ -256,13 +304,13 @@ function renderProToolsRow() {
   const watchCount = (marketState.userWatchlist || readUserWatchlist()).length;
   const alertCount = (marketState.alerts || readMarketAlerts()).filter(a => a.active).length;
   return `<section class="pro-tools-row">
-    <button onclick="setMarketTab('alerts')"><span>♢</span><b>Alertas</b>${alertCount ? `<em>${alertCount}</em>` : ''}</button>
-    <button onclick="setMarketTab('summary')"><span>◎</span><b>Scanner</b></button>
-    <button onclick="scrollToMarketInsight()"><span>✺</span><b>AI Insights</b><em>Nuevo</em></button>
-    <button onclick="setMarketTab('watchlist')"><span>◉</span><b>Watchlist</b>${watchCount ? `<em>${watchCount}</em>` : ''}</button>
-    <button onclick="renderMarketNewsToast()"><span>▤</span><b>Noticias</b></button>
-    <button onclick="openStrategyEngine()"><span>⌬</span><b>Estrategia</b></button>
-    <button onclick="openMarketApiSettings()"><span>⌘</span><b>API</b></button>
+    <button data-tool="alerts"   onclick="setMarketTab('alerts')"><span>♢</span><b>Alertas</b>${alertCount ? `<em>${alertCount}</em>` : ''}</button>
+    <button data-tool="scanner"  onclick="setMarketTab('summary')"><span>◎</span><b>Scanner</b></button>
+    <button data-tool="ai"       onclick="scrollToMarketInsight()"><span>✺</span><b>AI Insights</b><em>Nuevo</em></button>
+    <button data-tool="watchlist" onclick="setMarketTab('watchlist')"><span>◉</span><b>Watchlist</b>${watchCount ? `<em>${watchCount}</em>` : ''}</button>
+    <button data-tool="news"     onclick="renderMarketNewsToast()"><span>▤</span><b>Noticias</b></button>
+    <button data-tool="strategy" onclick="openStrategyEngine()"><span>⌬</span><b>Estrategia</b></button>
+    <button data-tool="api"      onclick="openMarketApiSettings()"><span>⌘</span><b>API</b></button>
   </section>`;
 }
 
