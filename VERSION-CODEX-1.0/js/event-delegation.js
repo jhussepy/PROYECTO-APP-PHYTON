@@ -200,6 +200,12 @@ const ACTION_REGISTRY = {
   // <button data-action="chess-new-game">...</button>
   'chess-new-game': function() {
     _chessNewGame();
+  },
+
+  // <button data-action="chess-review" data-idx="3">...</button>
+  // idx -2 = ⏮ start, -3 = ⏭ end, -1 = ▶ past end (live), ≥0 = position
+  'chess-review': function(el) {
+    _chessReview(el.dataset.idx);
   }
 };
 
