@@ -38,6 +38,12 @@ const LEARNING_PATH_GROUPS = [
     courseIds: ['python_blue_team', 'hacking_etico_python', 'labs_hacking_etico', 'threat_defense_lab', 'red_team_autorizado']
   },
   {
+    id: 'datos-ia',
+    title: 'Datos e IA',
+    summary: 'Análisis de logs con pandas, detección de anomalías y ML clásico para ciberseguridad.',
+    courseIds: ['analisis_datos', 'ml_seguridad']
+  },
+  {
     id: 'real-projects',
     title: 'Proyectos Reales',
     summary: 'Dashboards, analizadores, APIs, IA local y portfolio técnico.',
