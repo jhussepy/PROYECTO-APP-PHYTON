@@ -315,13 +315,14 @@ function insertCode(text) { const editor = document.getElementById('code-editor'
 // Panel visual de carga de Pyodide — se renderiza en .console-output solo la
 // primera vez (cuando aún no hay instancia). El texto de estado se actualiza
 // con updatePyodideLoader() desde el callback onStatus del motor.
-function showPyodideLoader(consoleEl, statusText) {
+function showPyodideLoader(consoleEl, statusText, note) {
+  const noteText = note || 'Solo la primera vez · ~8 MB · se descarga el entorno Python real';
   consoleEl.innerHTML = `
     <div class="pyodide-loader">
       <div class="pyodide-loader-glyph">🐍</div>
       <div class="pyodide-loader-bar"></div>
       <div class="pyodide-loader-status" id="pyodide-status">${escapeHtml(statusText)}</div>
-      <div class="pyodide-loader-note">Solo la primera vez · ~3s · se descarga el entorno Python real</div>
+      <div class="pyodide-loader-note">${escapeHtml(noteText)}</div>
     </div>`;
 }
 function updatePyodideLoader(statusText) {
@@ -335,11 +336,18 @@ async function runPythonSimulation(code, lesson, courseId) {
   const runBtn = document.getElementById('run-btn');
   const agentHint = document.getElementById('agent-hint');
   const useRealPython = lesson && lesson.engine === 'pyodide';
-  // ¿primera carga de Pyodide en la sesión? → panel visual; si ya está listo → directo
-  const showLoader = useRealPython && (typeof isPyodideReady !== 'function' || !isPyodideReady());
+  const pkgs = lesson && lesson.packages;
+  // Mostrar loader si Pyodide no está listo O si los paquetes aún no están cargados
+  const showLoader = useRealPython && (
+    (typeof isPyodideReady !== 'function' || !isPyodideReady()) ||
+    (pkgs && pkgs.length > 0 && (typeof arePyodidePackagesReady !== 'function' || !arePyodidePackagesReady(pkgs)))
+  );
+  const loaderNote = pkgs && pkgs.length > 0
+    ? `Primera vez: ~18 MB (intérprete + ${pkgs.join(', ')}) · solo una vez`
+    : 'Solo la primera vez · ~8 MB · se descarga el entorno Python real';
   if (useRealPython && !showLoader) consoleEl.textContent = '[pyodide] Ejecutando Python real…\n';
   else if (!useRealPython) consoleEl.textContent = '[local simulation] Ejecutando en safe execution...\n';
-  if (showLoader) showPyodideLoader(consoleEl, 'Preparando laboratorio Python real…');
+  if (showLoader) showPyodideLoader(consoleEl, 'Preparando laboratorio Python real…', loaderNote);
   feedbackEl.classList.add('hidden');
   if (agentHint) agentHint.textContent = getAgentHint(code, lesson, 'practice');
   runBtn.disabled = true; runBtn.textContent = '⏳ EJECUTANDO...';
@@ -347,7 +355,7 @@ async function runPythonSimulation(code, lesson, courseId) {
     let result;
     if (useRealPython) {
       if (typeof runPythonReal !== 'function') throw new Error('runPythonReal no disponible. ¿Se cargó pyodide-engine.js?');
-      result = await runPythonReal(code, (status) => { if (showLoader) updatePyodideLoader(status); });
+      result = await runPythonReal(code, (status) => { if (showLoader) updatePyodideLoader(status); }, pkgs);
     } else {
       result = await runPythonSafe(code);
     }
