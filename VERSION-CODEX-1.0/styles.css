@@ -8023,10 +8023,10 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
   justify-content: space-between;
   gap: 8px;
   flex-wrap: wrap;
-  background: rgba(4,6,10,.92);
-  border: 1px solid rgba(45,245,126,.22);
-  border-radius: 12px;
-  padding: 10px 14px;
+  background: rgba(4,6,10,.92) !important;
+  border: 1px solid rgba(45,245,126,.22) !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
   backdrop-filter: blur(10px);
   margin-bottom: 8px;
 }
