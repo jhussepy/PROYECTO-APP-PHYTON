@@ -497,3 +497,119 @@ BADGES.push({ id:'ctf_operator', title:'CTF Operator', description:'Completaste 
   ]
 });
 })();
+
+/* ── Análisis de Datos P3-c: curso nuevo + 5 lecciones pandas (Pyodide) ──
+   Nuevo curso 'analisis_datos' con módulo pandas_seguridad.
+   Cada lección lleva engine:'pyodide' + packages:['pandas']. */
+(function pandasP3c(){
+  COURSES.push({
+    id: 'analisis_datos',
+    title: 'Análisis de Datos para Seguridad',
+    level: 'Intermedio',
+    description: 'pandas real para logs de seguridad: crea tablas, filtra eventos, agrupa por IP y detecta anomalías con Python real (Pyodide).',
+    icon: '📊',
+    ethical: true,
+    modules: [{
+      id: 'pandas_seguridad',
+      title: '🐼 pandas: logs y anomalías con datos reales',
+      lessons: [
+        Object.assign(
+          lesson(
+            'ad_001',
+            'Tu primer DataFrame de eventos',
+            'Crear una tabla estructurada de eventos de seguridad con pd.DataFrame.',
+            'pandas organiza datos en DataFrames: tablas con filas y columnas. Crear un DataFrame a partir de un diccionario es el primer paso de cualquier pipeline de análisis de logs. Cada clave del dict se convierte en columna, cada lista en sus valores.',
+            "import pandas as pd\ndata = {'ip': ['10.0.0.1', '10.0.0.2'], 'evento': ['OK', 'ERROR']}\ndf = pd.DataFrame(data)\nprint(df)",
+            ['pd.DataFrame(dict) convierte un diccionario en tabla.', 'Cada clave se convierte en columna; cada lista, en sus filas.', 'print(df) muestra la tabla con índice, columnas y valores alineados.'],
+            "Crea el DataFrame con pd.DataFrame(data) y muéstralo con print(df). Los datos ya están definidos en el starter.",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5'],\n    'evento': ['LOGIN', 'ERROR', 'LOGIN'],\n    'intentos': [1, 5, 1]\n}\n# Crea df = pd.DataFrame(data) y haz print(df)\n",
+            'ERROR',
+            'output_contains',
+            "Usa df = pd.DataFrame(data) y luego print(df).",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5'],\n    'evento': ['LOGIN', 'ERROR', 'LOGIN'],\n    'intentos': [1, 5, 1]\n}\ndf = pd.DataFrame(data)\nprint(df)",
+            30, 12,
+            quiz('¿Qué convierte pd.DataFrame(dict)?', ['Un dict en tabla de filas y columnas', 'Un dict en lista plana', 'Una lista en diccionario', 'Un CSV en JSON'], 'Un dict en tabla de filas y columnas')
+          ),
+          { engine: 'pyodide', packages: ['pandas'] }
+        ),
+        Object.assign(
+          lesson(
+            'ad_002',
+            'Filtrar eventos sospechosos',
+            'Seleccionar solo las filas que cumplen una condición con df[df[col]==valor].',
+            'El filtrado booleano es la operación más frecuente en análisis de logs. df[df["evento"] == "ERROR"] devuelve solo las filas donde el evento es ERROR. Es equivalente a un WHERE en SQL — fundamental para aislar eventos de interés en millones de registros.',
+            "import pandas as pd\ndata = {'ip': ['10.0.0.1', '10.0.0.2'], 'evento': ['OK', 'ERROR']}\ndf = pd.DataFrame(data)\nerrores = df[df['evento'] == 'ERROR']\nprint(len(errores))",
+            ["df[condición] devuelve solo las filas donde la condición es True.", "df['evento'] == 'ERROR' produce una Serie booleana.", 'len() cuenta cuántas filas pasaron el filtro.'],
+            "Filtra el DataFrame para quedarte solo con los eventos ERROR y muestra cuántos hay con print(len(errores)).",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '10.0.0.9'],\n    'evento': ['LOGIN', 'ERROR', 'LOGIN', 'ERROR']\n}\ndf = pd.DataFrame(data)\n# Filtra: errores = df[df['evento'] == 'ERROR']\n",
+            '2',
+            'output_equals',
+            "Usa errores = df[df['evento'] == 'ERROR'] y luego print(len(errores)).",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '10.0.0.9'],\n    'evento': ['LOGIN', 'ERROR', 'LOGIN', 'ERROR']\n}\ndf = pd.DataFrame(data)\nerrores = df[df['evento'] == 'ERROR']\nprint(len(errores))",
+            30, 13,
+            quiz('¿Qué devuelve df[df["col"] == valor]?', ['Las filas donde la condición es True', 'Todas las columnas del DataFrame', 'Un número entero', 'El índice del DataFrame'], 'Las filas donde la condición es True')
+          ),
+          { engine: 'pyodide', packages: ['pandas'] }
+        ),
+        Object.assign(
+          lesson(
+            'ad_003',
+            'Contar por IP: detectar la fuente más ruidosa',
+            'Usar value_counts() para contar eventos por IP y encontrar la fuente más activa.',
+            'value_counts() agrupa y cuenta las ocurrencias de cada valor en una columna. En análisis de amenazas, contar eventos por IP de origen detecta automáticamente la fuente más ruidosa — un indicador clave de brute force, scanning o comportamiento anómalo.',
+            "import pandas as pd\ndata = {'ip': ['10.0.0.1', '10.0.0.2', '10.0.0.1']}\ndf = pd.DataFrame(data)\nprint(df['ip'].value_counts())",
+            ["value_counts() devuelve los valores ordenados por frecuencia descendente.", ".index[0] obtiene el valor más frecuente (el primero de la lista ordenada).", 'Este patrón detecta la IP más activa en cualquier log de accesos.'],
+            "Encuentra la IP que aparece más veces en el log y muéstrala con print(ip_top).",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '192.168.1.5'],\n    'evento': ['LOGIN', 'ERROR', 'ERROR', 'LOGIN']\n}\ndf = pd.DataFrame(data)\n# ip_top = df['ip'].value_counts().index[0]\n",
+            '192.168.1.5',
+            'output_equals',
+            "Usa ip_top = df['ip'].value_counts().index[0] y luego print(ip_top).",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '192.168.1.5'],\n    'evento': ['LOGIN', 'ERROR', 'ERROR', 'LOGIN']\n}\ndf = pd.DataFrame(data)\nip_top = df['ip'].value_counts().index[0]\nprint(ip_top)",
+            35, 14,
+            quiz('¿Qué devuelve value_counts()?', ['Valores ordenados por frecuencia descendente', 'Solo el valor máximo', 'La media de los valores', 'Una lista de índices'], 'Valores ordenados por frecuencia descendente')
+          ),
+          { engine: 'pyodide', packages: ['pandas'] }
+        ),
+        Object.assign(
+          lesson(
+            'ad_004',
+            'Estadísticas básicas: máximo y media de intentos',
+            'Calcular estadísticas de una columna numérica con .max() y .mean().',
+            'pandas calcula estadísticas sobre columnas numéricas en una línea. .max() devuelve el mayor valor (útil para detectar el pico de intentos de login), .mean() la media (útil para establecer una línea base). En análisis de anomalías, compara cada evento con la media para detectar comportamientos fuera del rango normal.',
+            "import pandas as pd\ndata = {'ip': ['a', 'b'], 'intentos': [2, 8]}\ndf = pd.DataFrame(data)\nprint(df['intentos'].max())\nprint(df['intentos'].mean())",
+            ['.max() devuelve el valor máximo de la columna.', '.mean() calcula el promedio como float.', 'Compara el máximo con la media para detectar outliers.'],
+            "Imprime primero el máximo de intentos y luego la media. El resultado exacto debe ser 7 y 4.0.",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5'],\n    'intentos': [3, 7, 2]\n}\ndf = pd.DataFrame(data)\n# print(df['intentos'].max()) y print(df['intentos'].mean())\n",
+            '7\n4.0',
+            'output_equals',
+            "Usa print(df['intentos'].max()) y luego print(df['intentos'].mean()).",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5'],\n    'intentos': [3, 7, 2]\n}\ndf = pd.DataFrame(data)\nprint(df['intentos'].max())\nprint(df['intentos'].mean())",
+            35, 14,
+            quiz('¿Para qué sirve comparar max() con mean() en logs?', ['Detectar outliers (valores fuera del rango normal)', 'Cifrar la columna', 'Ordenar el DataFrame', 'Filtrar por IP'], 'Detectar outliers (valores fuera del rango normal)')
+          ),
+          { engine: 'pyodide', packages: ['pandas'] }
+        ),
+        Object.assign(
+          lesson(
+            'ad_005',
+            'Capstone: análisis completo de un log de accesos',
+            'Filtrar alertas críticas y detectar la IP más activa en un dataset real.',
+            'Un analista SOC procesa el log, filtra los eventos de alta severidad, identifica la fuente más ruidosa y genera un resumen accionable. Este ejercicio integra filtrado compuesto (& para AND), value_counts y f-strings para producir un mini informe automático — el mismo flujo de triage que usarías en Python real.',
+            "import pandas as pd\ndata = {'ip': ['10.0.0.1', '10.0.0.2'], 'evento': ['ERROR', 'LOGIN'], 'intentos': [9, 1]}\ndf = pd.DataFrame(data)\nalertas = df[(df['evento'] == 'ERROR') & (df['intentos'] > 3)]\nprint(f'Alertas: {len(alertas)}')",
+            ['& combina condiciones booleanas (equivale a AND).', 'Cada condición debe ir entre paréntesis al usar &.', 'f-strings generan el reporte en una línea.'],
+            "Analiza el log: filtra alertas críticas (evento ERROR Y intentos > 3), encuentra la IP más activa. Imprime 'Alertas críticas: N' y luego 'IP más activa: IP'.",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '10.0.0.9', '10.0.0.9'],\n    'evento': ['LOGIN', 'ERROR', 'ERROR', 'ERROR', 'LOGIN'],\n    'intentos': [1, 5, 3, 8, 1]\n}\ndf = pd.DataFrame(data)\n# alertas = df[(df['evento'] == 'ERROR') & (df['intentos'] > 3)]\n# ip_top = df['ip'].value_counts().index[0]\n",
+            'Alertas críticas: 2\nIP más activa: 10.0.0.9',
+            'output_equals',
+            "Usa df[(df['evento']=='ERROR') & (df['intentos']>3)] para las alertas y value_counts().index[0] para la IP top. Luego print(f'Alertas críticas: {len(alertas)}') y print(f'IP más activa: {ip_top}').",
+            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '10.0.0.9', '10.0.0.9'],\n    'evento': ['LOGIN', 'ERROR', 'ERROR', 'ERROR', 'LOGIN'],\n    'intentos': [1, 5, 3, 8, 1]\n}\ndf = pd.DataFrame(data)\nalertas = df[(df['evento'] == 'ERROR') & (df['intentos'] > 3)]\nip_top = df['ip'].value_counts().index[0]\nprint(f'Alertas críticas: {len(alertas)}')\nprint(f'IP más activa: {ip_top}')",
+            45, 16,
+            quiz('¿Qué operador combina dos condiciones booleanas en pandas?', ['& (and)', '| (or)', '+ (suma)', '== (igual)'], '& (and)')
+          ),
+          { engine: 'pyodide', packages: ['pandas'] }
+        )
+      ]
+    }]
+  });
+  BADGES.push({ id: 'data_analyst', title: 'Data Analyst', description: 'Analizaste logs reales con pandas y detectaste anomalías.', icon: '📊' });
+})();
