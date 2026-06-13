@@ -7937,3 +7937,63 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
   .pyodide-loader-glyph,
   .pyodide-loader-bar::before { animation: none; }
 }
+
+/* ===== v12.0 Game Hub ===== */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding-bottom: 12px;
+}
+.game-card {
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius);
+  background: var(--c-panel);
+  padding: 14px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .16s, box-shadow .16s, opacity .16s;
+}
+.game-card--ready {
+  border-color: var(--c-line-green);
+  cursor: pointer;
+}
+.game-card--ready:hover, .game-card--ready:focus-visible {
+  border-color: var(--c-green);
+  box-shadow: 0 0 18px var(--c-green-glow);
+  outline: none;
+}
+.game-card--soon { opacity: .48; pointer-events: none; }
+.game-card-icon { font-size: 1.8rem; line-height: 1; }
+.game-card-name {
+  font-family: var(--f-display);
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: block;
+}
+.game-card-desc {
+  font-family: var(--f-mono);
+  font-size: .62rem;
+  color: var(--c-ash);
+  line-height: 1.45;
+  margin: 0;
+}
+.game-soon-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: var(--f-mono);
+  font-size: .48rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  color: var(--c-faint);
+  background: var(--c-void);
+  border: 1px solid var(--c-line);
+  border-radius: 999px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
