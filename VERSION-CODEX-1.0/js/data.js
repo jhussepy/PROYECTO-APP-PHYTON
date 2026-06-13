@@ -613,3 +613,144 @@ BADGES.push({ id:'ctf_operator', title:'CTF Operator', description:'Completaste 
   });
   BADGES.push({ id: 'data_analyst', title: 'Data Analyst', description: 'Analizaste logs reales con pandas y detectaste anomalías.', icon: '📊' });
 })();
+
+// P3-d: Machine Learning para Seguridad — 6 lecciones (3 numpy + 3 sklearn), curso ml_seguridad
+(function mlSeguridad(){
+  COURSES.push({
+    id: 'ml_seguridad',
+    title: 'Machine Learning para Seguridad',
+    level: 'Avanzado',
+    description: 'ML clásico aplicado a ciberseguridad: detección de anomalías, clasificación de amenazas y clustering con numpy y scikit-learn en Python real.',
+    icon: '🤖',
+    ethical: true,
+    modules: [
+      {
+        id: 'numpy_deteccion',
+        title: '🔢 numpy: detección de anomalías sin modelos',
+        lessons: [
+          Object.assign(
+            lesson(
+              'ad_ml_001',
+              'Z-score para detectar tiempos de respuesta anómalos',
+              'Calcular el z-score de una serie de tiempos y detectar valores estadísticamente atípicos.',
+              'El z-score mide cuántas desviaciones estándar se aleja un punto de la media. En seguridad, un servidor que tarda 750ms cuando lo normal son 100ms tiene un z-score alto (≈2.65) y merece investigación. Fórmula: z = (x - media) / std. Un umbral clásico es |z| > 2.0.',
+              "import numpy as np\ntiempos = np.array([100, 102, 98, 750])\nmedia = np.mean(tiempos)\nstd = np.std(tiempos)\nz = (tiempos - media) / std\nprint(tiempos[np.abs(z) > 2.0])",
+              ['np.abs(z) devuelve el valor absoluto de cada z-score.', 'El umbral 2.0 captura ~5% de valores extremos en una distribución normal.', 'tiempos[condición] es indexación booleana — devuelve solo los elementos donde la condición es True.'],
+              "Tienes los tiempos de respuesta de un servidor (en ms). Calcula el z-score de cada tiempo. Imprime el número de tiempos anómalos (|z| > 2.0) usando print(len(...)).",
+              "import numpy as np\ntiempos = np.array([100, 102, 98, 101, 750, 99, 103, 97])\nmedia = np.mean(tiempos)\nstd = np.std(tiempos)\nz = (tiempos - media) / std\n# anomalos = tiempos[np.abs(z) > 2.0]\n",
+              '1',
+              'output_equals',
+              'Usa anomalos = tiempos[np.abs(z) > 2.0] y luego print(len(anomalos)). El array tiene 8 elementos — solo uno (750) tiene z > 2.0.',
+              "import numpy as np\ntiempos = np.array([100, 102, 98, 101, 750, 99, 103, 97])\nmedia = np.mean(tiempos)\nstd = np.std(tiempos)\nz = (tiempos - media) / std\nanomalos = tiempos[np.abs(z) > 2.0]\nprint(len(anomalos))",
+              35, 12,
+              quiz('¿Qué mide el z-score?', ['Cuántas desviaciones estándar se aleja un valor de la media', 'El valor máximo del array', 'La distancia euclidiana entre dos puntos', 'La varianza del conjunto'], 'Cuántas desviaciones estándar se aleja un valor de la media')
+            ),
+            { engine: 'pyodide', packages: ['numpy'] }
+          ),
+          Object.assign(
+            lesson(
+              'ad_ml_002',
+              'Umbral estadístico: media + 2·std para alertas',
+              'Detectar eventos sospechosos usando como umbral la media más dos desviaciones estándar.',
+              'Una heurística robusta para umbrales dinámicos: umbral = media + 2·std. Cualquier valor que supere este umbral es estadísticamente inusual. Esta técnica se usa en SIEM para baselining: aprendes el comportamiento normal y alertas sobre lo que se sale del rango.',
+              "import numpy as np\neventos = np.array([10, 12, 9, 11, 50])\numbral = np.mean(eventos) + 2 * np.std(eventos)\nprint(eventos[eventos > umbral])",
+              ['umbral = media + 2*std cubre el 97.5% de una distribución normal.', 'eventos > umbral produce un array booleano.', 'Se puede ajustar el multiplicador (1.5, 2, 3) según la sensibilidad deseada.'],
+              "Tienes eventos por minuto de un servidor. Calcula el umbral (media + 2·std). Imprime el número de eventos que superan ese umbral usando print(len(...)).",
+              "import numpy as np\neventos = np.array([10, 12, 9, 11, 13, 10, 45, 11, 10, 9])\numbral = np.mean(eventos) + 2 * np.std(eventos)\n# sospechosos = eventos[eventos > umbral]\n",
+              '1',
+              'output_equals',
+              'Usa sospechosos = eventos[eventos > umbral] y luego print(len(sospechosos)). El array tiene 10 elementos — solo 45 supera el umbral (~34.8).',
+              "import numpy as np\neventos = np.array([10, 12, 9, 11, 13, 10, 45, 11, 10, 9])\numbral = np.mean(eventos) + 2 * np.std(eventos)\nsospechosos = eventos[eventos > umbral]\nprint(len(sospechosos))",
+              35, 12,
+              quiz('¿Por qué usar media+2·std como umbral en vez de un valor fijo?', ['Se adapta automáticamente al comportamiento normal del sistema', 'Es más fácil de calcular', 'Solo funciona con enteros', 'Requiere menos datos'], 'Se adapta automáticamente al comportamiento normal del sistema')
+            ),
+            { engine: 'pyodide', packages: ['numpy'] }
+          ),
+          Object.assign(
+            lesson(
+              'ad_ml_003',
+              'Normalización min-max para comparar métricas dispares',
+              'Escalar features heterogéneas al rango [0, 1] para que sean comparables.',
+              'Un log de seguridad puede combinar bytes transferidos (0–10MB), intentos de login (0–100) y puertos abiertos (0–65535). Mezclar estas escalas en un modelo distorsiona los resultados. La normalización min-max resuelve esto: x_norm = (x - min) / (max - min). El mínimo queda en 0.0 y el máximo en 1.0.',
+              "import numpy as np\ndatos = np.array([0.0, 100.0, 200.0])\nnorm = (datos - datos.min()) / (datos.max() - datos.min())\nprint(norm)",
+              ['datos.min() y datos.max() calculan el rango en una línea.', 'El resultado siempre está en [0.0, 1.0].', 'Si max == min (todos iguales), la división da NaN — en la práctica se añade un pequeño epsilon.'],
+              "Normaliza el array de datos al rango [0, 1]. Imprime el primer valor normalizado y el último valor normalizado, cada uno en su propia línea.",
+              "import numpy as np\ndatos = np.array([10.0, 50.0, 30.0, 90.0, 20.0])\n# norm = (datos - datos.min()) / (datos.max() - datos.min())\n",
+              '0.0\n0.125',
+              'output_equals',
+              "Calcula norm = (datos - datos.min()) / (datos.max() - datos.min()). Luego print(norm[0]) y print(norm[-1]). Con datos=[10,50,30,90,20]: min=10, max=90 → norm[0]=(10-10)/80=0.0, norm[-1]=(20-10)/80=0.125.",
+              "import numpy as np\ndatos = np.array([10.0, 50.0, 30.0, 90.0, 20.0])\nnorm = (datos - datos.min()) / (datos.max() - datos.min())\nprint(norm[0])\nprint(norm[-1])",
+              35, 13,
+              quiz('¿Qué valor produce la normalización min-max para el valor mínimo del array?', ['0.0', '1.0', '-1.0', 'El valor original'], '0.0')
+            ),
+            { engine: 'pyodide', packages: ['numpy'] }
+          )
+        ]
+      },
+      {
+        id: 'sklearn_avanzado',
+        title: '🧠 scikit-learn: clasificación y clustering',
+        lessons: [
+          Object.assign(
+            lesson(
+              'ad_ml_004',
+              'Árbol de decisión para clasificar conexiones',
+              'Entrenar un clasificador binario que distingue conexiones normales de sospechosas.',
+              'Un árbol de decisión aprende reglas tipo "si bytes > 80 Y puertos > 10 → sospechoso". Es interpretable: puedes ver exactamente qué feature disparó la alerta. En threat hunting esto es clave — necesitas poder explicar al equipo de respuesta por qué un evento se marcó como amenaza.',
+              "from sklearn.tree import DecisionTreeClassifier\nX = [[10, 1], [90, 20]]\ny = [0, 1]\nclf = DecisionTreeClassifier(random_state=42)\nclf.fit(X, y)\nprint(clf.predict([[100, 25]])[0])",
+              ['X son los features (bytes, puertos); y las etiquetas (0=normal, 1=sospechoso).', 'random_state=42 garantiza resultados reproducibles.', 'predict() devuelve un array — [0] toma el primer (único) resultado.'],
+              "Tienes conexiones etiquetadas como normales (0) o sospechosas (1). Entrena un DecisionTreeClassifier con random_state=42. Predice la conexión [100, 25] e imprime 'Normal' si la predicción es 0, o 'Sospechoso' si es 1.",
+              "from sklearn.tree import DecisionTreeClassifier\nX = [\n    [10, 1], [12, 2], [11, 1], [10, 2],\n    [75, 15], [80, 18], [90, 20], [85, 17]\n]\ny = [0, 0, 0, 0, 1, 1, 1, 1]\nclf = DecisionTreeClassifier(random_state=42)\n# clf.fit(X, y)\n# pred = clf.predict([[100, 25]])[0]\n",
+              'Sospechoso',
+              'output_equals',
+              "Llama a clf.fit(X, y) y luego pred = clf.predict([[100, 25]])[0]. Si pred == 1 imprime 'Sospechoso', si pred == 0 imprime 'Normal'. Con los datos dados, [100,25] cae claramente en la zona sospechosa.",
+              "from sklearn.tree import DecisionTreeClassifier\nX = [\n    [10, 1], [12, 2], [11, 1], [10, 2],\n    [75, 15], [80, 18], [90, 20], [85, 17]\n]\ny = [0, 0, 0, 0, 1, 1, 1, 1]\nclf = DecisionTreeClassifier(random_state=42)\nclf.fit(X, y)\npred = clf.predict([[100, 25]])[0]\nprint('Sospechoso' if pred == 1 else 'Normal')",
+              45, 15,
+              quiz('¿Por qué un árbol de decisión es útil en threat hunting?', ['Sus reglas son interpretables y explicables al equipo', 'Es el modelo más preciso disponible', 'No necesita datos de entrenamiento', 'Solo funciona con datos categóricos'], 'Sus reglas son interpretables y explicables al equipo')
+            ),
+            { engine: 'pyodide', packages: ['scikit-learn'] }
+          ),
+          Object.assign(
+            lesson(
+              'ad_ml_005',
+              'K-Means para agrupar IPs por comportamiento',
+              'Usar clustering para separar automáticamente grupos de comportamiento sin etiquetas previas.',
+              'K-Means agrupa puntos en k clusters minimizando la distancia intra-cluster. En seguridad se usa para segmentar hosts: un grupo con tráfico alto y muchos puertos abiertos puede indicar un escáner o máquina comprometida, sin necesidad de etiquetas previas. Es aprendizaje no supervisado — el modelo descubre los patrones por sí solo.',
+              "from sklearn.cluster import KMeans\nX = [[5, 100], [6, 98], [80, 800], [82, 810]]\nkm = KMeans(n_clusters=2, random_state=42, n_init=10)\nkm.fit(X)\nprint(len(set(km.labels_)))",
+              ['n_clusters=2 le dice al modelo que busque 2 grupos.', 'n_init=10 repite el algoritmo 10 veces con distintas semillas para mayor estabilidad.', 'km.labels_ es un array con el ID del cluster asignado a cada punto.'],
+              "Tienes conexiones descritas por [bytes_enviados, puertos_escaneados]. Agrupa con KMeans en 2 clusters (n_clusters=2, random_state=42, n_init=10). Imprime el número de clusters distintos encontrados.",
+              "from sklearn.cluster import KMeans\nX = [\n    [5, 95], [6, 100], [7, 98], [5, 102],\n    [75, 780], [80, 800], [82, 820], [78, 790]\n]\nkm = KMeans(n_clusters=2, random_state=42, n_init=10)\n# km.fit(X)\n# print(len(set(km.labels_)))\n",
+              '2',
+              'output_equals',
+              'Llama a km.fit(X) y luego print(len(set(km.labels_))). Los 8 puntos forman 2 grupos claramente separados — KMeans los distingue perfectamente.',
+              "from sklearn.cluster import KMeans\nX = [\n    [5, 95], [6, 100], [7, 98], [5, 102],\n    [75, 780], [80, 800], [82, 820], [78, 790]\n]\nkm = KMeans(n_clusters=2, random_state=42, n_init=10)\nkm.fit(X)\nprint(len(set(km.labels_)))",
+              45, 15,
+              quiz('¿Qué ventaja tiene K-Means frente a un clasificador supervisado?', ['No necesita datos etiquetados para encontrar patrones', 'Siempre produce mejores resultados', 'Requiere menos datos', 'Solo funciona con 2 clusters'], 'No necesita datos etiquetados para encontrar patrones')
+            ),
+            { engine: 'pyodide', packages: ['scikit-learn'] }
+          ),
+          Object.assign(
+            lesson(
+              'ad_ml_006',
+              'Capstone: IsolationForest para detección de intrusiones',
+              'Aplicar un modelo de detección de anomalías para identificar conexiones sospechosas en tráfico de red.',
+              'IsolationForest es el algoritmo de facto para detección de anomalías: aísla puntos raros con menos pasos que los normales. Devuelve 1 para puntos normales y -1 para anomalías. En defensa de redes, se entrena con tráfico normal y alerta cuando llega algo que "no encaja". Es robusto, rápido y no requiere etiquetas — ideal para entornos donde las amenazas son raras y desconocidas.',
+              "from sklearn.ensemble import IsolationForest\nX = [[50], [52], [200]]\nif_model = IsolationForest(contamination=0.33, random_state=42)\nif_model.fit(X)\npred = if_model.predict(X)\nprint((pred == -1).sum())",
+              ['contamination indica la fracción esperada de anomalías en los datos.', 'predict() devuelve 1 (normal) o -1 (anomalía).', '(pred == -1).sum() cuenta las anomalías eficientemente con numpy.'],
+              "Tienes conexiones de red: 6 normales (bytes ~50) y 3 sospechosas (bytes ~200). Usa IsolationForest(contamination=1/3, random_state=42) para detectarlas. Imprime 'Conexiones sospechosas: N' donde N es el número de anomalías (pred == -1).",
+              "from sklearn.ensemble import IsolationForest\nX = [[50],[52],[48],[51],[53],[49],[200],[220],[190]]\nif_model = IsolationForest(contamination=1/3, random_state=42)\nif_model.fit(X)\npred = if_model.predict(X)\n# anomalias = (pred == -1).sum()\n",
+              'Conexiones sospechosas: 3',
+              'output_equals',
+              "Calcula anomalias = (pred == -1).sum() y luego print(f'Conexiones sospechosas: {anomalias}'). Con contamination=1/3 sobre 9 puntos, IsolationForest marcará exactamente 3 como anomalías.",
+              "from sklearn.ensemble import IsolationForest\nX = [[50],[52],[48],[51],[53],[49],[200],[220],[190]]\nif_model = IsolationForest(contamination=1/3, random_state=42)\nif_model.fit(X)\npred = if_model.predict(X)\nanomalias = (pred == -1).sum()\nprint(f'Conexiones sospechosas: {anomalias}')",
+              50, 18,
+              quiz('¿Qué devuelve IsolationForest para un punto anómalo?', ['-1', '1', '0', 'True'], '-1')
+            ),
+            { engine: 'pyodide', packages: ['scikit-learn'] }
+          )
+        ]
+      }
+    ]
+  });
+  BADGES.push({ id: 'ml_defender', title: 'ML Defender', description: 'Aplicaste machine learning clásico para detectar amenazas y anomalías en datos de red.', icon: '🤖' });
+})();

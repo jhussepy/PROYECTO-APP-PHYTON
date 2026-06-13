@@ -342,8 +342,9 @@ async function runPythonSimulation(code, lesson, courseId) {
     (typeof isPyodideReady !== 'function' || !isPyodideReady()) ||
     (pkgs && pkgs.length > 0 && (typeof arePyodidePackagesReady !== 'function' || !arePyodidePackagesReady(pkgs)))
   );
+  const _pkgMB = (pkgs || []).reduce((max, p) => Math.max(max, ({ numpy: 10, pandas: 18, 'scikit-learn': 30 }[p] || 10)), 8);
   const loaderNote = pkgs && pkgs.length > 0
-    ? `Primera vez: ~18 MB (intérprete + ${pkgs.join(', ')}) · solo una vez`
+    ? `Primera vez: ~${_pkgMB} MB (intérprete + ${pkgs.join(', ')}) · solo una vez`
     : 'Solo la primera vez · ~8 MB · se descarga el entorno Python real';
   if (useRealPython && !showLoader) consoleEl.textContent = '[pyodide] Ejecutando Python real…\n';
   else if (!useRealPython) consoleEl.textContent = '[local simulation] Ejecutando en safe execution...\n';
