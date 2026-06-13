@@ -3891,6 +3891,8 @@ body::after {
   --pro-red:#ff405b;
   --pro-bg:#030914;
   display:grid;
+  width:100%;
+  overflow-x:hidden;
   gap:10px;
   padding: 10px 14px calc(104px + env(safe-area-inset-bottom));
   background:
@@ -3957,13 +3959,14 @@ body::after {
 }
 .pro-market-top-grid {
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
   gap:10px;
 }
 .pro-metric-card {
   position:relative;
   min-height:150px;
   padding:14px;
+  max-width:100%;
   border:1px solid rgba(24,232,255,.36);
   border-radius:16px;
   background:
@@ -4185,6 +4188,7 @@ body::after {
   font-family: var(--f-mono);
   font-size: .62rem;
   font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
   transition: background .15s, box-shadow .15s;
 }
@@ -4193,7 +4197,7 @@ body::after {
 /* KPI row */
 .ptf-telem-kpis {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0,1fr));
   gap: 6px;
   margin: 8px 0 6px;
 }
@@ -4263,13 +4267,14 @@ body::after {
 .ptf-rows { display: flex; flex-direction: column; gap: 4px; }
 .ptf-row {
   display: grid;
-  grid-template-columns: 32px 1fr auto;
+  grid-template-columns: 32px minmax(0,1fr) auto;
   gap: 7px;
   align-items: center;
   padding: 6px 8px;
   border-radius: 8px;
   border: 1px solid rgba(145,178,225,.10);
   background: rgba(0,3,10,.3);
+  min-width: 0;
 }
 .ptf-row.is-up   { border-color: rgba(45,245,126,.2); }
 .ptf-row.is-down { border-color: rgba(255,59,92,.2); }
@@ -4955,8 +4960,10 @@ body::after {
    dashboard sin bloques desbordados y jerarquía premium móvil.
    ========================================================= */
 .pro-market-dashboard {
+  width: 100%;
   max-width: 480px;
   margin: 0 auto;
+  overflow-x: hidden;
   padding: 10px 12px calc(92px + env(safe-area-inset-bottom));
   gap: 10px;
   background:
