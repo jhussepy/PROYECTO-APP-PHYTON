@@ -73,12 +73,13 @@ function _loadChessJs() {
 // ── STATUS ────────────────────────────────────────────────────────────────────
 
 function _statusInfo(chessInst) {
-  const c = chessInst || _chess;
-  if (c.in_checkmate()) return { msg: `Jaque mate — ganan ${c.turn() === 'w' ? '♛ Negras' : '♕ Blancas'}`, over: true,  check: false };
-  if (c.in_stalemate()) return { msg: 'Tablas por ahogado',                                                   over: true,  check: false };
-  if (c.in_draw())      return { msg: 'Tablas',                                                               over: true,  check: false };
-  if (c.in_check())     return { msg: c.turn() === 'w' ? '¡Jaque a Blancas!' : '¡Jaque a Negras!',           over: false, check: true  };
-  return                       { msg: c.turn() === 'w' ? '⬜ Turno: Blancas' : '⬛ Turno: Negras',           over: false, check: false };
+  const c    = chessInst || _chess;
+  const side = c.turn() === 'w' ? '⬜ Blancas' : '⬛ Negras';
+  if (c.in_checkmate()) return { msg: `Jaque mate — ganan ${c.turn() === 'w' ? '♛ Negras' : '♕ Blancas'}`, over: true,  check: false, side };
+  if (c.in_stalemate()) return { msg: 'Tablas por ahogado',                                                   over: true,  check: false, side };
+  if (c.in_draw())      return { msg: 'Tablas',                                                               over: true,  check: false, side };
+  if (c.in_check())     return { msg: c.turn() === 'w' ? '¡Jaque a Blancas!' : '¡Jaque a Negras!',           over: false, check: true,  side };
+  return                       { msg: c.turn() === 'w' ? '⬜ Turno: Blancas' : '⬛ Turno: Negras',           over: false, check: false, side };
 }
 
 // ── 4. BOARD HTML ─────────────────────────────────────────────────────────────
@@ -147,7 +148,8 @@ function _buildReviewBar(status, reviewing) {
 }
 
 function _buildShell(cells, status, reviewing) {
-  const turnLabel   = escapeHtml(status.msg);
+  // When in check, show side name in .chess-turn; checkBadge handles the "¡Jaque!" text.
+  const turnLabel   = status.over ? escapeHtml(status.msg) : escapeHtml(status.check ? status.side : status.msg);
   const checkBadge  = status.check ? `<span class="chess-check">${escapeHtml(status.msg)}</span>` : '';
   const overBadge   = status.over  ? `<span class="chess-gameover">${escapeHtml(status.msg)}</span>` : '';
   const reviewBadge = reviewing    ? `<span class="chess-reviewing-badge">👁 Revisando</span>` : '';
