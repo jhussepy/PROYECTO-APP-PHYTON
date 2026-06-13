@@ -1,7 +1,10 @@
-/* chess-game.js — Ajedrez con chess.js 0.13.4 (CDN: cdn.jsdelivr.net, ya excluido del SW).
+/* chess-game.js — Ajedrez con chess.js 0.13.4 empaquetado LOCAL (js/lib/chess.js).
+   Sin CDN: funciona offline (la lib está en el caché del SW). El archivo local es
+   chess.js 0.13.4 (BSD-2-Clause, Jeff Hlywa) con los `export` ESM convertidos a
+   globales clásicos para encajar con el patrón de <script> de la app.
    Dos jugadores por turnos en el mismo dispositivo. Coronación auto → dama (♕). */
 
-const _CHESS_CDN = 'https://cdn.jsdelivr.net/npm/chess.js@0.13.4/chess.min.js';
+const _CHESS_LIB = 'js/lib/chess.js';
 
 const _PIECES = {
   wk:'♔', wq:'♕', wr:'♖', wb:'♗', wn:'♘', wp:'♙',
@@ -19,9 +22,11 @@ function _loadChessJs() {
   if (typeof Chess !== 'undefined') return Promise.resolve();
   return new Promise((resolve, reject) => {
     const s = document.createElement('script');
-    s.src = _CHESS_CDN;
-    s.onload  = resolve;
-    s.onerror = () => reject(new Error('No se pudo cargar chess.js desde CDN. ¿Hay conexión?'));
+    s.src = _CHESS_LIB;
+    s.onload  = () => (typeof Chess !== 'undefined'
+      ? resolve()
+      : reject(new Error('chess.js se cargó pero no expuso Chess.')));
+    s.onerror = () => reject(new Error('No se pudo cargar la librería de ajedrez local (js/lib/chess.js).'));
     document.head.appendChild(s);
   });
 }
