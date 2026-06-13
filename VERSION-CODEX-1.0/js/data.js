@@ -498,259 +498,130 @@ BADGES.push({ id:'ctf_operator', title:'CTF Operator', description:'Completaste 
 });
 })();
 
-/* ── Análisis de Datos P3-c: curso nuevo + 5 lecciones pandas (Pyodide) ──
-   Nuevo curso 'analisis_datos' con módulo pandas_seguridad.
-   Cada lección lleva engine:'pyodide' + packages:['pandas']. */
-(function pandasP3c(){
-  COURSES.push({
-    id: 'analisis_datos',
-    title: 'Análisis de Datos para Seguridad',
-    level: 'Intermedio',
-    description: 'pandas real para logs de seguridad: crea tablas, filtra eventos, agrupa por IP y detecta anomalías con Python real (Pyodide).',
-    icon: '📊',
-    ethical: true,
-    modules: [{
-      id: 'pandas_seguridad',
-      title: '🐼 pandas: logs y anomalías con datos reales',
-      lessons: [
-        Object.assign(
-          lesson(
-            'ad_001',
-            'Tu primer DataFrame de eventos',
-            'Crear una tabla estructurada de eventos de seguridad con pd.DataFrame.',
-            'pandas organiza datos en DataFrames: tablas con filas y columnas. Crear un DataFrame a partir de un diccionario es el primer paso de cualquier pipeline de análisis de logs. Cada clave del dict se convierte en columna, cada lista en sus valores.',
-            "import pandas as pd\ndata = {'ip': ['10.0.0.1', '10.0.0.2'], 'evento': ['OK', 'ERROR']}\ndf = pd.DataFrame(data)\nprint(df)",
-            ['pd.DataFrame(dict) convierte un diccionario en tabla.', 'Cada clave se convierte en columna; cada lista, en sus filas.', 'print(df) muestra la tabla con índice, columnas y valores alineados.'],
-            "Crea el DataFrame con pd.DataFrame(data) y muéstralo con print(df). Los datos ya están definidos en el starter.",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5'],\n    'evento': ['LOGIN', 'ERROR', 'LOGIN'],\n    'intentos': [1, 5, 1]\n}\n# Crea df = pd.DataFrame(data) y haz print(df)\n",
-            'ERROR',
-            'output_contains',
-            "Usa df = pd.DataFrame(data) y luego print(df).",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5'],\n    'evento': ['LOGIN', 'ERROR', 'LOGIN'],\n    'intentos': [1, 5, 1]\n}\ndf = pd.DataFrame(data)\nprint(df)",
-            30, 12,
-            quiz('¿Qué convierte pd.DataFrame(dict)?', ['Un dict en tabla de filas y columnas', 'Un dict en lista plana', 'Una lista en diccionario', 'Un CSV en JSON'], 'Un dict en tabla de filas y columnas')
-          ),
-          { engine: 'pyodide', packages: ['pandas'] }
+/* ── Regex avanzado P3-a: 6 lecciones engine:'pyodide' ──────────────
+   Módulo 'regex_avanzado' en python_ciberseguridad.
+   Desbloquea re.sub, grupos, re.match, re.compile — imposible en runner casero. */
+(function regexAvanzadoP3a(){
+  const courseById = id => COURSES.find(c => c.id === id);
+  const addModule = (courseId, module) => { const c = courseById(courseId); if (c) c.modules.push(module); };
+  addModule('python_ciberseguridad', {
+    id: 'regex_avanzado',
+    title: '🔍 Regex y análisis de logs (Python real)',
+    lessons: [
+      Object.assign(
+        lesson(
+          'cs_regex_001',
+          'Grupos de captura: extraer fecha e IP',
+          'Extraer partes específicas de un log con re.search y grupos de captura.',
+          'Los paréntesis en un patrón regex crean grupos de captura. re.search devuelve un objeto match y .group(1), .group(2) extraen cada grupo por posición. En logs SSH o SIEM, extraer fecha e IP por separado permite indexar eventos y correlacionar por origen.',
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5'\nm = re.search(r'(\\d{4}-\\d{2}-\\d{2}) ERROR (\\d+\\.\\d+\\.\\d+\\.\\d+)', log)\nprint(m.group(1))\nprint(m.group(2))",
+          ['Los paréntesis crean grupos de captura numerados desde 1.', '.group(1) extrae el primer grupo, .group(2) el segundo.', 're.search busca el patrón en cualquier parte del string.'],
+          "Extrae la fecha y la IP del log con re.search y dos grupos. Muestra primero la fecha y luego la IP en líneas separadas.",
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5'\n# Usa re.search con r'(\\d{4}-\\d{2}-\\d{2}) ERROR (\\d+\\.\\d+\\.\\d+\\.\\d+)'\n",
+          '2024-01-15\n192.168.1.5',
+          'output_equals',
+          "Llama m.group(1) para la fecha y m.group(2) para la IP.",
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5'\nm = re.search(r'(\\d{4}-\\d{2}-\\d{2}) ERROR (\\d+\\.\\d+\\.\\d+\\.\\d+)', log)\nprint(m.group(1))\nprint(m.group(2))",
+          30, 12,
+          quiz('¿Qué crean los paréntesis en un patrón regex?', ['Grupos de captura', 'Una lista nueva', 'Un bucle for', 'Un comentario'], 'Grupos de captura')
         ),
-        Object.assign(
-          lesson(
-            'ad_002',
-            'Filtrar eventos sospechosos',
-            'Seleccionar solo las filas que cumplen una condición con df[df[col]==valor].',
-            'El filtrado booleano es la operación más frecuente en análisis de logs. df[df["evento"] == "ERROR"] devuelve solo las filas donde el evento es ERROR. Es equivalente a un WHERE en SQL — fundamental para aislar eventos de interés en millones de registros.',
-            "import pandas as pd\ndata = {'ip': ['10.0.0.1', '10.0.0.2'], 'evento': ['OK', 'ERROR']}\ndf = pd.DataFrame(data)\nerrores = df[df['evento'] == 'ERROR']\nprint(len(errores))",
-            ["df[condición] devuelve solo las filas donde la condición es True.", "df['evento'] == 'ERROR' produce una Serie booleana.", 'len() cuenta cuántas filas pasaron el filtro.'],
-            "Filtra el DataFrame para quedarte solo con los eventos ERROR y muestra cuántos hay con print(len(errores)).",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '10.0.0.9'],\n    'evento': ['LOGIN', 'ERROR', 'LOGIN', 'ERROR']\n}\ndf = pd.DataFrame(data)\n# Filtra: errores = df[df['evento'] == 'ERROR']\n",
-            '2',
-            'output_equals',
-            "Usa errores = df[df['evento'] == 'ERROR'] y luego print(len(errores)).",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '10.0.0.9'],\n    'evento': ['LOGIN', 'ERROR', 'LOGIN', 'ERROR']\n}\ndf = pd.DataFrame(data)\nerrores = df[df['evento'] == 'ERROR']\nprint(len(errores))",
-            30, 13,
-            quiz('¿Qué devuelve df[df["col"] == valor]?', ['Las filas donde la condición es True', 'Todas las columnas del DataFrame', 'Un número entero', 'El índice del DataFrame'], 'Las filas donde la condición es True')
-          ),
-          { engine: 'pyodide', packages: ['pandas'] }
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_002',
+          're.sub: anonimizar IPs en logs',
+          'Reemplazar IPs por [REDACTED] con re.sub antes de compartir un log.',
+          're.sub(patrón, reemplazo, texto) reemplaza todas las coincidencias del patrón en una sola llamada. Anonimizar IPs es un requisito habitual en organizaciones antes de enviar logs a terceros, herramientas SaaS o equipos de soporte — protege datos personales y es necesario para cumplir GDPR y normativas similares.',
+          "import re\ntexto = 'Alerta: IP 10.0.0.5 bloqueada'\nlimpio = re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[REDACTED]', texto)\nprint(limpio)",
+          ['re.sub reemplaza TODAS las coincidencias, no solo la primera.', 'El patrón \\d+\\.\\d+\\.\\d+\\.\\d+ detecta cualquier IPv4.', 'Anonimizar IPs antes de compartir logs es buena práctica legal y de seguridad.'],
+          "Anonimiza la IP del log con re.sub, reemplazándola por [REDACTED]. Muestra el resultado.",
+          "import re\nlog = 'ERROR 192.168.1.5 login failed user admin'\n",
+          'ERROR [REDACTED] login failed user admin',
+          'output_equals',
+          "Usa re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[REDACTED]', log) y luego print.",
+          "import re\nlog = 'ERROR 192.168.1.5 login failed user admin'\nanonimizado = re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[REDACTED]', log)\nprint(anonimizado)",
+          30, 11,
+          quiz('¿Cuántas coincidencias reemplaza re.sub?', ['Todas las que encuentre', 'Solo la primera', 'Solo la última', 'Ninguna si no hay grupos'], 'Todas las que encuentre')
         ),
-        Object.assign(
-          lesson(
-            'ad_003',
-            'Contar por IP: detectar la fuente más ruidosa',
-            'Usar value_counts() para contar eventos por IP y encontrar la fuente más activa.',
-            'value_counts() agrupa y cuenta las ocurrencias de cada valor en una columna. En análisis de amenazas, contar eventos por IP de origen detecta automáticamente la fuente más ruidosa — un indicador clave de brute force, scanning o comportamiento anómalo.',
-            "import pandas as pd\ndata = {'ip': ['10.0.0.1', '10.0.0.2', '10.0.0.1']}\ndf = pd.DataFrame(data)\nprint(df['ip'].value_counts())",
-            ["value_counts() devuelve los valores ordenados por frecuencia descendente.", ".index[0] obtiene el valor más frecuente (el primero de la lista ordenada).", 'Este patrón detecta la IP más activa en cualquier log de accesos.'],
-            "Encuentra la IP que aparece más veces en el log y muéstrala con print(ip_top).",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '192.168.1.5'],\n    'evento': ['LOGIN', 'ERROR', 'ERROR', 'LOGIN']\n}\ndf = pd.DataFrame(data)\n# ip_top = df['ip'].value_counts().index[0]\n",
-            '192.168.1.5',
-            'output_equals',
-            "Usa ip_top = df['ip'].value_counts().index[0] y luego print(ip_top).",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '192.168.1.5'],\n    'evento': ['LOGIN', 'ERROR', 'ERROR', 'LOGIN']\n}\ndf = pd.DataFrame(data)\nip_top = df['ip'].value_counts().index[0]\nprint(ip_top)",
-            35, 14,
-            quiz('¿Qué devuelve value_counts()?', ['Valores ordenados por frecuencia descendente', 'Solo el valor máximo', 'La media de los valores', 'Una lista de índices'], 'Valores ordenados por frecuencia descendente')
-          ),
-          { engine: 'pyodide', packages: ['pandas'] }
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_003',
+          're.findall con grupos: extraer pares usuario/IP',
+          'Extraer múltiples pares de campos estructurados de un log con re.findall y grupos.',
+          'Con varios grupos de captura, re.findall devuelve una lista de tuplas. Cada tupla contiene los grupos de un match en orden de izquierda a derecha. Este patrón es central en parsing de logs de autenticación: extraer todos los pares (usuario, IP) de una sesión de intentos fallidos.',
+          "import re\ntexto = 'admin 10.0.0.1 OK\\nroot 10.0.0.2 OK'\npares = re.findall(r'(\\w+) (\\d+\\.\\d+\\.\\d+\\.\\d+)', texto)\nprint(pares)",
+          ['Con dos grupos, findall devuelve lista de tuplas, no lista de strings.', 'Cada tupla contiene los grupos en orden de izquierda a derecha.', 'Ideal para extraer campos paralelos como usuario e IP de logs de login.'],
+          "Extrae todos los pares (usuario, IP) del log de logins fallidos. Para cada par imprime en el formato: usuario: IP",
+          "import re\nlogs = 'admin 10.0.0.1 failed\\nroot 192.168.1.9 failed'\n# Usa re.findall con r'(\\w+) (\\d+\\.\\d+\\.\\d+\\.\\d+)'\n",
+          'admin: 10.0.0.1\nroot: 192.168.1.9',
+          'output_equals',
+          "Usa re.findall con dos grupos y luego: for usuario, ip in pares: print(f'{usuario}: {ip}').",
+          "import re\nlogs = 'admin 10.0.0.1 failed\\nroot 192.168.1.9 failed'\npares = re.findall(r'(\\w+) (\\d+\\.\\d+\\.\\d+\\.\\d+)', logs)\nfor usuario, ip in pares:\n    print(f'{usuario}: {ip}')",
+          35, 13,
+          quiz('¿Qué devuelve re.findall con dos grupos de captura?', ['Lista de tuplas', 'Un solo string', 'Un diccionario', 'Solo la primera coincidencia'], 'Lista de tuplas')
         ),
-        Object.assign(
-          lesson(
-            'ad_004',
-            'Estadísticas básicas: máximo y media de intentos',
-            'Calcular estadísticas de una columna numérica con .max() y .mean().',
-            'pandas calcula estadísticas sobre columnas numéricas en una línea. .max() devuelve el mayor valor (útil para detectar el pico de intentos de login), .mean() la media (útil para establecer una línea base). En análisis de anomalías, compara cada evento con la media para detectar comportamientos fuera del rango normal.',
-            "import pandas as pd\ndata = {'ip': ['a', 'b'], 'intentos': [2, 8]}\ndf = pd.DataFrame(data)\nprint(df['intentos'].max())\nprint(df['intentos'].mean())",
-            ['.max() devuelve el valor máximo de la columna.', '.mean() calcula el promedio como float.', 'Compara el máximo con la media para detectar outliers.'],
-            "Imprime primero el máximo de intentos y luego la media. El resultado exacto debe ser 7 y 4.0.",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5'],\n    'intentos': [3, 7, 2]\n}\ndf = pd.DataFrame(data)\n# print(df['intentos'].max()) y print(df['intentos'].mean())\n",
-            '7\n4.0',
-            'output_equals',
-            "Usa print(df['intentos'].max()) y luego print(df['intentos'].mean()).",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5'],\n    'intentos': [3, 7, 2]\n}\ndf = pd.DataFrame(data)\nprint(df['intentos'].max())\nprint(df['intentos'].mean())",
-            35, 14,
-            quiz('¿Para qué sirve comparar max() con mean() en logs?', ['Detectar outliers (valores fuera del rango normal)', 'Cifrar la columna', 'Ordenar el DataFrame', 'Filtrar por IP'], 'Detectar outliers (valores fuera del rango normal)')
-          ),
-          { engine: 'pyodide', packages: ['pandas'] }
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_004',
+          're.match vs re.search: validar formato de log',
+          'Entender que re.match ancla al inicio y re.search busca en cualquier parte.',
+          're.match solo tiene éxito si el patrón coincide desde el principio del string. re.search busca en cualquier posición. En un parser de logs, re.match valida que la línea tenga el formato esperado — líneas que no empiezan con fecha-severidad se descartan como corruptas antes de procesarlas.',
+          "import re\nbuena = '2024-01-15 ERROR acceso'\nmala = 'Garbage ERROR 2024-01-15'\nprint(bool(re.match(r'\\d{4}-\\d{2}-\\d{2} ERROR', buena)))\nprint(bool(re.match(r'\\d{4}-\\d{2}-\\d{2} ERROR', mala)))",
+          ['re.match ancla al inicio: la fecha debe estar primero.', 're.search hubiera encontrado ERROR en cualquier posición.', 'Validar formato es el primer paso de cualquier pipeline de logs.'],
+          "Valida si linea tiene el formato correcto (YYYY-MM-DD seguido de ERROR, WARN o INFO) usando re.match. Imprime 'Formato válido' o 'Formato inválido'.",
+          "import re\nlinea = '2024-01-15 ERROR acceso denegado'\n",
+          'Formato válido',
+          'output_equals',
+          "Usa re.match(r'\\d{4}-\\d{2}-\\d{2} (ERROR|WARN|INFO)', linea) con un if/else.",
+          "import re\nlinea = '2024-01-15 ERROR acceso denegado'\nif re.match(r'\\d{4}-\\d{2}-\\d{2} (ERROR|WARN|INFO)', linea):\n    print('Formato válido')\nelse:\n    print('Formato inválido')",
+          30, 12,
+          quiz('¿Cuál es la diferencia clave entre re.match y re.search?', ['match ancla al inicio, search busca en cualquier parte', 'match es más lento siempre', 'search devuelve más grupos', 'No hay diferencia'], 'match ancla al inicio, search busca en cualquier parte')
         ),
-        Object.assign(
-          lesson(
-            'ad_005',
-            'Capstone: análisis completo de un log de accesos',
-            'Filtrar alertas críticas y detectar la IP más activa en un dataset real.',
-            'Un analista SOC procesa el log, filtra los eventos de alta severidad, identifica la fuente más ruidosa y genera un resumen accionable. Este ejercicio integra filtrado compuesto (& para AND), value_counts y f-strings para producir un mini informe automático — el mismo flujo de triage que usarías en Python real.',
-            "import pandas as pd\ndata = {'ip': ['10.0.0.1', '10.0.0.2'], 'evento': ['ERROR', 'LOGIN'], 'intentos': [9, 1]}\ndf = pd.DataFrame(data)\nalertas = df[(df['evento'] == 'ERROR') & (df['intentos'] > 3)]\nprint(f'Alertas: {len(alertas)}')",
-            ['& combina condiciones booleanas (equivale a AND).', 'Cada condición debe ir entre paréntesis al usar &.', 'f-strings generan el reporte en una línea.'],
-            "Analiza el log: filtra alertas críticas (evento ERROR Y intentos > 3), encuentra la IP más activa. Imprime 'Alertas críticas: N' y luego 'IP más activa: IP'.",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '10.0.0.9', '10.0.0.9'],\n    'evento': ['LOGIN', 'ERROR', 'ERROR', 'ERROR', 'LOGIN'],\n    'intentos': [1, 5, 3, 8, 1]\n}\ndf = pd.DataFrame(data)\n# alertas = df[(df['evento'] == 'ERROR') & (df['intentos'] > 3)]\n# ip_top = df['ip'].value_counts().index[0]\n",
-            'Alertas críticas: 2\nIP más activa: 10.0.0.9',
-            'output_equals',
-            "Usa df[(df['evento']=='ERROR') & (df['intentos']>3)] para las alertas y value_counts().index[0] para la IP top. Luego print(f'Alertas críticas: {len(alertas)}') y print(f'IP más activa: {ip_top}').",
-            "import pandas as pd\ndata = {\n    'ip': ['192.168.1.5', '10.0.0.9', '192.168.1.5', '10.0.0.9', '10.0.0.9'],\n    'evento': ['LOGIN', 'ERROR', 'ERROR', 'ERROR', 'LOGIN'],\n    'intentos': [1, 5, 3, 8, 1]\n}\ndf = pd.DataFrame(data)\nalertas = df[(df['evento'] == 'ERROR') & (df['intentos'] > 3)]\nip_top = df['ip'].value_counts().index[0]\nprint(f'Alertas críticas: {len(alertas)}')\nprint(f'IP más activa: {ip_top}')",
-            45, 16,
-            quiz('¿Qué operador combina dos condiciones booleanas en pandas?', ['& (and)', '| (or)', '+ (suma)', '== (igual)'], '& (and)')
-          ),
-          { engine: 'pyodide', packages: ['pandas'] }
-        )
-      ]
-    }]
-  });
-  BADGES.push({ id: 'data_analyst', title: 'Data Analyst', description: 'Analizaste logs reales con pandas y detectaste anomalías.', icon: '📊' });
-})();
-
-// P3-d: Machine Learning para Seguridad — 6 lecciones (3 numpy + 3 sklearn), curso ml_seguridad
-(function mlSeguridad(){
-  COURSES.push({
-    id: 'ml_seguridad',
-    title: 'Machine Learning para Seguridad',
-    level: 'Avanzado',
-    description: 'ML clásico aplicado a ciberseguridad: detección de anomalías, clasificación de amenazas y clustering con numpy y scikit-learn en Python real.',
-    icon: '🤖',
-    ethical: true,
-    modules: [
-      {
-        id: 'numpy_deteccion',
-        title: '🔢 numpy: detección de anomalías sin modelos',
-        lessons: [
-          Object.assign(
-            lesson(
-              'ad_ml_001',
-              'Z-score para detectar tiempos de respuesta anómalos',
-              'Calcular el z-score de una serie de tiempos y detectar valores estadísticamente atípicos.',
-              'El z-score mide cuántas desviaciones estándar se aleja un punto de la media. En seguridad, un servidor que tarda 750ms cuando lo normal son 100ms tiene un z-score alto (≈2.65) y merece investigación. Fórmula: z = (x - media) / std. Un umbral clásico es |z| > 2.0.',
-              "import numpy as np\ntiempos = np.array([100, 102, 98, 750])\nmedia = np.mean(tiempos)\nstd = np.std(tiempos)\nz = (tiempos - media) / std\nprint(tiempos[np.abs(z) > 2.0])",
-              ['np.abs(z) devuelve el valor absoluto de cada z-score.', 'El umbral 2.0 captura ~5% de valores extremos en una distribución normal.', 'tiempos[condición] es indexación booleana — devuelve solo los elementos donde la condición es True.'],
-              "Tienes los tiempos de respuesta de un servidor (en ms). Calcula el z-score de cada tiempo. Imprime el número de tiempos anómalos (|z| > 2.0) usando print(len(...)).",
-              "import numpy as np\ntiempos = np.array([100, 102, 98, 101, 750, 99, 103, 97])\nmedia = np.mean(tiempos)\nstd = np.std(tiempos)\nz = (tiempos - media) / std\n# anomalos = tiempos[np.abs(z) > 2.0]\n",
-              '1',
-              'output_equals',
-              'Usa anomalos = tiempos[np.abs(z) > 2.0] y luego print(len(anomalos)). El array tiene 8 elementos — solo uno (750) tiene z > 2.0.',
-              "import numpy as np\ntiempos = np.array([100, 102, 98, 101, 750, 99, 103, 97])\nmedia = np.mean(tiempos)\nstd = np.std(tiempos)\nz = (tiempos - media) / std\nanomalos = tiempos[np.abs(z) > 2.0]\nprint(len(anomalos))",
-              35, 12,
-              quiz('¿Qué mide el z-score?', ['Cuántas desviaciones estándar se aleja un valor de la media', 'El valor máximo del array', 'La distancia euclidiana entre dos puntos', 'La varianza del conjunto'], 'Cuántas desviaciones estándar se aleja un valor de la media')
-            ),
-            { engine: 'pyodide', packages: ['numpy'] }
-          ),
-          Object.assign(
-            lesson(
-              'ad_ml_002',
-              'Umbral estadístico: media + 2·std para alertas',
-              'Detectar eventos sospechosos usando como umbral la media más dos desviaciones estándar.',
-              'Una heurística robusta para umbrales dinámicos: umbral = media + 2·std. Cualquier valor que supere este umbral es estadísticamente inusual. Esta técnica se usa en SIEM para baselining: aprendes el comportamiento normal y alertas sobre lo que se sale del rango.',
-              "import numpy as np\neventos = np.array([10, 12, 9, 11, 50])\numbral = np.mean(eventos) + 2 * np.std(eventos)\nprint(eventos[eventos > umbral])",
-              ['umbral = media + 2*std cubre el 97.5% de una distribución normal.', 'eventos > umbral produce un array booleano.', 'Se puede ajustar el multiplicador (1.5, 2, 3) según la sensibilidad deseada.'],
-              "Tienes eventos por minuto de un servidor. Calcula el umbral (media + 2·std). Imprime el número de eventos que superan ese umbral usando print(len(...)).",
-              "import numpy as np\neventos = np.array([10, 12, 9, 11, 13, 10, 45, 11, 10, 9])\numbral = np.mean(eventos) + 2 * np.std(eventos)\n# sospechosos = eventos[eventos > umbral]\n",
-              '1',
-              'output_equals',
-              'Usa sospechosos = eventos[eventos > umbral] y luego print(len(sospechosos)). El array tiene 10 elementos — solo 45 supera el umbral (~34.8).',
-              "import numpy as np\neventos = np.array([10, 12, 9, 11, 13, 10, 45, 11, 10, 9])\numbral = np.mean(eventos) + 2 * np.std(eventos)\nsospechosos = eventos[eventos > umbral]\nprint(len(sospechosos))",
-              35, 12,
-              quiz('¿Por qué usar media+2·std como umbral en vez de un valor fijo?', ['Se adapta automáticamente al comportamiento normal del sistema', 'Es más fácil de calcular', 'Solo funciona con enteros', 'Requiere menos datos'], 'Se adapta automáticamente al comportamiento normal del sistema')
-            ),
-            { engine: 'pyodide', packages: ['numpy'] }
-          ),
-          Object.assign(
-            lesson(
-              'ad_ml_003',
-              'Normalización min-max para comparar métricas dispares',
-              'Escalar features heterogéneas al rango [0, 1] para que sean comparables.',
-              'Un log de seguridad puede combinar bytes transferidos (0–10MB), intentos de login (0–100) y puertos abiertos (0–65535). Mezclar estas escalas en un modelo distorsiona los resultados. La normalización min-max resuelve esto: x_norm = (x - min) / (max - min). El mínimo queda en 0.0 y el máximo en 1.0.',
-              "import numpy as np\ndatos = np.array([0.0, 100.0, 200.0])\nnorm = (datos - datos.min()) / (datos.max() - datos.min())\nprint(norm)",
-              ['datos.min() y datos.max() calculan el rango en una línea.', 'El resultado siempre está en [0.0, 1.0].', 'Si max == min (todos iguales), la división da NaN — en la práctica se añade un pequeño epsilon.'],
-              "Normaliza el array de datos al rango [0, 1]. Imprime el primer valor normalizado y el último valor normalizado, cada uno en su propia línea.",
-              "import numpy as np\ndatos = np.array([10.0, 50.0, 30.0, 90.0, 20.0])\n# norm = (datos - datos.min()) / (datos.max() - datos.min())\n",
-              '0.0\n0.125',
-              'output_equals',
-              "Calcula norm = (datos - datos.min()) / (datos.max() - datos.min()). Luego print(norm[0]) y print(norm[-1]). Con datos=[10,50,30,90,20]: min=10, max=90 → norm[0]=(10-10)/80=0.0, norm[-1]=(20-10)/80=0.125.",
-              "import numpy as np\ndatos = np.array([10.0, 50.0, 30.0, 90.0, 20.0])\nnorm = (datos - datos.min()) / (datos.max() - datos.min())\nprint(norm[0])\nprint(norm[-1])",
-              35, 13,
-              quiz('¿Qué valor produce la normalización min-max para el valor mínimo del array?', ['0.0', '1.0', '-1.0', 'El valor original'], '0.0')
-            ),
-            { engine: 'pyodide', packages: ['numpy'] }
-          )
-        ]
-      },
-      {
-        id: 'sklearn_avanzado',
-        title: '🧠 scikit-learn: clasificación y clustering',
-        lessons: [
-          Object.assign(
-            lesson(
-              'ad_ml_004',
-              'Árbol de decisión para clasificar conexiones',
-              'Entrenar un clasificador binario que distingue conexiones normales de sospechosas.',
-              'Un árbol de decisión aprende reglas tipo "si bytes > 80 Y puertos > 10 → sospechoso". Es interpretable: puedes ver exactamente qué feature disparó la alerta. En threat hunting esto es clave — necesitas poder explicar al equipo de respuesta por qué un evento se marcó como amenaza.',
-              "from sklearn.tree import DecisionTreeClassifier\nX = [[10, 1], [90, 20]]\ny = [0, 1]\nclf = DecisionTreeClassifier(random_state=42)\nclf.fit(X, y)\nprint(clf.predict([[100, 25]])[0])",
-              ['X son los features (bytes, puertos); y las etiquetas (0=normal, 1=sospechoso).', 'random_state=42 garantiza resultados reproducibles.', 'predict() devuelve un array — [0] toma el primer (único) resultado.'],
-              "Tienes conexiones etiquetadas como normales (0) o sospechosas (1). Entrena un DecisionTreeClassifier con random_state=42. Predice la conexión [100, 25] e imprime 'Normal' si la predicción es 0, o 'Sospechoso' si es 1.",
-              "from sklearn.tree import DecisionTreeClassifier\nX = [\n    [10, 1], [12, 2], [11, 1], [10, 2],\n    [75, 15], [80, 18], [90, 20], [85, 17]\n]\ny = [0, 0, 0, 0, 1, 1, 1, 1]\nclf = DecisionTreeClassifier(random_state=42)\n# clf.fit(X, y)\n# pred = clf.predict([[100, 25]])[0]\n",
-              'Sospechoso',
-              'output_equals',
-              "Llama a clf.fit(X, y) y luego pred = clf.predict([[100, 25]])[0]. Si pred == 1 imprime 'Sospechoso', si pred == 0 imprime 'Normal'. Con los datos dados, [100,25] cae claramente en la zona sospechosa.",
-              "from sklearn.tree import DecisionTreeClassifier\nX = [\n    [10, 1], [12, 2], [11, 1], [10, 2],\n    [75, 15], [80, 18], [90, 20], [85, 17]\n]\ny = [0, 0, 0, 0, 1, 1, 1, 1]\nclf = DecisionTreeClassifier(random_state=42)\nclf.fit(X, y)\npred = clf.predict([[100, 25]])[0]\nprint('Sospechoso' if pred == 1 else 'Normal')",
-              45, 15,
-              quiz('¿Por qué un árbol de decisión es útil en threat hunting?', ['Sus reglas son interpretables y explicables al equipo', 'Es el modelo más preciso disponible', 'No necesita datos de entrenamiento', 'Solo funciona con datos categóricos'], 'Sus reglas son interpretables y explicables al equipo')
-            ),
-            { engine: 'pyodide', packages: ['scikit-learn'] }
-          ),
-          Object.assign(
-            lesson(
-              'ad_ml_005',
-              'K-Means para agrupar IPs por comportamiento',
-              'Usar clustering para separar automáticamente grupos de comportamiento sin etiquetas previas.',
-              'K-Means agrupa puntos en k clusters minimizando la distancia intra-cluster. En seguridad se usa para segmentar hosts: un grupo con tráfico alto y muchos puertos abiertos puede indicar un escáner o máquina comprometida, sin necesidad de etiquetas previas. Es aprendizaje no supervisado — el modelo descubre los patrones por sí solo.',
-              "from sklearn.cluster import KMeans\nX = [[5, 100], [6, 98], [80, 800], [82, 810]]\nkm = KMeans(n_clusters=2, random_state=42, n_init=10)\nkm.fit(X)\nprint(len(set(km.labels_)))",
-              ['n_clusters=2 le dice al modelo que busque 2 grupos.', 'n_init=10 repite el algoritmo 10 veces con distintas semillas para mayor estabilidad.', 'km.labels_ es un array con el ID del cluster asignado a cada punto.'],
-              "Tienes conexiones descritas por [bytes_enviados, puertos_escaneados]. Agrupa con KMeans en 2 clusters (n_clusters=2, random_state=42, n_init=10). Imprime el número de clusters distintos encontrados.",
-              "from sklearn.cluster import KMeans\nX = [\n    [5, 95], [6, 100], [7, 98], [5, 102],\n    [75, 780], [80, 800], [82, 820], [78, 790]\n]\nkm = KMeans(n_clusters=2, random_state=42, n_init=10)\n# km.fit(X)\n# print(len(set(km.labels_)))\n",
-              '2',
-              'output_equals',
-              'Llama a km.fit(X) y luego print(len(set(km.labels_))). Los 8 puntos forman 2 grupos claramente separados — KMeans los distingue perfectamente.',
-              "from sklearn.cluster import KMeans\nX = [\n    [5, 95], [6, 100], [7, 98], [5, 102],\n    [75, 780], [80, 800], [82, 820], [78, 790]\n]\nkm = KMeans(n_clusters=2, random_state=42, n_init=10)\nkm.fit(X)\nprint(len(set(km.labels_)))",
-              45, 15,
-              quiz('¿Qué ventaja tiene K-Means frente a un clasificador supervisado?', ['No necesita datos etiquetados para encontrar patrones', 'Siempre produce mejores resultados', 'Requiere menos datos', 'Solo funciona con 2 clusters'], 'No necesita datos etiquetados para encontrar patrones')
-            ),
-            { engine: 'pyodide', packages: ['scikit-learn'] }
-          ),
-          Object.assign(
-            lesson(
-              'ad_ml_006',
-              'Capstone: IsolationForest para detección de intrusiones',
-              'Aplicar un modelo de detección de anomalías para identificar conexiones sospechosas en tráfico de red.',
-              'IsolationForest es el algoritmo de facto para detección de anomalías: aísla puntos raros con menos pasos que los normales. Devuelve 1 para puntos normales y -1 para anomalías. En defensa de redes, se entrena con tráfico normal y alerta cuando llega algo que "no encaja". Es robusto, rápido y no requiere etiquetas — ideal para entornos donde las amenazas son raras y desconocidas.',
-              "from sklearn.ensemble import IsolationForest\nX = [[50], [52], [200]]\nif_model = IsolationForest(contamination=0.33, random_state=42)\nif_model.fit(X)\npred = if_model.predict(X)\nprint((pred == -1).sum())",
-              ['contamination indica la fracción esperada de anomalías en los datos.', 'predict() devuelve 1 (normal) o -1 (anomalía).', '(pred == -1).sum() cuenta las anomalías eficientemente con numpy.'],
-              "Tienes conexiones de red: 6 normales (bytes ~50) y 3 sospechosas (bytes ~200). Usa IsolationForest(contamination=1/3, random_state=42) para detectarlas. Imprime 'Conexiones sospechosas: N' donde N es el número de anomalías (pred == -1).",
-              "from sklearn.ensemble import IsolationForest\nX = [[50],[52],[48],[51],[53],[49],[200],[220],[190]]\nif_model = IsolationForest(contamination=1/3, random_state=42)\nif_model.fit(X)\npred = if_model.predict(X)\n# anomalias = (pred == -1).sum()\n",
-              'Conexiones sospechosas: 3',
-              'output_equals',
-              "Calcula anomalias = (pred == -1).sum() y luego print(f'Conexiones sospechosas: {anomalias}'). Con contamination=1/3 sobre 9 puntos, IsolationForest marcará exactamente 3 como anomalías.",
-              "from sklearn.ensemble import IsolationForest\nX = [[50],[52],[48],[51],[53],[49],[200],[220],[190]]\nif_model = IsolationForest(contamination=1/3, random_state=42)\nif_model.fit(X)\npred = if_model.predict(X)\nanomalias = (pred == -1).sum()\nprint(f'Conexiones sospechosas: {anomalias}')",
-              50, 18,
-              quiz('¿Qué devuelve IsolationForest para un punto anómalo?', ['-1', '1', '0', 'True'], '-1')
-            ),
-            { engine: 'pyodide', packages: ['scikit-learn'] }
-          )
-        ]
-      }
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_005',
+          'Patrones avanzados: detectar líneas críticas',
+          'Usar alternancia, \\b y re.compile para filtrar logs de alta severidad.',
+          're.compile precompila un patrón para reutilizarlo eficientemente en bucles. La alternancia (A|B|C) busca cualquiera de las opciones. \\b es límite de palabra: evita que ERROR_SYS o WARNX hagan match cuando buscas ERROR o WARN exactos. En un pipeline SIEM, filtrar solo severidades altas reduce el volumen de alertas a analizar.',
+          "import re\nlog = 'CRITICAL: 5 intentos desde 10.0.0.5'\nif re.search(r'\\bCRITICAL\\b', log):\n    print('Alerta crítica')",
+          ['\\b es límite de palabra: no matchea CRITICAL_SYS.', '(ERROR|WARN|CRITICAL) busca cualquiera de los tres con una sola pasada.', 're.compile precompila para búsquedas eficientes en bucles.'],
+          "Filtra los logs de alta severidad (ERROR, WARN o CRITICAL) con re.compile. El patrón ya está definido en el starter — añade el bucle para imprimir solo las líneas que coincidan.",
+          "import re\nlogs = ['INFO servicio OK', 'ERROR login fallido', 'CRITICAL disco lleno', 'WARN timeout red']\npatron = re.compile(r'\\b(ERROR|WARN|CRITICAL)\\b')\n# Recorre logs e imprime los que coincidan con patron\n",
+          'ERROR login fallido\nCRITICAL disco lleno\nWARN timeout red',
+          'output_equals',
+          "Usa: for log in logs: if patron.search(log): print(log).",
+          "import re\nlogs = ['INFO servicio OK', 'ERROR login fallido', 'CRITICAL disco lleno', 'WARN timeout red']\npatron = re.compile(r'\\b(ERROR|WARN|CRITICAL)\\b')\nfor log in logs:\n    if patron.search(log):\n        print(log)",
+          35, 13,
+          quiz('¿Para qué sirve \\b en un patrón regex?', ['Límite de palabra (no matchea dentro de otras palabras)', 'Inicio de línea', 'Fin del string', 'Cualquier dígito'], 'Límite de palabra (no matchea dentro de otras palabras)')
+        ),
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_006',
+          'Capstone: parser SOC de log multilinea',
+          'Combinar re.findall, re.sub y conteo para parsear un log completo como analista SOC.',
+          'Un analista SOC real extrae severidades, cuenta eventos por tipo y anonimiza datos sensibles antes de escalar un incidente. Este ejercicio integra grupos, findall, sub y f-strings para generar un mini reporte — el mismo flujo que usarías en Python real contra logs de un SIEM o Splunk.',
+          "import re\ntexto = 'WARN: 3 fallos desde 10.0.0.1'\nsev = re.findall(r'\\b(ERROR|WARN|CRITICAL)\\b', texto)\nlimpio = re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[IP]', texto)\nprint(sev)\nprint(limpio)",
+          ['re.findall extrae todas las severidades del texto.', 're.sub anonimiza las IPs automáticamente.', 'Combinar ambos genera un pipeline de análisis defensivo real.'],
+          "Parsea el log de tres líneas: extrae severidades con re.findall, cuenta cuántas hay de cada tipo, anonimiza IPs con re.sub. Imprime el conteo por tipo en orden alfabético ('TIPO: N') y al final 'IPs anonimizadas: N'.",
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5 login fallido\\n2024-01-15 WARN 10.0.0.9 timeout\\n2024-01-15 ERROR 172.16.0.1 acceso denegado'\n",
+          'ERROR: 2\nWARN: 1\nIPs anonimizadas: 3',
+          'output_equals',
+          "Usa re.findall(r'\\b(ERROR|WARN|CRITICAL)\\b', log) para severidades, un dict para conteo, re.sub para IPs, sorted(conteo) para imprimir en orden y anonimizado.count('[IP]') para el total.",
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5 login fallido\\n2024-01-15 WARN 10.0.0.9 timeout\\n2024-01-15 ERROR 172.16.0.1 acceso denegado'\nseveridades = re.findall(r'\\b(ERROR|WARN|CRITICAL)\\b', log)\nconteo = {}\nfor s in severidades:\n    conteo[s] = conteo.get(s, 0) + 1\nanonimizado = re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[IP]', log)\nfor sev in sorted(conteo):\n    print(f'{sev}: {conteo[sev]}')\nn_ips = anonimizado.count('[IP]')\nprint(f'IPs anonimizadas: {n_ips}')",
+          40, 15,
+          quiz('En este pipeline SOC, ¿qué hace re.sub?', ['Anonimiza IPs reemplazándolas por [IP]', 'Cuenta severidades', 'Valida el formato de fecha', 'Ordena los eventos'], 'Anonimiza IPs reemplazándolas por [IP]')
+        ),
+        { engine: 'pyodide' }
+      )
     ]
   });
-  BADGES.push({ id: 'ml_defender', title: 'ML Defender', description: 'Aplicaste machine learning clásico para detectar amenazas y anomalías en datos de red.', icon: '🤖' });
 })();
