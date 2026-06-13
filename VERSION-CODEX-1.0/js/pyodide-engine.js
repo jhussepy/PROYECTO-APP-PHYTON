@@ -9,6 +9,13 @@ const PYODIDE_INDEX   = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/fu
 let _pyodide = null;  // instancia cacheada — se descarga solo una vez
 let _pending = null;  // promesa en vuelo — evita doble descarga concurrente
 
+/* ¿Pyodide ya está cargado y listo en esta sesión?
+   La UI lo usa para decidir si muestra el panel de descarga (primera vez)
+   o ejecuta directo y rápido (segunda vez en adelante). */
+function isPyodideReady() {
+  return !!_pyodide;
+}
+
 /* Carga (o reutiliza) la instancia de Pyodide.
    onStatus(msg) es un callback opcional para mostrar progreso en la UI. */
 function initPyodide(onStatus) {
@@ -18,10 +25,14 @@ function initPyodide(onStatus) {
   const notify = (msg) => { if (typeof onStatus === 'function') onStatus(msg); };
 
   _pending = (async () => {
-    notify('Descargando intérprete Python real (~8 MB)…');
-
-    // Inyectar el script del CDN si loadPyodide no está disponible aún
+    // Fase 1 — descargar el script del CDN si loadPyodide no está disponible aún
     if (typeof loadPyodide === 'undefined') {
+      // Sin conexión y sin nada cacheado → fallar rápido con un error claro,
+      // en vez de esperar el timeout del navegador con un mensaje técnico feo.
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        throw new Error('offline: sin conexión para descargar el entorno Python');
+      }
+      notify('Descargando entorno Python…');
       await new Promise((resolve, reject) => {
         const s = document.createElement('script');
         s.src = PYODIDE_INDEX + 'pyodide.js';
@@ -33,10 +44,13 @@ function initPyodide(onStatus) {
       });
     }
 
-    notify('Iniciando intérprete Python…');
+    // Fase 2 — inicializar el intérprete (descarga el runtime WASM ~8 MB)
+    notify('Inicializando intérprete…');
     // eslint-disable-next-line no-undef
     _pyodide = await loadPyodide({ indexURL: PYODIDE_INDEX });
-    notify('Python real listo ✓');
+
+    // Fase 3 — listo para ejecutar
+    notify('Laboratorio listo');
     return _pyodide;
   })();
 
@@ -53,10 +67,13 @@ async function runPythonReal(code, onStatus) {
   try {
     py = await initPyodide(onStatus);
   } catch (e) {
+    const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
     return {
       ok: false,
-      error: `Pyodide no disponible: ${e.message}`,
-      friendly: 'Verifica tu conexión a internet. Pyodide se descarga desde CDN la primera vez (~8 MB).'
+      error: e.message || 'Pyodide no disponible',
+      friendly: offline
+        ? 'Esta lección usa Python real y necesita conexión la primera vez para descargar el entorno (~8 MB, solo una vez). Conéctate e inténtalo de nuevo. Las demás lecciones funcionan sin conexión.'
+        : 'No se pudo descargar el entorno Python real. Revisa tu conexión e inténtalo de nuevo — las demás lecciones siguen disponibles offline.'
     };
   }
 
