@@ -497,3 +497,131 @@ BADGES.push({ id:'ctf_operator', title:'CTF Operator', description:'Completaste 
   ]
 });
 })();
+
+/* ── Regex avanzado P3-a: 6 lecciones engine:'pyodide' ──────────────
+   Módulo 'regex_avanzado' en python_ciberseguridad.
+   Desbloquea re.sub, grupos, re.match, re.compile — imposible en runner casero. */
+(function regexAvanzadoP3a(){
+  const courseById = id => COURSES.find(c => c.id === id);
+  const addModule = (courseId, module) => { const c = courseById(courseId); if (c) c.modules.push(module); };
+  addModule('python_ciberseguridad', {
+    id: 'regex_avanzado',
+    title: '🔍 Regex y análisis de logs (Python real)',
+    lessons: [
+      Object.assign(
+        lesson(
+          'cs_regex_001',
+          'Grupos de captura: extraer fecha e IP',
+          'Extraer partes específicas de un log con re.search y grupos de captura.',
+          'Los paréntesis en un patrón regex crean grupos de captura. re.search devuelve un objeto match y .group(1), .group(2) extraen cada grupo por posición. En logs SSH o SIEM, extraer fecha e IP por separado permite indexar eventos y correlacionar por origen.',
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5'\nm = re.search(r'(\\d{4}-\\d{2}-\\d{2}) ERROR (\\d+\\.\\d+\\.\\d+\\.\\d+)', log)\nprint(m.group(1))\nprint(m.group(2))",
+          ['Los paréntesis crean grupos de captura numerados desde 1.', '.group(1) extrae el primer grupo, .group(2) el segundo.', 're.search busca el patrón en cualquier parte del string.'],
+          "Extrae la fecha y la IP del log con re.search y dos grupos. Muestra primero la fecha y luego la IP en líneas separadas.",
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5'\n# Usa re.search con r'(\\d{4}-\\d{2}-\\d{2}) ERROR (\\d+\\.\\d+\\.\\d+\\.\\d+)'\n",
+          '2024-01-15\n192.168.1.5',
+          'output_equals',
+          "Llama m.group(1) para la fecha y m.group(2) para la IP.",
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5'\nm = re.search(r'(\\d{4}-\\d{2}-\\d{2}) ERROR (\\d+\\.\\d+\\.\\d+\\.\\d+)', log)\nprint(m.group(1))\nprint(m.group(2))",
+          30, 12,
+          quiz('¿Qué crean los paréntesis en un patrón regex?', ['Grupos de captura', 'Una lista nueva', 'Un bucle for', 'Un comentario'], 'Grupos de captura')
+        ),
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_002',
+          're.sub: anonimizar IPs en logs',
+          'Reemplazar IPs por [REDACTED] con re.sub antes de compartir un log.',
+          're.sub(patrón, reemplazo, texto) reemplaza todas las coincidencias del patrón en una sola llamada. Anonimizar IPs es un requisito habitual en organizaciones antes de enviar logs a terceros, herramientas SaaS o equipos de soporte — protege datos personales y es necesario para cumplir GDPR y normativas similares.',
+          "import re\ntexto = 'Alerta: IP 10.0.0.5 bloqueada'\nlimpio = re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[REDACTED]', texto)\nprint(limpio)",
+          ['re.sub reemplaza TODAS las coincidencias, no solo la primera.', 'El patrón \\d+\\.\\d+\\.\\d+\\.\\d+ detecta cualquier IPv4.', 'Anonimizar IPs antes de compartir logs es buena práctica legal y de seguridad.'],
+          "Anonimiza la IP del log con re.sub, reemplazándola por [REDACTED]. Muestra el resultado.",
+          "import re\nlog = 'ERROR 192.168.1.5 login failed user admin'\n",
+          'ERROR [REDACTED] login failed user admin',
+          'output_equals',
+          "Usa re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[REDACTED]', log) y luego print.",
+          "import re\nlog = 'ERROR 192.168.1.5 login failed user admin'\nanonimizado = re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[REDACTED]', log)\nprint(anonimizado)",
+          30, 11,
+          quiz('¿Cuántas coincidencias reemplaza re.sub?', ['Todas las que encuentre', 'Solo la primera', 'Solo la última', 'Ninguna si no hay grupos'], 'Todas las que encuentre')
+        ),
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_003',
+          're.findall con grupos: extraer pares usuario/IP',
+          'Extraer múltiples pares de campos estructurados de un log con re.findall y grupos.',
+          'Con varios grupos de captura, re.findall devuelve una lista de tuplas. Cada tupla contiene los grupos de un match en orden de izquierda a derecha. Este patrón es central en parsing de logs de autenticación: extraer todos los pares (usuario, IP) de una sesión de intentos fallidos.',
+          "import re\ntexto = 'admin 10.0.0.1 OK\\nroot 10.0.0.2 OK'\npares = re.findall(r'(\\w+) (\\d+\\.\\d+\\.\\d+\\.\\d+)', texto)\nprint(pares)",
+          ['Con dos grupos, findall devuelve lista de tuplas, no lista de strings.', 'Cada tupla contiene los grupos en orden de izquierda a derecha.', 'Ideal para extraer campos paralelos como usuario e IP de logs de login.'],
+          "Extrae todos los pares (usuario, IP) del log de logins fallidos. Para cada par imprime en el formato: usuario: IP",
+          "import re\nlogs = 'admin 10.0.0.1 failed\\nroot 192.168.1.9 failed'\n# Usa re.findall con r'(\\w+) (\\d+\\.\\d+\\.\\d+\\.\\d+)'\n",
+          'admin: 10.0.0.1\nroot: 192.168.1.9',
+          'output_equals',
+          "Usa re.findall con dos grupos y luego: for usuario, ip in pares: print(f'{usuario}: {ip}').",
+          "import re\nlogs = 'admin 10.0.0.1 failed\\nroot 192.168.1.9 failed'\npares = re.findall(r'(\\w+) (\\d+\\.\\d+\\.\\d+\\.\\d+)', logs)\nfor usuario, ip in pares:\n    print(f'{usuario}: {ip}')",
+          35, 13,
+          quiz('¿Qué devuelve re.findall con dos grupos de captura?', ['Lista de tuplas', 'Un solo string', 'Un diccionario', 'Solo la primera coincidencia'], 'Lista de tuplas')
+        ),
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_004',
+          're.match vs re.search: validar formato de log',
+          'Entender que re.match ancla al inicio y re.search busca en cualquier parte.',
+          're.match solo tiene éxito si el patrón coincide desde el principio del string. re.search busca en cualquier posición. En un parser de logs, re.match valida que la línea tenga el formato esperado — líneas que no empiezan con fecha-severidad se descartan como corruptas antes de procesarlas.',
+          "import re\nbuena = '2024-01-15 ERROR acceso'\nmala = 'Garbage ERROR 2024-01-15'\nprint(bool(re.match(r'\\d{4}-\\d{2}-\\d{2} ERROR', buena)))\nprint(bool(re.match(r'\\d{4}-\\d{2}-\\d{2} ERROR', mala)))",
+          ['re.match ancla al inicio: la fecha debe estar primero.', 're.search hubiera encontrado ERROR en cualquier posición.', 'Validar formato es el primer paso de cualquier pipeline de logs.'],
+          "Valida si linea tiene el formato correcto (YYYY-MM-DD seguido de ERROR, WARN o INFO) usando re.match. Imprime 'Formato válido' o 'Formato inválido'.",
+          "import re\nlinea = '2024-01-15 ERROR acceso denegado'\n",
+          'Formato válido',
+          'output_equals',
+          "Usa re.match(r'\\d{4}-\\d{2}-\\d{2} (ERROR|WARN|INFO)', linea) con un if/else.",
+          "import re\nlinea = '2024-01-15 ERROR acceso denegado'\nif re.match(r'\\d{4}-\\d{2}-\\d{2} (ERROR|WARN|INFO)', linea):\n    print('Formato válido')\nelse:\n    print('Formato inválido')",
+          30, 12,
+          quiz('¿Cuál es la diferencia clave entre re.match y re.search?', ['match ancla al inicio, search busca en cualquier parte', 'match es más lento siempre', 'search devuelve más grupos', 'No hay diferencia'], 'match ancla al inicio, search busca en cualquier parte')
+        ),
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_005',
+          'Patrones avanzados: detectar líneas críticas',
+          'Usar alternancia, \\b y re.compile para filtrar logs de alta severidad.',
+          're.compile precompila un patrón para reutilizarlo eficientemente en bucles. La alternancia (A|B|C) busca cualquiera de las opciones. \\b es límite de palabra: evita que ERROR_SYS o WARNX hagan match cuando buscas ERROR o WARN exactos. En un pipeline SIEM, filtrar solo severidades altas reduce el volumen de alertas a analizar.',
+          "import re\nlog = 'CRITICAL: 5 intentos desde 10.0.0.5'\nif re.search(r'\\bCRITICAL\\b', log):\n    print('Alerta crítica')",
+          ['\\b es límite de palabra: no matchea CRITICAL_SYS.', '(ERROR|WARN|CRITICAL) busca cualquiera de los tres con una sola pasada.', 're.compile precompila para búsquedas eficientes en bucles.'],
+          "Filtra los logs de alta severidad (ERROR, WARN o CRITICAL) con re.compile. El patrón ya está definido en el starter — añade el bucle para imprimir solo las líneas que coincidan.",
+          "import re\nlogs = ['INFO servicio OK', 'ERROR login fallido', 'CRITICAL disco lleno', 'WARN timeout red']\npatron = re.compile(r'\\b(ERROR|WARN|CRITICAL)\\b')\n# Recorre logs e imprime los que coincidan con patron\n",
+          'ERROR login fallido\nCRITICAL disco lleno\nWARN timeout red',
+          'output_equals',
+          "Usa: for log in logs: if patron.search(log): print(log).",
+          "import re\nlogs = ['INFO servicio OK', 'ERROR login fallido', 'CRITICAL disco lleno', 'WARN timeout red']\npatron = re.compile(r'\\b(ERROR|WARN|CRITICAL)\\b')\nfor log in logs:\n    if patron.search(log):\n        print(log)",
+          35, 13,
+          quiz('¿Para qué sirve \\b en un patrón regex?', ['Límite de palabra (no matchea dentro de otras palabras)', 'Inicio de línea', 'Fin del string', 'Cualquier dígito'], 'Límite de palabra (no matchea dentro de otras palabras)')
+        ),
+        { engine: 'pyodide' }
+      ),
+      Object.assign(
+        lesson(
+          'cs_regex_006',
+          'Capstone: parser SOC de log multilinea',
+          'Combinar re.findall, re.sub y conteo para parsear un log completo como analista SOC.',
+          'Un analista SOC real extrae severidades, cuenta eventos por tipo y anonimiza datos sensibles antes de escalar un incidente. Este ejercicio integra grupos, findall, sub y f-strings para generar un mini reporte — el mismo flujo que usarías en Python real contra logs de un SIEM o Splunk.',
+          "import re\ntexto = 'WARN: 3 fallos desde 10.0.0.1'\nsev = re.findall(r'\\b(ERROR|WARN|CRITICAL)\\b', texto)\nlimpio = re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[IP]', texto)\nprint(sev)\nprint(limpio)",
+          ['re.findall extrae todas las severidades del texto.', 're.sub anonimiza las IPs automáticamente.', 'Combinar ambos genera un pipeline de análisis defensivo real.'],
+          "Parsea el log de tres líneas: extrae severidades con re.findall, cuenta cuántas hay de cada tipo, anonimiza IPs con re.sub. Imprime el conteo por tipo en orden alfabético ('TIPO: N') y al final 'IPs anonimizadas: N'.",
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5 login fallido\\n2024-01-15 WARN 10.0.0.9 timeout\\n2024-01-15 ERROR 172.16.0.1 acceso denegado'\n",
+          'ERROR: 2\nWARN: 1\nIPs anonimizadas: 3',
+          'output_equals',
+          "Usa re.findall(r'\\b(ERROR|WARN|CRITICAL)\\b', log) para severidades, un dict para conteo, re.sub para IPs, sorted(conteo) para imprimir en orden y anonimizado.count('[IP]') para el total.",
+          "import re\nlog = '2024-01-15 ERROR 192.168.1.5 login fallido\\n2024-01-15 WARN 10.0.0.9 timeout\\n2024-01-15 ERROR 172.16.0.1 acceso denegado'\nseveridades = re.findall(r'\\b(ERROR|WARN|CRITICAL)\\b', log)\nconteo = {}\nfor s in severidades:\n    conteo[s] = conteo.get(s, 0) + 1\nanonimizado = re.sub(r'\\d+\\.\\d+\\.\\d+\\.\\d+', '[IP]', log)\nfor sev in sorted(conteo):\n    print(f'{sev}: {conteo[sev]}')\nn_ips = anonimizado.count('[IP]')\nprint(f'IPs anonimizadas: {n_ips}')",
+          40, 15,
+          quiz('En este pipeline SOC, ¿qué hace re.sub?', ['Anonimiza IPs reemplazándolas por [IP]', 'Cuenta severidades', 'Valida el formato de fecha', 'Ordena los eventos'], 'Anonimiza IPs reemplazándolas por [IP]')
+        ),
+        { engine: 'pyodide' }
+      )
+    ]
+  });
+})();
