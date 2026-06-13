@@ -188,6 +188,18 @@ const ACTION_REGISTRY = {
   // Handles both normal items and packs (data-category="packs").
   'buy-elite-item': function(el) {
     buyEliteItem(el.dataset.category, el.dataset.itemId);
+  },
+
+  // --- v12.0 Chess ---
+
+  // <div class="chess-cell" data-action="chess-click" data-sq="e4">...</div>
+  'chess-click': function(el) {
+    _chessClick(el.dataset.sq);
+  },
+
+  // <button data-action="chess-new-game">...</button>
+  'chess-new-game': function() {
+    _chessNewGame();
   }
 };
 
