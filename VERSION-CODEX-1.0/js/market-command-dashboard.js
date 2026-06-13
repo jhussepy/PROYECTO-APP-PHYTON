@@ -181,11 +181,16 @@ const MARKET_COMMAND_PRO_BUILD = '9.9.0';
 
 function renderProLiveHeader() {
   const finnhubLive = isFinnhubLiveMarket();
-  return `<section class="pro-live-line ${finnhubLive ? 'online' : 'cache'}">
-    <span class="market-dot ${finnhubLive ? 'online' : 'offline'}"></span>
-    <b>${finnhubLive ? 'FINNHUB LIVE' : 'MERCADO EDUCATIVO / CACHÉ'}</b>
-    <small>${safeMarketEscape(marketState.source || 'Pendiente')} · ${safeMarketEscape(formatMarketTime(marketState.updatedAt))}</small>
-  </section>`;
+  const sourceLabel = safeMarketEscape(marketState.source || 'Demo local');
+  const timeLabel   = safeMarketEscape(formatMarketTime(marketState.updatedAt));
+  return `<header class="pro-live-line${finnhubLive ? ' online' : ''}">
+    <div class="mkt-hdr-status">
+      <span class="market-dot ${finnhubLive ? 'online' : 'offline'}"></span>
+      <b>MERCADO EDUCATIVO</b>
+    </div>
+    <span class="mkt-hdr-chip${finnhubLive ? ' live' : ''}">${finnhubLive ? 'Finnhub Live' : sourceLabel}</span>
+    <small>${timeLabel}</small>
+  </header>`;
 }
 
 function renderProPortfolioCard(quotes = marketState.quotes || []) {
