@@ -8023,6 +8023,12 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
   justify-content: space-between;
   gap: 8px;
   flex-wrap: wrap;
+  background: rgba(4,6,10,.92);
+  border: 1px solid rgba(45,245,126,.22);
+  border-radius: 12px;
+  padding: 10px 14px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 8px;
 }
 .chess-back-btn, .chess-new-btn { white-space: nowrap; flex-shrink: 0; }
 .chess-info {
@@ -8209,11 +8215,13 @@ html[data-operator-frame="gold-command-frame"] .elite-header-avatar { filter: dr
 .piece.w {
   filter: drop-shadow(0 1px 3px rgba(255,255,255,.6)) drop-shadow(0 0 8px rgba(255,255,255,.25));
   color: #f0f0e8;
+  text-shadow: 0 1px 0 rgba(255,255,255,.95), 0 3px 8px rgba(0,0,0,.9);
 }
 /* Black pieces */
 .piece.b {
   filter: drop-shadow(0 1px 3px rgba(45,245,126,.55)) drop-shadow(0 0 10px rgba(45,245,126,.3));
-  color: #1a2e1e;
+  color: #2df57e;
+  text-shadow: 0 0 14px rgba(45,245,126,.9), 0 2px 6px rgba(0,0,0,.9);
 }
 
 /* Materialización al inicio — SOLO via .piece.spawn, NUNCA en .piece base */
